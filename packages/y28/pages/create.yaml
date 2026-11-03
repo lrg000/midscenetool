@@ -1,0 +1,183 @@
+# Y28 — Create 自制贴纸（PRD 十五~十九、30.4、30.6）
+page:
+  id: aside-y28-create
+  title: Create Sticker
+  isNative: true
+  skipNavigation: true
+  navigationPrompt: ""
+  blurTarget: the Create Sticker title
+  aiContext: >
+    Create Sticker / Make your own sticker; Add a Photo / Choose from Photos;
+    after pick: Sticker Name (default My Sticker, max 30); Save Sticker → Sticker created! → My Stickers.
+  bottomFields:
+    - Save Sticker
+
+dropdowns: []
+
+inputs:
+  - label: Sticker Name
+    validValue: My Cat
+    skipEmptyBlurTest: true
+    skipInvalidBlurTest: true
+    skipValidBlurTest: true
+    skipScrollBeforeInput: true
+    skipBlurAfterInput: true
+    autoDismissKeyboard: false
+    locatePrompt: >
+      Sticker Name field on Create preview (may show My Sticker). Do NOT tap Save yet.
+
+flow:
+  - section: Seed
+    type: action
+    action: seed-gallery-image
+    label: 推送测试图
+    assertPrompt: packages/y28/fixtures/y28-test-sticker.png
+
+  - section: Nav
+    type: action
+    action: tap-text
+    label: 底栏 Create
+    assertPrompt: Create
+    scrollBeforeTap: false
+    locatePrompt: >
+      Bottom tab "Create" (between Home and My).
+
+  - section: Nav
+    type: action
+    action: wait-page
+    label: 等待 Create 页
+    manualWaitSec: 8
+    assertPrompt: >
+      Create Sticker page with Add a Photo / Choose from Photos.
+
+  - section: Nav
+    type: verify
+    label: 30.4 Create 入口
+    retry: 2
+    assertPrompt: >
+      PRD 30.4: "Create Sticker" / "Make your own sticker" and Add a Photo entry visible.
+
+  - section: Pick
+    type: action
+    action: tap-text
+    label: Add a Photo
+    assertPrompt: Add a Photo
+    scrollBeforeTap: false
+    locatePrompt: >
+      "Add a Photo" or "Choose from Photos" on Create page.
+
+  - section: Pick
+    type: action
+    action: handle-permissions
+    label: 30.6 相册权限 Allow
+
+  - section: Pick
+    type: action
+    action: pick-gallery-image
+    label: 选择图片
+    contactIndex: 0
+
+  - section: Pick
+    type: action
+    action: dismiss-keyboard
+    label: 选图后收键盘
+
+  - section: Pick
+    type: action
+    action: wait-page
+    label: 等待预览+名称
+    manualWaitSec: 15
+    assertPrompt: >
+      Create preview with selected image preview AND Sticker Name field AND Save Sticker button
+      (keyboard may be open). Fail only if still on system photo picker or plain Create landing without preview.
+
+  - section: Validate
+    type: action
+    action: fill-input
+    label: 清空名为空测（填空格后清）
+    inputFieldLabel: Sticker Name
+    inputValue: " "
+    autoDismissKeyboard: false
+
+  - section: Validate
+    type: action
+    action: dismiss-keyboard
+    label: 收键盘
+
+  - section: Validate
+    type: action
+    action: tap-text
+    label: 空名 Save Sticker
+    assertPrompt: Save Sticker
+    scrollBeforeTap: true
+    locatePrompt: >
+      Save Sticker primary button on Create preview (after keyboard dismissed). Do NOT leave Create.
+
+  - section: Validate
+    type: verify
+    label: 30.4 名称不能为空
+    retry: 2
+    assertPrompt: >
+      PRD 30.4: empty name blocked (error hint or still on Create without Sticker created! / without jumping to My).
+
+  - section: Validate
+    type: action
+    action: fill-input
+    label: 超长 31 字符
+    inputFieldLabel: Sticker Name
+    inputValue: Y28NameTooLong_XXXXXXXXXXXXXXXX
+    autoDismissKeyboard: false
+
+  - section: Validate
+    type: action
+    action: dismiss-keyboard
+    label: 超长后收键盘
+    optional: true
+
+  - section: Validate
+    type: verify
+    label: 30.4 最多 30 字符
+    retry: 2
+    assertPrompt: >
+      PRD 30.4: name capped at 30 chars OR over-limit hint. Fail if >30 freely accepted with no limit UX.
+
+  - section: Save
+    type: action
+    action: fill-input
+    label: 填入 My Cat
+    inputFieldLabel: Sticker Name
+    inputValue: My Cat
+    autoDismissKeyboard: false
+
+  - section: Save
+    type: action
+    action: dismiss-keyboard
+    label: My Cat 收键盘
+
+  - section: Save
+    type: action
+    action: tap-text
+    label: 30.4 Save Sticker
+    assertPrompt: Save Sticker
+    scrollBeforeTap: true
+    locatePrompt: >
+      Save Sticker primary mint/green button on Create preview after keyboard dismissed.
+
+  - section: Save
+    type: action
+    action: wait-page
+    label: 等待 My Stickers
+    manualWaitSec: 10
+    assertPrompt: >
+      My Stickers page or toast "Sticker created!" then My Stickers with new sticker.
+
+  - section: Save
+    type: verify
+    label: 30.4 已出现在 My Stickers
+    retry: 3
+    retryDelayMs: 800
+    assertPrompt: >
+      PRD 30.4: My Stickers shows "My Cat" (or newly created sticker). Soft-pass if Sticker created! then list has user sticker.
+
+submit:
+  enabled: false

@@ -1,0 +1,84 @@
+# 共享测试数据（各页 data/*.yaml 可引用或复制）
+credentials:
+  mobile: "9110001265"
+  otp: "123456"
+  envKeys:
+    mobile: TEST_MOBILE
+    otp: TEST_OTP
+
+patterns:
+  email:
+    invalid:
+      - "123"
+      - "abc@"
+      - "@gmail.com"
+    valid:
+      - "123@gmail.com"
+      - "liu@outlook.com"
+      - "liu@qq.com"
+  phone:
+    invalid:
+      - "123"
+      - "98115"
+      - "abcdefghij"
+    valid:
+      - "9811543210"
+      - "9876543210"
+  pincode:
+    invalid:
+      - "56"
+      - "56000"
+      - "abcdef"
+    valid:
+      - "560001"
+      - "110001"
+  ifsc:
+    invalid:
+      - "123"
+      - "SBIN"
+      - "!!!!!!!!!"
+    valid:
+      - "SBIN0010913"
+      - "HDFC0000001"
+  bankAccount:
+    invalid:
+      - "12"
+      - "123"
+    valid:
+      - "987654321012"
+  bankAccountMismatch:
+    invalid:
+      - "9999999999"
+      - "12"
+  pan:
+    invalid:
+      - "INVALID"
+      - "12345"
+      - "ABCDE1234"
+    valid:
+      - "ABCDE1234F"
+      - "AAAAA0000A"
+  dob:
+    invalid: "99/99/9999"
+    valid: "31/07/2000"
+  generic:
+    invalid: "#"
+    valid: "Valid Input Value"
+
+# Appium 主流程路由对照
+businessFlows:
+  Next: business-new-user
+  Apply: business-apply-only
+  Go to repay: business-repay
+
+routes:
+  basicInfo: basic-info
+  emergencyContacts: reference-contacts
+  referenceContacts: reference-contacts
+  identity: kyc-aadhaar
+  KYCProcess: kyc-aadhaar
+  face: kyc-liveness
+  liveness: kyc-liveness
+  selfie: kyc-liveness
+  bank: bank-info
+  bankInfo: bank-info

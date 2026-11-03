@@ -1,0 +1,56 @@
+# T53 SMS Permission — PRD 四十四 / 60.8 允许路径。拒绝与 Open Settings 未自动化。
+page:
+  id: aside-t53-sms
+  title: SMS Permission
+  isNative: true
+  skipNavigation: true
+  navigationPrompt: ""
+  blurTarget: SMS Permission
+  aiContext: SMS Permission switch. First enable shows SMS Access dialog and Continue, then system SMS permission.
+  bottomFields: []
+dropdowns: []
+inputs: []
+flow:
+  - section: SMS
+    type: verify
+    label: My 上有 SMS Permission
+    assertPrompt: >
+      My Account shows an "SMS Permission" row with an on/off switch.
+  - section: SMS
+    type: action
+    action: tap-text
+    label: 打开 SMS 开关
+    scrollBeforeTap: false
+    noScrollRetry: true
+    assertPrompt: SMS Permission
+    locatePrompt: >
+      The SMS Permission switch control (tap to turn ON).
+      Do NOT tap Personal Information, Help, or Logout.
+  - section: SMS
+    type: verify
+    label: SMS Access 说明
+    optional: true
+    assertPrompt: >
+      If the explainer is up, it says "SMS Access" and
+      "Allow FlexiCredit to access SMS messages for supported loan-related services."
+      with Continue. If the system permission dialog is already up, pass.
+  - section: SMS
+    type: action
+    action: tap-text
+    label: SMS Access Continue
+    optional: true
+    scrollBeforeTap: false
+    noScrollRetry: true
+    assertPrompt: Continue
+    locatePrompt: On the "SMS Access" dialog, tap "Continue". Do NOT tap outside to dismiss.
+  - section: SMS
+    type: action
+    action: handle-permissions
+    label: 系统短信权限
+    optional: true
+  - section: SMS
+    type: verify
+    label: 允许后开关为 ON
+    optional: true
+    assertPrompt: >
+      The SMS Permission switch shows ON, or the row indicates SMS access is enabled.

@@ -1,0 +1,139 @@
+# T46 A 面 — Welcome + Phone Code Verification（精简：合并校验、去掉与 bootstrap 重复的恢复链）
+# 凭证：9110001244 / 123456；勿复用 T42 Login with Mobile Number / Verify & Login
+page:
+  id: aside-t46-login
+  title: Login
+  isNative: true
+  skipNavigation: true
+  navigationPrompt: ""
+  blurTarget: the page title or subtitle text area above the input fields (not links or buttons)
+  aiContext: >
+    Welcome: Sree Dhan Lekha, CONTINUE WITH TRUECALLER/GOOGLE, CINTINUE WITH PHONE CODE,
+    checkbox "I agree to the Terms & Conditions and Privacy Policy" (tap box only).
+    Phone page (login-otp.png): "Phone Code" + "Verification", subtitle about sending code,
+    +91, placeholder "10-digit handset ID", gold "SEND CODE".
+    OTP page (fill-otp.png): "Code dispatched to:", "Enter code", black "VERIFY CODE", "RESEND IN".
+    NOT T42 OTP modals. Ignore vConsole.
+  bottomFields: []
+
+dropdowns: []
+inputs: []
+
+checkboxes:
+  - label: Terms & Conditions
+
+flow:
+  - section: Welcome
+    type: action
+    action: relaunch-if-not
+    label: 不在 App 内则重开
+    assertPrompt: >
+      Is in-app UI visible (Welcome Sree Dhan Lekha, Before You Continue, Charter of Operation,
+      or Phone Code Verification) — not Android launcher and not solid black
+    locatePrompt: com.sreedhan.lekhabook.app
+
+  - section: Welcome
+    type: action
+    action: tap-text
+    label: 关闭残留协议弹窗
+    optional: true
+    scrollBeforeTap: false
+    assertPrompt: ACCEPT & CONTINUE
+    locatePrompt: >
+      If Before You Continue modal visible: UPPER black ACCEPT & CONTINUE only (NOT DECLINE)
+
+  - section: Welcome
+    type: action
+    action: wait-page
+    label: 等待 Welcome 页
+    manualWaitSec: 6
+    assertPrompt: >
+      Welcome shows Sree Dhan Lekha and a PHONE CODE login button (CINTINUE or CINTINE WITH PHONE CODE)
+      or CONTINUE WITH TRUECALLER. Not Charter, not Terms document, not Before You Continue modal
+
+  - section: Welcome
+    type: verify
+    label: Welcome 主文案
+    retry: 1
+    assertPrompt: >
+      Welcome shows "Sree Dhan Lekha", three login buttons (TRUECALLER / GOOGLE / PHONE CODE),
+      and "I agree to the Terms & Conditions and Privacy Policy."
+      Fail if RajWise, Charter full page, Terms document, or Login with Mobile Number (T42).
+
+  - section: Welcome
+    type: checkbox
+    label: Terms & Conditions
+
+  - section: Welcome
+    type: action
+    action: tap-text
+    label: CINTINUE WITH PHONE CODE
+    assertPrompt: PHONE CODE
+    scrollBeforeTap: false
+    locatePrompt: >
+      The third login button whose label contains "PHONE CODE"
+      (CINTINUE WITH PHONE CODE or CINTINE WITH PHONE CODE), below Google.
+      Do NOT tap Truecaller, Google, checkbox, or gold Terms/Privacy link text.
+
+  - section: Phone
+    type: action
+    action: wait-page
+    label: 等待 Phone Code 发码页
+    manualWaitSec: 6
+    assertPrompt: >
+      Full page "Phone Code" / "Verification" with "+91", "10-digit handset ID", and "SEND CODE".
+      NOT Welcome. NOT T42 Login with OTP modal.
+
+  - section: Phone
+    type: native-input
+    label: Mobile Number
+    valueKey: mobile
+    autoDismissKeyboard: true
+    assertPrompt: >
+      Phone Code Verification page shows +91 and input placeholder "10-digit handset ID"
+    locatePrompt: >
+      On Phone Code Verification page, the phone input to the right of "+91"
+      with placeholder "10-digit handset ID". Tap input — not SEND CODE, not back arrow
+
+  - section: Phone
+    type: action
+    action: tap-text
+    label: SEND CODE
+    assertPrompt: SEND CODE
+    scrollBeforeTap: false
+    locatePrompt: >
+      The solid gold/tan primary button labeled "SEND CODE" at the bottom
+      (NOT Send OTP — T42)
+
+  - section: OTP
+    type: action
+    action: wait-page
+    label: 等待 OTP 填写页
+    manualWaitSec: 8
+    assertPrompt: >
+      OTP page shows "Code dispatched to:", "Enter code", and "VERIFY CODE".
+      NOT Verify & Login modal (T42).
+
+  - section: OTP
+    type: native-input
+    label: Enter OTP
+    valueKey: otp
+    autoDismissKeyboard: true
+    assertPrompt: >
+      OTP page visible with Enter code input and VERIFY CODE button
+    locatePrompt: >
+      The code input with placeholder "Enter code" on the page showing "Code dispatched to:".
+      Tap input center — not VERIFY CODE yet, not back arrow
+
+  - section: OTP
+    type: action
+    action: tap-text
+    label: VERIFY CODE
+    assertPrompt: VERIFY CODE
+    scrollBeforeTap: false
+    locatePrompt: >
+      The solid black primary button labeled "VERIFY CODE" near the bottom
+      (NOT Verify & Login — T42)
+
+submit:
+  enabled: false

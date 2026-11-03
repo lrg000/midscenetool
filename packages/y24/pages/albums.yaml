@@ -1,0 +1,264 @@
+# Y24 — Albums 创建/添加/下载/校验（PRD 十一~十三、TC-010~014、019~020）
+page:
+  id: aside-y24-albums
+  title: Albums
+  isNative: true
+  skipNavigation: true
+  navigationPrompt: ""
+  blurTarget: the Albums or New Album title
+  aiContext: >
+    Albums tab: 2-col covers; New Album sheet with Album name, Protect this album, Create Album.
+    Album detail: Add Photos, Download All, overflow Delete Album. Purple #8B5CF6 Create.
+  bottomFields:
+    - Create Album
+
+dropdowns: []
+
+inputs:
+  - label: Album name
+    validValue: Holiday
+    skipEmptyBlurTest: true
+    skipInvalidBlurTest: true
+    skipValidBlurTest: true
+    skipScrollBeforeInput: true
+    skipBlurAfterInput: true
+    autoDismissKeyboard: false
+    locatePrompt: >
+      Text field labeled or placeholder "Album name" inside open "New Album" bottom sheet.
+      Do NOT tap Create Album or Protect toggle yet.
+
+flow:
+  - section: Nav
+    type: action
+    action: tap-text
+    label: 底栏 Albums
+    assertPrompt: Albums
+    scrollBeforeTap: false
+    locatePrompt: >
+      Bottom navigation tab "Albums" (right of Photos). Do NOT tap Photos grid.
+
+  - section: Nav
+    type: action
+    action: wait-page
+    label: 等待 Albums
+    manualWaitSec: 8
+    assertPrompt: >
+      Albums page with title "Albums" and top-right "+" (or album list / empty albums).
+
+  # ----- TC-019 空名称 -----
+  - section: Validate
+    type: action
+    action: tap-text
+    label: 打开 New Album
+    assertPrompt: +
+    scrollBeforeTap: false
+    locatePrompt: >
+      Top-right "+" on Albums header to create album. Do NOT tap existing album covers.
+
+  - section: Validate
+    type: action
+    action: wait-page
+    label: 等待 New Album Sheet
+    manualWaitSec: 6
+    assertPrompt: >
+      "New Album" bottom sheet open with Album name field and Create Album.
+
+  - section: Validate
+    type: action
+    action: dismiss-keyboard
+    label: 收键盘露出 Create
+    optional: true
+
+  - section: Validate
+    type: action
+    action: tap-text
+    label: TC-019 空名 Create Album
+    assertPrompt: Create Album
+    scrollBeforeTap: false
+    locatePrompt: >
+      Purple "Create Album" on New Album sheet with empty Album name. Do NOT tap Photos tab.
+
+  - section: Validate
+    type: verify
+    label: TC-019 Please enter album name
+    retry: 2
+    assertPrompt: >
+      PRD TC-019: toast/inline error "Please enter album name." Sheet still open; album not created.
+
+  # ----- TC-020 超长 -----
+  - section: Validate
+    type: action
+    action: fill-input
+    label: TC-020 填入 31 字符
+    inputFieldLabel: Album name
+    inputValue: Y24AlbumNameTooLong_ABCDEFGHIJK
+    autoDismissKeyboard: false
+
+  - section: Validate
+    type: action
+    action: dismiss-keyboard
+    label: 超长后收键盘
+    optional: true
+
+  - section: Validate
+    type: verify
+    label: TC-020 Maximum 30 characters
+    retry: 2
+    assertPrompt: >
+      PRD TC-020: PASS if (A) message "Maximum 30 characters." visible, OR
+      (B) Album name field clearly capped at 30 chars (counter/truncation). Fail if >30 freely accepted with no limit UX.
+
+  # ----- TC-010 / TC-011 创建 Holiday -----
+  - section: Create
+    type: action
+    action: fill-input
+    label: 填入 Holiday
+    inputFieldLabel: Album name
+    inputValue: Holiday
+    autoDismissKeyboard: false
+
+  - section: Create
+    type: action
+    action: dismiss-keyboard
+    label: Holiday 后收键盘
+
+  - section: Create
+    type: action
+    action: tap-text
+    label: TC-010 Create Album
+    assertPrompt: Create Album
+    scrollBeforeTap: false
+    locatePrompt: >
+      "Create Album" on New Album sheet (Protect off). Do NOT enable Protect this album here.
+
+  - section: Create
+    type: action
+    action: wait-page
+    label: 等待相册列表
+    manualWaitSec: 8
+    assertPrompt: >
+      Albums list showing album "Holiday" (possibly 0 photos / empty).
+
+  - section: Create
+    type: verify
+    label: TC-010 Holiday 已创建
+    retry: 2
+    assertPrompt: >
+      PRD TC-010: Albums list includes album titled "Holiday".
+
+  - section: Create
+    type: action
+    action: tap-text
+    label: 进入 Holiday
+    assertPrompt: Holiday
+    scrollBeforeTap: false
+    locatePrompt: >
+      Album card/row titled "Holiday". Do NOT tap lock-only private albums.
+
+  - section: Create
+    type: action
+    action: wait-page
+    label: 等待相册详情
+    manualWaitSec: 8
+    assertPrompt: >
+      Album detail for Holiday with Add Photos and/or empty album state.
+
+  - section: Create
+    type: verify
+    label: TC-011 空相册状态
+    retry: 2
+    assertPrompt: >
+      PRD TC-011: Holiday album detail open; empty or zero-photos state is acceptable (no crash).
+      Add Photos control should be available.
+
+  # ----- TC-012 Add Photos -----
+  - section: Add
+    type: action
+    action: tap-text
+    label: Add Photos
+    assertPrompt: Add Photos
+    scrollBeforeTap: false
+    locatePrompt: >
+      "Add Photos" on Holiday album detail. Do NOT tap Download All yet.
+
+  - section: Add
+    type: action
+    action: handle-permissions
+    label: 添加图片权限
+
+  - section: Add
+    type: action
+    action: pick-gallery-image
+    label: TC-012 选择图片
+    contactIndex: 0
+
+  - section: Add
+    type: action
+    action: wait-page
+    label: 等待加入相册
+    manualWaitSec: 10
+    assertPrompt: >
+      Holiday album detail showing at least one photo in 3-col grid, OR intermediate Add to Album confirm finished.
+
+  - section: Add
+    type: action
+    action: tap-text
+    label: 若出现 Add to Album 则确认
+    assertPrompt: Add to Album
+    scrollBeforeTap: false
+    optional: true
+    locatePrompt: >
+      Button "Add to Album" if visible after picking. Skip if already back on album grid.
+
+  - section: Add
+    type: verify
+    label: TC-012 图片已在相册
+    retry: 3
+    retryDelayMs: 800
+    assertPrompt: >
+      PRD TC-012: Holiday album shows at least one photo thumbnail.
+
+  # ----- TC-014 Download All -----
+  - section: DownloadAll
+    type: action
+    action: tap-text
+    label: 打开相册操作菜单
+    assertPrompt: overflow
+    scrollBeforeTap: false
+    optional: true
+    locatePrompt: >
+      Top-right "..." on album detail if Download All is inside menu. Skip if Download All is visible as a button.
+
+  - section: DownloadAll
+    type: action
+    action: tap-text
+    label: TC-014 Download All
+    assertPrompt: Download All
+    scrollBeforeTap: false
+    locatePrompt: >
+      Control labeled "Download All" (menu or toolbar). Do NOT tap Delete Album.
+
+  - section: DownloadAll
+    type: action
+    action: handle-permissions
+    label: Download All 权限
+
+  - section: DownloadAll
+    type: verify
+    label: TC-014 Photos saved
+    retry: 3
+    retryDelayMs: 700
+    assertPrompt: >
+      PRD TC-014: toast/banner "Photos saved." (or clear multi-save success). FAIL if only Save failed.
+
+  - section: DownloadAll
+    type: action
+    action: tap-text
+    label: 返回 Albums 列表
+    assertPrompt: back
+    scrollBeforeTap: false
+    locatePrompt: >
+      Top-left back arrow from Holiday album detail to Albums list.
+
+submit:
+  enabled: false

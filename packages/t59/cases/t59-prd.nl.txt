@@ -1,0 +1,65 @@
+# T59 Viramgam CardVista A 面自然语言用例
+
+云效：https://devops.aliyun.com/projex/project/f56f3edd04756632f67acd5450/req#openWorkitemIdentifier=a9c8f29ec7c367447b1d5e9938
+workItemId：a9c8f29ec7c367447b1d5e9938
+WIFO-2110 T59AB面包开发
+应用名：Viramgam CardVista
+包名：com.viramgamcard.cardvista.app
+kind：loan-shell（T 包；A 面为信用卡管理，不走 B 面 H5 模版）
+
+## 包元信息
+
+- 底栏：Home / Cards / Activity / My
+- 品牌紫 #5B35D5；背景 #F7F7FA；卡片白 #FFFFFF；标题 #191922；次级 #777783
+- 成功 #159A72；即将到期 #E99532；逾期 #D94B55
+- 登录：Truecaller / Google / Phone OTP；无密码登录
+- 数据均为用户手动录入，不接银行、不自动读短信账单
+
+## AC 映射（PRD 十四、功能验收清单）
+
+| AC | PRD | YAML | 自动化 |
+|----|-----|------|--------|
+| AC-01 | 首次协议确认，可查看协议 | bootstrap.yaml | 是 |
+| AC-02 | Truecaller 登录及失败重试 | — | 未自动化：需 Truecaller 真机授权 |
+| AC-03 | Google 登录、绑定、Not Now | login.yaml Not Now | 部分：仅 Not Now；Google 真授权未自动化 |
+| AC-04 | 手机号 OTP、重发、错误提示 | login.yaml | 是（错误 OTP + 正确 OTP） |
+| AC-05 | Google 登录后必须补手机号 | — | 未自动化：依赖 Google 登录 |
+| AC-06 | 新增、编辑、查看信用卡 | cards.yaml | 是（新增+查看；编辑点入详情） |
+| AC-07 | 手动添加账单并显示状态 | activity.yaml | 是 |
+| AC-08 | 手动还款且金额校验 | activity.yaml | 是（超剩余额文案 + 部分还款） |
+| AC-09 | 部分还款 / 全额 / 逾期计算 | activity.yaml | 部分：Partially Paid；全额与 Overdue 见下 |
+| AC-10 | 首页额度与待还随数据更新 | home.yaml + cards 后回 Home | 是 |
+| AC-11 | Activity 账单与还款历史 | activity.yaml | 是 |
+| AC-12 | My 账户、绑定、权限说明、退出 | my.yaml | 是 |
+| AC-13 | 退出不误删历史 | persist.yaml | 是（登出再登录仍见测试卡） |
+| AC-14 | slice 风格视觉与英文文案 | 各页 UI … PRD | 是（视觉 STRICT，非像素尺） |
+
+## 未自动化 + 原因
+
+- AC-02 Truecaller 全流程：需安装 Truecaller 并完成通话校验
+- AC-03 Google 账户选择器：系统账号选择，非稳定自动化
+- AC-05 Google 后补手机号：同上
+- AC-09 Overdue：需把到期日改到过去或改系统日期；未做日期选择器
+- AC-09 全额还清 Paid：为保留未结清账单以测「有未结清不可直接删卡」，不做第二次还清
+- 拒权 / 超大图 / 故障注入 / 卸载监控 / Push / 活体补光：PRD 工单前半功能点，非第十四节验收清单，未纳入本脚本
+- 编辑已有还款后重算：未单独造数
+
+## 步骤（可维护）
+
+1. 冷启，协议弹层：Manage Your Cards, Simply；三条协议勾选；Continue
+2. 登录页：Continue with Truecaller / Google / Phone
+3. Continue with Phone → +91 → 输入测试号 → Continue/Send OTP
+4. 错误 OTP 有提示；正确 OTP Verify & Continue
+5. 若出现 Connect Your Google Account → Not Now
+6. Home：Total Credit Limit / Total Outstanding / Available Credit / My Cards / Upcoming Bills
+7. Cards：+ Add Card，空保存校验，再填 HDFC 测试卡 Save Card → Card added successfully
+8. Activity Bills：+ Add Bill，Save Bill → Bill added successfully，状态 Unpaid
+9. Record Payment：超额提示 Payment amount exceeds the remaining balance.；再记 ₹2000 → Partially Paid
+10. 有未结清时 Delete Card 不可直接删除
+11. My：Log out? → Cancel 仍在；再 Log Out 回登录；再 OTP 登录，测试卡仍在
+
+## 实机差异
+
+- 以实机截图为准。若协议是单条合并勾选（T53 风格）而非 PRD 三条独立勾选，在本栏补记，并改 bootstrap.yaml，禁止假装已覆盖 PRD 三条。
+- 登录按钮若为 Use Mobile Number 而非 Continue with Phone，改 locatePrompt 并记入本栏。
+- OTP 主按钮若为 Verify & Login 而非 Verify & Continue，同样记录。

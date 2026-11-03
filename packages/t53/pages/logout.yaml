@@ -1,0 +1,39 @@
+# T53 Logout — PRD 60.12
+page:
+  id: aside-t53-logout
+  title: Logout
+  isNative: true
+  skipNavigation: true
+  navigationPrompt: ""
+  blurTarget: My Account
+  aiContext: Logout returns toward the login screen Anantapur Chakra / Credit made simple.
+  bottomFields: []
+dropdowns: []
+inputs: []
+flow:
+  - section: Logout
+    type: action
+    action: tap-text
+    label: Logout
+    scrollBeforeTap: true
+    assertPrompt: Logout
+    locatePrompt: >
+      The "Logout" row on My Account. Do NOT tap Help or Terms.
+  - section: Logout
+    type: action
+    action: tap-text
+    label: 确认 Logout
+    optional: true
+    scrollBeforeTap: false
+    noScrollRetry: true
+    assertPrompt: Logout
+    locatePrompt: >
+      If a confirm dialog is visible, tap the confirm control labeled Logout, Confirm, or Yes.
+      Do NOT tap Cancel.
+  - section: Logout
+    type: verify
+    label: 回到登录页
+    retry: 2
+    assertPrompt: >
+      Login is showing "Anantapur Chakra" and "Credit made simple."
+      or "Use Mobile Number". Not My Account.

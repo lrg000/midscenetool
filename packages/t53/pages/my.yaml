@@ -1,0 +1,38 @@
+# T53 我的 — PRD 四十二
+page:
+  id: aside-t53-my
+  title: My Account
+  isNative: true
+  skipNavigation: true
+  navigationPrompt: ""
+  blurTarget: My Account
+  aiContext: >
+    My Account. Rows only: Personal Information, SMS Permission, Help & Support,
+    Terms of Service, Privacy Policy, Logout.
+  bottomFields: []
+dropdowns: []
+inputs: []
+flow:
+  - section: My
+    type: action
+    action: tap-text
+    label: 进入 My
+    scrollBeforeTap: false
+    assertPrompt: My
+    locatePrompt: >
+      The "My" tab or profile entry that opens My Account.
+      Do NOT tap Home, Borrow, or Repay.
+  - section: My
+    type: verify
+    label: My Account 菜单
+    retry: 1
+    assertPrompt: >
+      "My Account" is visible with rows
+      "Personal Information", "SMS Permission", "Help & Support",
+      "Terms of Service", "Privacy Policy", and "Logout".
+      No FAQ, chat, or points center.
+  - section: My
+    type: verify
+    label: UI My PRD
+    assertPrompt: >
+      STRICT: warm off-white background #F4F3EF, primary blue #1D4ED8 buttons with about 6dp corners (not pills), title/amount near #171717, secondary #6B7280. Fail if yellow notes, retro paper, black gallery, or cream sticker theme.

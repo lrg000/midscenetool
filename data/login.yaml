@@ -1,0 +1,112 @@
+# 原生登录 — 不含冷启动（见 data/app-bootstrap.yaml）
+# 马甲包只换品牌/色调；登录前触发点按英文文案对齐，不按颜色定位。
+# 凭证：ACCOUNT_PROFILE 或 TEST_MOBILE / TEST_OTP
+# 实际 UI：Welcome 登录页（须勾选底部协议）→ Login with Mobile Number
+#          → Login with OTP 弹窗(+91/Enter mobile number/Send OTP)
+#          → Enter OTP 弹窗(Enter OTP / Verify & Login)
+# Agree & Continue 只在 data/app-bootstrap.yaml（权限之后），本页不处理。
+page:
+  id: login
+  title: Login
+  isNative: true
+  skipNavigation: true
+  navigationPrompt: ""
+  blurTarget: the login screen header
+  aiContext: >
+    Native Android loan-app mobile OTP login (white-label skins). App Bootstrap already
+    tapped Agree & Continue; this page starts on Welcome login.
+    Screens:
+    1) Welcome login: must check the Terms checkbox at bottom before login buttons work;
+    2) "Login with OTP" modal: +91 + "Enter mobile number" input, "Send OTP" button;
+    3) "Enter OTP" modal: "Enter OTP" input, "Verify & Login" button;
+    4) After login, a "Login faster with Passkey" screen may appear — tap "Skip for now"
+       (never Create Passkey), then H5 home with Apply / Next / Go to repay.
+    Never dismiss soft keyboard with ESC/Back — that closes OTP dialogs.
+    Do not tap the X close icon or the Terms/Privacy text links (only the checkbox).
+  bottomFields: []
+
+dropdowns: []
+inputs: []
+
+checkboxes:
+  - label: Terms of Service & Privacy Policy
+    locatePrompt: >
+      On the Welcome LOGIN screen (Truecaller / Google / Login with Mobile Number buttons
+      are visible; the first-launch "Agree & Continue" dialog is NOT covering the screen):
+      the small empty circular or square checkbox at the bottom-left, immediately LEFT of
+      the Terms of Service & Privacy Policy consent line.
+      Tap ONLY that empty checkbox. Do NOT tap underlined legal links or login buttons.
+    checkedPrompt: >
+      On the Welcome login screen (not the first-launch Agree & Continue dialog):
+      is the small checkbox to the LEFT of the Terms of Service & Privacy Policy consent
+      line checked (filled with a tick)? Answer only true or false.
+
+flow:
+  - section: Login
+    type: checkbox
+    label: Terms of Service & Privacy Policy
+  - section: Login
+    type: action
+    action: tap-text
+    label: Login with Mobile Number
+    assertPrompt: Login with Mobile Number
+    locatePrompt: >
+      The button whose visible text is exactly "Login with Mobile Number"
+      on the Welcome login screen (under Continue with Google; phone icon on the left).
+      Ignore button/theme color. Do NOT tap Truecaller, Google, or Terms links.
+  - section: Login
+    type: action
+    action: wait-page
+    label: 等待 Login with OTP 弹窗
+    assertPrompt: >
+      The "Login with OTP" dialog is visible with "+91", "Enter mobile number", and "Send OTP"
+  - section: Login
+    type: native-input
+    label: Mobile Number
+    valueKey: mobile
+    locatePrompt: >
+      The mobile number text input inside the "Login with OTP" dialog:
+      field with "+91" on the left and placeholder "Enter mobile number".
+      Tap the number area to the right of "+91" only
+  - section: Login
+    type: action
+    action: tap-text
+    label: Send OTP
+    assertPrompt: Send OTP
+    locatePrompt: >
+      The primary button whose visible text is exactly "Send OTP" inside the
+      "Login with OTP" dialog. Ignore button color. Tap even if the soft keyboard
+      is still visible — do NOT press Back/ESC to hide keyboard.
+  - section: OTP
+    type: action
+    action: wait-page
+    label: 等待 Enter OTP 弹窗
+    assertPrompt: >
+      The "Enter OTP" dialog is visible with "Enter OTP" input and "Verify & Login" button
+  - section: OTP
+    type: native-input
+    label: OTP Code
+    valueKey: otp
+    locatePrompt: >
+      The text input with placeholder "Enter OTP" inside the "Enter OTP" dialog.
+      Tap the input box center — not Change Number, not Resend, not X
+  - section: OTP
+    type: action
+    action: tap-text
+    label: Verify & Login
+    assertPrompt: Verify & Login
+    locatePrompt: >
+      The primary button whose visible text is exactly "Verify & Login" inside the
+      "Enter OTP" dialog. Ignore button color. Tap even if the soft keyboard is
+      still visible — do NOT press Back/ESC to hide keyboard.
+  - section: Post Login
+    type: action
+    action: dismiss-home-popup
+    label: 关闭登录后营销/通知/Passkey 弹层
+  - section: Post Login
+    type: action
+    action: wait-h5-home
+    label: 登录成功进入 H5
+    manualWaitSec: 15
+submit:
+  enabled: false

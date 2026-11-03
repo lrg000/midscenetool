@@ -1,0 +1,94 @@
+# Y25 Chitra Stickers — Explore 首页（PRD 八~十、TC-001~004、TC-025）
+# 云效: 1193c1c5bb9b624cdd83471e07 | com.chitrachitra.stickers.app
+page:
+  id: aside-y25-explore
+  title: Explore
+  isNative: true
+  skipNavigation: true
+  navigationPrompt: ""
+  blurTarget: the Sticker Box title in the Explore header
+  aiContext: >
+    Chitra Stickers Explore: header "Sticker Box", horizontal category chips
+    (Emoji/Cute/Funny/Love/Reaction/Animals/Food/Party), 3-column sticker grid,
+    top-right "+", bottom tabs Explore and My. Colorful playful UI, coral #FF6B5E.
+    No login. Ignore vConsole.
+  bottomFields: []
+
+dropdowns: []
+inputs: []
+
+flow:
+  - section: Cold Start
+    type: action
+    action: wait-app-ready
+    label: 等待 App 就绪
+    manualWaitSec: 20
+    assertPrompt: >
+      Chitra Stickers finished loading: Explore with Sticker Box / categories / sticker grid,
+      OR My Stickers, OR sticker detail. No endless splash.
+
+  - section: Cold Start
+    type: action
+    action: handle-permissions
+    label: 系统权限弹窗
+
+  - section: Explore
+    type: action
+    action: relaunch-if-not
+    label: 不在 App 内则重开
+    assertPrompt: >
+      Is in-app Chitra Stickers UI visible (Sticker Box / Explore / My Stickers / sticker detail),
+      not Android launcher and not solid black
+    locatePrompt: com.chitrachitra.stickers.app
+
+  - section: Explore
+    type: verify
+    label: TC-001 默认进入 Explore 无登录
+    retry: 2
+    assertPrompt: >
+      PRD TC-001: Explore home with title "Sticker Box" (or Explore) and sticker content.
+      No login/registration. Bottom has Explore and My tabs (2 tabs only).
+      FAIL for login screens or 3+ icon bottom nav.
+
+  - section: Explore
+    type: verify
+    label: UI Explore 彩色活泼风
+    assertPrompt: >
+      STRICT PRD UI (五~八, TC-025): light warm bg near #FFFDF8; playful colorful stickers app;
+      coral/orange accents (~#FF6B5E) on selected controls or FAB/+; rounded chips/cards.
+      Fail if calendar-blue or note-yellow loan branding, or dark gallery-only chrome.
+
+  - section: Explore
+    type: verify
+    label: TC-002 分类横向展示
+    retry: 2
+    assertPrompt: >
+      PRD TC-002: horizontal category chips visible (e.g. Emoji, Cute, Funny, Love, Reaction,
+      Animals, Food, Party — at least several). Capsule/rounded chips. May scroll horizontally.
+
+  - section: Explore
+    type: action
+    action: tap-text
+    label: TC-003 切换 Cute 分类
+    assertPrompt: Cute
+    scrollBeforeTap: false
+    locatePrompt: >
+      The horizontal category chip labeled "Cute" (may include emoji). Do NOT tap stickers or My tab.
+
+  - section: Explore
+    type: verify
+    label: TC-003 Cute 分类贴纸
+    retry: 2
+    assertPrompt: >
+      After selecting Cute: Cute chip appears selected/highlighted and sticker grid below shows stickers.
+      Fail if still only empty splash with no grid.
+
+  - section: Explore
+    type: verify
+    label: TC-004 三列 Grid
+    assertPrompt: >
+      PRD TC-004 / TC-026: stickers shown in about 3-column grid, square-ish cards, rounded corners,
+      images not obviously stretched. Fail if single-column list only or severe distortion.
+
+submit:
+  enabled: false

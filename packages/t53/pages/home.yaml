@@ -1,0 +1,36 @@
+# T53 首页初始额度 — PRD 二十七、二十八 / 60.9
+page:
+  id: aside-t53-home
+  title: Home
+  isNative: true
+  skipNavigation: true
+  navigationPrompt: ""
+  blurTarget: AVAILABLE CREDIT
+  aiContext: >
+    Home. Good morning. AVAILABLE CREDIT ₹30,000. Total Limit ₹30,000. Used ₹0. Borrow Now.
+    No banners, points, or ads.
+  bottomFields: [Borrow Now]
+dropdowns: []
+inputs: []
+flow:
+  - section: Home
+    type: action
+    action: wait-page
+    label: 等待首页
+    manualWaitSec: 10
+    assertPrompt: >
+      Home shows "AVAILABLE CREDIT" and "₹30,000" and a "Borrow Now" button.
+  - section: Home
+    type: verify
+    label: 初始额度
+    assertPrompt: >
+      "Good morning" is visible. AVAILABLE CREDIT is "₹30,000".
+      Total Limit "₹30,000". Used "₹0". There is "Borrow Now".
+      No promotional banner, points, or news feed.
+  - section: Home
+    type: verify
+    label: UI Home PRD
+    assertPrompt: >
+      STRICT: background #F4F3EF. The large amount is about 40–48px and near #171717.
+      Borrow Now is #1D4ED8 with ~6dp corners, not a pill.
+      Fail if yellow, retro, black-gallery, or sticker theme.

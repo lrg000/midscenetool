@@ -1,0 +1,39 @@
+# 账号分流配置 — 不同手机号登录后首页按钮不同，对应不同业务流
+# 使用：ACCOUNT_PROFILE=new-user npm run test:business-auto
+# 或：  ACCOUNT_PROFILE=repay-user npm run test:business-repay
+accounts:
+  new-user:
+    description: 新用户，首页显示 Next，走 KYC 全流程
+    mobile: "9110001376"
+    otp: "123456"
+    expectedHome: Next
+    flow: business-new-user
+
+  apply-user:
+    description: 已 KYC 老用户，首页显示 Apply
+    mobile: "9110001361"
+    otp: "123456"
+    expectedHome: Apply
+    flow: business-apply-only
+
+  repay-user:
+    description: 在贷用户，首页显示 Go to repay
+    mobile: "9110001361"
+    otp: "123456"
+    expectedHome: "Go to repay"
+    flow: business-repay
+
+  # 单页字段测试：登录后人工/navigate 到目标页，只跑表单
+  basic-info-only:
+    description: 登录后手动进入 Basic info，仅测字段（skipNavigation）
+    mobile: "9110001370"
+    otp: "123456"
+    expectedHome: Next
+    flow: basic-info
+    skipPostLoginTap: true
+
+  # T46 A 面壳登录（tests/aside/t46.test.ts 默认注入 TEST_MOBILE/TEST_OTP）
+  t46-aside:
+    description: T46 Sree Dhan Lekha A 面 OTP 登录
+    mobile: "9110001244"
+    otp: "123456"

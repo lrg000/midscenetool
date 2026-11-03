@@ -1,0 +1,181 @@
+# T53 冷启协议弹窗 — PRD 七 / 60.1
+# 实机：勾选文案为 "I agree to the Terms of Service, Privacy Policy and Permissions Declaration."
+# 未勾选时 Continue 为浅色禁用；勾选后变主色再点 Continue（勿点 Decline / X）
+page:
+  id: aside-t53-bootstrap
+  title: Before you continue
+  isNative: true
+  skipNavigation: true
+  navigationPrompt: ""
+  blurTarget: the dialog title
+  aiContext: >
+    Anantapur Chakra / FlexiCredit first launch.
+    Modal title "Before you continue". Body "Please review and agree to the following before using FlexiCredit."
+    Rows: Terms of Service, Privacy Policy, Permissions Declaration (blue with chevron).
+    Checkbox text: "I agree to the Terms of Service, Privacy Policy and Permissions Declaration."
+    Continue is disabled/pale until checkbox is checked; then primary blue. Decline text below.
+    Not T42 RajWise, not T46 ACCEPT & CONTINUE.
+  bottomFields: []
+
+dropdowns: []
+inputs: []
+
+checkboxes:
+  - label: I agree to the Terms of Service, Privacy Policy and Permissions Declaration
+
+flow:
+  - section: Cold Start
+    type: action
+    action: wait-app-ready
+    label: 等待 T53 冷启就绪
+    manualWaitSec: 15
+    assertPrompt: >
+      Has Anantapur Chakra / FlexiCredit finished splash and is NOW showing ANY of:
+      (1) "Before you continue" agreement,
+      (2) login with "Credit made simple." or "Use Mobile Number",
+      (3) a system permission Allow dialog?
+      Answer false only for pure splash, launcher, or endless spinner. Answer only true or false.
+
+  - section: Permissions
+    type: action
+    action: handle-permissions
+    label: 系统权限（若有）
+    optional: true
+
+  - section: Agreement
+    type: verify
+    label: 首次协议弹窗文案
+    optional: true
+    retry: 1
+    assertPrompt: >
+      If "Before you continue" is visible, it shows
+      "Please review and agree to the following before using FlexiCredit."
+      and rows "Terms of Service", "Privacy Policy", "Permissions Declaration",
+      a checkbox next to "I agree to the Terms of Service, Privacy Policy and Permissions Declaration.",
+      a "Continue" button, and a "Decline" text control.
+      If the agreement modal is already gone and login is showing, pass.
+      Fail if this is RajWise or Sree Dhan Lekha.
+
+  - section: Agreement
+    type: verify
+    label: UI Before you continue PRD
+    optional: true
+    assertPrompt: >
+      STRICT if the agreement modal is on screen: white/off-white dialog on a dimmed background;
+      title near dark navy; protocol row text blue; secondary body near #6B7280.
+      While the consent checkbox is unchecked, Continue may be pale/disabled (not #1D4ED8) — that is OK.
+      Fail if notes-yellow, retro paper, or sticker-cream theme.
+      If modal already dismissed, pass.
+
+  - section: Agreement
+    type: action
+    action: tap-text
+    label: 打开 Terms of Service
+    optional: true
+    scrollBeforeTap: false
+    noScrollRetry: true
+    assertPrompt: Terms of Service
+    locatePrompt: >
+      Only if "Before you continue" modal is visible: the list row "Terms of Service" with a right chevron
+      (NOT the blue link words inside the checkbox sentence).
+      Do NOT tap the checkbox, Continue, Decline, Privacy Policy, or Permissions Declaration.
+
+  - section: Agreement
+    type: verify
+    label: Terms of Service 阅读页
+    optional: true
+    assertPrompt: >
+      A text page titled "Terms of Service" is open (not the agreement modal, not login).
+      If still on Before you continue after a failed open, pass (optional path).
+
+  - section: Agreement
+    type: action
+    action: android-back
+    label: 从 Terms 返回
+    optional: true
+
+  - section: Agreement
+    type: action
+    action: tap-text
+    label: 打开 Privacy Policy
+    optional: true
+    scrollBeforeTap: false
+    noScrollRetry: true
+    assertPrompt: Privacy Policy
+    locatePrompt: >
+      Only if "Before you continue" modal is visible: the list row "Privacy Policy" with a right chevron.
+      Do NOT tap Terms of Service, Permissions Declaration, checkbox, Continue, or Decline.
+
+  - section: Agreement
+    type: action
+    action: android-back
+    label: 从 Privacy 返回
+    optional: true
+
+  - section: Agreement
+    type: action
+    action: tap-text
+    label: 打开 Permissions Declaration
+    optional: true
+    scrollBeforeTap: false
+    noScrollRetry: true
+    assertPrompt: Permissions Declaration
+    locatePrompt: >
+      Only if "Before you continue" modal is visible: the list row "Permissions Declaration" with a right chevron.
+      Do NOT tap the other protocol rows, checkbox, Continue, or Decline.
+
+  - section: Agreement
+    type: action
+    action: android-back
+    label: 从 Permissions Declaration 返回
+    optional: true
+
+  - section: Agreement
+    type: verify
+    label: 未勾选 Continue 不可用
+    optional: true
+    assertPrompt: >
+      If "Before you continue" is visible and the consent checkbox is unchecked,
+      the "Continue" button is disabled or pale/greyed (not solid primary blue).
+      If modal is already gone, pass.
+
+  # 弹窗仍在时必须勾选；optional 仅用于「已同意过、弹窗已消失」
+  - section: Agreement
+    type: checkbox
+    label: I agree to the Terms of Service, Privacy Policy and Permissions Declaration
+    optional: true
+
+  - section: Agreement
+    type: verify
+    label: 勾选后 Continue 可点
+    optional: true
+    assertPrompt: >
+      If "Before you continue" is still visible, the consent checkbox is checked
+      and the "Continue" button looks enabled (solid primary blue, not pale/disabled).
+      If the modal is already gone, pass.
+
+  - section: Agreement
+    type: action
+    action: tap-text
+    label: Continue
+    optional: true
+    scrollBeforeTap: false
+    noScrollRetry: true
+    assertPrompt: Continue
+    locatePrompt: >
+      Only if "Before you continue" modal is visible: the primary "Continue" button
+      AFTER the consent checkbox is checked (solid blue, enabled).
+      Do NOT tap Decline, the X close icon, protocol rows, or the checkbox.
+
+  - section: Login
+    type: action
+    action: wait-page
+    label: 进入登录页
+    manualWaitSec: 10
+    assertPrompt: >
+      Login shows "Anantapur Chakra" and "Credit made simple."
+      or buttons "Continue with Truecaller", "Continue with Google", "Use Mobile Number".
+      Not the Before you continue modal. Not Decline.
+
+submit:
+  enabled: false

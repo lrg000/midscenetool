@@ -1,0 +1,25 @@
+android:
+  deviceId: "3443348804001VS" # 设备ID, 可通过adb devices命令获取
+  launch: "your_app_name"
+tasks:
+  - name: 登录流程
+    flow:
+      - aiAction: 启动xxx应用
+      - aiWaitFor: 出现“通过手机号登录”按钮
+      - aiAction: 点击“通过手机号登录”按钮
+      - aiWaitFor: 登录页面出现
+      - aiAction: 在第一个输入框中输入2024023181
+      - aiAction: 在第二个输入框中输入9527
+      - sleep: 5000
+      - aiAssert: 登录页面不再展示
+  - name: 签到流程
+    flow:
+      - #1. 关闭开通PRO弹窗（如有）
+      - aiAction: 如果出现的是开通PRO弹窗, 而非“每日奖励”的签到弹窗, 则点击右上角“x”按钮关闭
+      - aiAction: 如果没有“开通PRO”弹窗, 则跳过此步骤
+      - #2. 处理每日奖励弹窗
+      - aiAction: 如果出现“每日奖励”弹窗, 观察“领取”按钮是否可点击, 如果没有“每日奖励”弹窗, 则跳过此步骤和后面一个步骤
+      - aiAction: 如果领取按钮可点击, 则点击领取按钮, 如果领取按钮不可点击, 则跳过此步骤
+      - aiAction: 循环检测页面中间是否还有其他弹窗, 如果有, 则点击右上角“x”按钮或退出按钮或页面任意空白位置关闭这些弹窗
+      - #4. 最终断言
+      - aiAssert: 不再有任意弹窗

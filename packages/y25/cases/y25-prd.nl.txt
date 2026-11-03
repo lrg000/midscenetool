@@ -1,0 +1,103 @@
+# ============================================================
+# Y25 Chitra Stickers A 面 — 自然语言测试用例（云效 PRD 全量映射）
+# ============================================================
+#
+# 云效: Y25面包开发 | WIFO-1959 | workItemId: 1193c1c5bb9b624cdd83471e07
+# URL: https://devops.aliyun.com/projex/project/f56f3edd04756632f67acd5450/req#openWorkitemIdentifier=1193c1c5bb9b624cdd83471e07
+# androidPackage: com.chitrachitra.stickers.app
+#
+# ============================================================
+
+## 包元信息
+
+| 字段 | 值 |
+|------|-----|
+| packageId | y25 |
+| appLabel | Chitra Stickers |
+| androidPackage | com.chitrachitra.stickers.app |
+| 包类别 | 贴纸 |
+| 自动化 | npm run test:aside:y25 |
+| 云效状态 | 测试中 |
+
+## PRD 验收标准 → 自动化覆盖表
+
+| TC | PRD 要求 | 自动化 | 说明 |
+|----|----------|--------|------|
+| TC-001 | 首次打开进 Explore，无登录 | explore | |
+| TC-002 | 分类横向滑动可见 | explore | |
+| TC-003 | 切换 Cute 等分类 | explore | |
+| TC-004 | 3 列 Grid 无拉伸 | explore | |
+| TC-005 | 点贴纸进详情预览 | detail | |
+| TC-006 | Download Sticker → Sticker saved! | detail | |
+| TC-007 | 再下显示 Downloaded | detail | |
+| TC-008~014 | 上传/权限/格式限制 | — / 软测 | 需相册图；权限可 handle-permissions |
+| TC-015 | My → Downloaded 可见刚下贴纸 | my | |
+| TC-016~018 | Uploaded 上传删除 | — | 需真实选图，主流程软冒烟 |
+| TC-019 | force-stop 后数据仍在 | my | |
+| TC-020 | 删除同步 | — | 依赖上传 |
+| TC-021 | 卸载清数据 | ac021-uninstall | 专项 |
+| TC-022~024 | 异常/无网 | — | 需注入 |
+| TC-025~029 | UI / 稳定性 | explore+detail+my | STRICT soft |
+
+## UI 规范（PRD 五~七）
+
+| 项 | PRD |
+|----|-----|
+| 背景 | #FFFDF8 |
+| 主色珊瑚橙 | #FF6B5E |
+| 辅助色 | #FFD166 / #5B8DEF / #65C18C / #A78BFA |
+| 主/次文字 | #292524 / #78716C |
+| Header | 64dp；标题 Sticker Box 26sp |
+| Grid | 3 列，圆角 16dp，间距 8dp |
+| 底栏 | Explore / My |
+| 下载按钮 | Download Sticker（珊瑚橙） |
+| 成功文案 | Sticker saved! |
+| 已下载态 | Downloaded |
+
+## 测试流程摘要
+
+### Explore（explore.yaml）
+1. wait-app-ready → Explore / Sticker Box
+2. TC-001 无登录、底栏两 Tab
+3. UI 彩色活泼风 STRICT
+4. TC-002/003 分类可见并点 Cute
+5. TC-004 3 列 Grid
+
+### Detail（detail.yaml）
+6. 点任一贴纸 → TC-005 详情
+7. Download Sticker → TC-006 Sticker saved!
+8. 再点 → TC-007 Downloaded
+9. 返回 Explore
+
+### My（my.yaml）
+10. 底栏 My → My Stickers
+11. Downloaded 含刚下贴纸 TC-015
+12. force-stop + relaunch → TC-019
+13. Uploaded Tab 可见（可不上传）
+
+### TC-021 卸载（破坏性）
+
+```powershell
+$env:Y25_APK_PATH = "F:\path\to\app.apk"
+$env:Y25_RUN_UNINSTALL = "1"
+npm run test:aside:y25:uninstall
+```
+
+## PRD 明确不支持（不测）
+
+登录 / 云同步 / 搜索 / 点赞评论 / AI 抠图 / 图片编辑 / 自定义文字
+
+## 实机差异
+
+- UI 链接 PRD 为空；文案以本 PRD 英文为准
+- 附件 `key_Oc98.jks` 仅签名用，不写入 YAML
+- 上传用例需设备相册有图；主脚本默认不强制选图
+
+## 产物
+
+- packages/y25/pages/explore.yaml
+- packages/y25/pages/detail.yaml
+- packages/y25/pages/my.yaml
+- packages/y25/pages/ac021-uninstall.yaml
+- tests/aside/y25.test.ts
+- tests/aside/y25-uninstall.test.ts

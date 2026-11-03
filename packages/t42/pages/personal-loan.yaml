@@ -1,0 +1,69 @@
+# T42 A 面 — Personal Loan 详情（对齐 Figma「Personal Loan」1:585）
+page:
+  id: aside-t42-personal-loan
+  title: Personal Loan
+  isNative: true
+  skipNavigation: true
+  navigationPrompt: ""
+  blurTarget: the "Personal Loan" title
+  aiContext: >
+    T42 A-side Personal Loan detail page from Figma. Must show title "Personal Loan",
+    cards Overview / Typical Features / Suitable For / Required Documents with
+    Figma values. Back arrow returns to Home. Ignore vConsole.
+  bottomFields:
+    - Required Documents
+
+dropdowns: []
+inputs: []
+
+flow:
+  - section: Home
+    type: action
+    action: tap-text
+    label: Personal Loan 磁贴
+    assertPrompt: Personal Loan
+    locatePrompt: >
+      The "Personal Loan" service tile under "Our Services" on Home
+      (person icon). Do NOT tap Business Loan, Get Cash Now, or Profile tab.
+
+  - section: Personal Loan
+    type: verify
+    label: Personal Loan 标题与 Overview
+    retry: 2
+    assertPrompt: >
+      Page title is exactly "Personal Loan". An "Overview" section is visible with
+      descriptive body text about personal/instant funds (must not be empty and must not
+      show Business Loan overview). Fail if title is wrong or Overview missing.
+
+  - section: Personal Loan
+    type: verify
+    label: Typical Features 数值对齐 Figma
+    assertPrompt: >
+      "Typical Features" section shows exact pairs:
+      "Loan Amount" → "₹50k - ₹20 Lakhs" (or visually identical ₹50k–₹20 Lakhs),
+      "Repayment Period" → "12 - 60 Months",
+      "Interest Rate" → "10.5% - 24% p.a.".
+      Fail if any label/value differs from Figma.
+
+  - section: Personal Loan
+    type: verify
+    label: Suitable For / Required Documents
+    scrollDownBefore: 2
+    retry: 3
+    locatePrompt: The "Required Documents" or "Suitable For" section on Personal Loan page
+    assertPrompt: >
+      "Suitable For" shows tags "Salaried" and "Self-employed".
+      "Required Documents" lists "PAN Card", "Aadhaar Card", and "Income Proof".
+      Fail if any of these exact strings are missing.
+
+  - section: Personal Loan
+    type: action
+    action: tap-text
+    label: 返回 Home
+    assertPrompt: Back
+    locatePrompt: >
+      The circular back arrow button at the top-left of the Personal Loan page
+      (not Android system Back, not any loan tile)
+
+submit:
+  enabled: false

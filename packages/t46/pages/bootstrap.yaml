@@ -1,0 +1,80 @@
+# T46 A 面 — 冷启动 / 协议（精简：少 AI 校验、短 optional 等待）
+page:
+  id: aside-t46-bootstrap
+  title: App Bootstrap
+  isNative: true
+  skipNavigation: true
+  navigationPrompt: ""
+  blurTarget: the app screen
+  aiContext: >
+    T46 Sree Dhan Lekha cold start. Consent modal "Before You Continue":
+    UPPER black "ACCEPT & CONTINUE", LOWER white "DECLINE" — never DECLINE or gold Terms links.
+    After accept, optional full-page "Charter of Operation" with checkbox and blue CONTINUE.
+    Then Welcome with Sree Dhan Lekha + phone-code login button. Ignore vConsole.
+  bottomFields: []
+
+dropdowns: []
+inputs: []
+
+checkboxes:
+  - label: Charter of Operation
+
+flow:
+  - section: Cold Start
+    type: action
+    action: wait-app-ready
+    label: 等待 T46 冷启就绪
+    manualWaitSec: 12
+    assertPrompt: >
+      Has Sree Dhan Lekha finished splash and is NOW showing ANY of:
+      (1) Android system permission Allow / While using the app,
+      (2) "Before You Continue" with ACCEPT & CONTINUE,
+      (3) "Charter of Operation" with CONTINUE,
+      (4) Welcome with "Sree Dhan Lekha" and a PHONE CODE login button?
+      Answer false for pure splash, Android launcher, or endless spinner. Answer only true or false.
+
+  - section: Permissions
+    type: action
+    action: handle-permissions
+    label: 系统权限弹窗
+
+  - section: Consent
+    type: action
+    action: tap-text
+    label: ACCEPT & CONTINUE
+    assertPrompt: ACCEPT & CONTINUE
+    scrollBeforeTap: false
+    optional: true
+    locatePrompt: >
+      On "Before You Continue" modal: UPPER solid BLACK "ACCEPT & CONTINUE" only.
+      Do NOT tap LOWER "DECLINE" or gold Terms/Privacy/Permissions links.
+      If modal already gone, skip.
+
+  - section: Charter
+    type: checkbox
+    label: Charter of Operation
+    optional: true
+
+  - section: Charter
+    type: action
+    action: tap-text
+    label: CONTINUE
+    assertPrompt: Charter of Operation page blue CONTINUE button
+    scrollBeforeTap: false
+    optional: true
+    locatePrompt: >
+      On Charter of Operation page: solid blue "CONTINUE" at bottom
+      (NOT back arrow, NOT checkbox)
+
+  - section: Consent
+    type: action
+    action: wait-page
+    label: 确认 Welcome 就绪
+    manualWaitSec: 8
+    assertPrompt: >
+      Welcome shows "Sree Dhan Lekha" AND a login button containing "PHONE CODE"
+      (CINTINUE/CINTINE WITH PHONE CODE) or CONTINUE WITH TRUECALLER.
+      Not Charter page, not Before You Continue modal, not Android launcher
+
+submit:
+  enabled: false

@@ -1,0 +1,86 @@
+# T53 还款与额度恢复 — PRD 三十七~四十一 / 60.9 / 60.11
+# 全额还清 ₹10,000 后 Used ₹0、Available ₹30,000。
+page:
+  id: aside-t53-repay
+  title: Repayment
+  isNative: true
+  skipNavigation: true
+  navigationPrompt: ""
+  blurTarget: Repayment
+  aiContext: >
+    Home may show Outstanding and Repay Now. Repayment page: Outstanding ₹10,000,
+    Principal, Interest, Fees, Total Due, Full Repayment. Choose Payment Method, Pay with UPI.
+    UPI Payment, Simulate Payment, Payment Successful, Your credit has been updated.
+  bottomFields: [Repay Now]
+dropdowns: []
+inputs: []
+flow:
+  - section: Home
+    type: verify
+    label: 借款后首页额度
+    retry: 2
+    assertPrompt: >
+      Home shows Used "₹10,000" and Available "₹20,000" (Total Limit still "₹30,000"),
+      plus Outstanding "₹10,000" and "Repay Now".
+  - section: Home
+    type: action
+    action: tap-text
+    label: Repay Now
+    scrollBeforeTap: true
+    assertPrompt: Repay Now
+    locatePrompt: The "Repay Now" button. Do NOT tap Borrow Now.
+  - section: Repay
+    type: action
+    action: wait-page
+    label: 等待 Repayment
+    manualWaitSec: 8
+    assertPrompt: '"Repayment" and Outstanding "₹10,000" are visible.'
+  - section: Repay
+    type: verify
+    label: 还款拆分
+    assertPrompt: >
+      Shows "Principal", "Interest", "Fees", and "Total Due" "₹10,000",
+      and "Full Repayment" "₹10,000".
+  - section: Repay
+    type: verify
+    label: UI Repayment PRD
+    assertPrompt: >
+      STRICT: warm off-white background #F4F3EF, primary blue #1D4ED8 buttons with about 6dp corners (not pills), title/amount near #171717, secondary #6B7280. Fail if yellow notes, retro paper, black gallery, or cream sticker theme.
+  - section: Pay
+    type: action
+    action: tap-text
+    label: Pay with UPI
+    scrollBeforeTap: true
+    assertPrompt: Pay with UPI
+    locatePrompt: >
+      "Pay with UPI" under "Choose Payment Method" (or the UPI row). Do NOT tap back.
+  - section: Pay
+    type: verify
+    label: UPI Payment
+    retry: 2
+    assertPrompt: '"UPI Payment" is visible with a "Simulate Payment" button.'
+  - section: Pay
+    type: action
+    action: tap-text
+    label: Simulate Payment
+    scrollBeforeTap: false
+    assertPrompt: Simulate Payment
+    locatePrompt: The "Simulate Payment" button. Do NOT start a real UPI app if a simulate button exists.
+  - section: Pay
+    type: verify
+    label: Payment Successful
+    retry: 3
+    retryDelayMs: 1000
+    assertPrompt: >
+      "Payment Successful" and "Your credit has been updated." are visible.
+  - section: Home
+    type: action
+    action: android-back
+    label: 回到首页看额度
+    optional: true
+  - section: Home
+    type: verify
+    label: 全额还款后额度恢复
+    retry: 2
+    assertPrompt: >
+      Used is "₹0" and Available is "₹30,000" (Total Limit "₹30,000").

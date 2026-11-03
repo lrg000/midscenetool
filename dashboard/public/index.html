@@ -1,0 +1,349 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>MidsceneTool · 执行控制台</title>
+  <link rel="stylesheet" href="/styles.css">
+</head>
+<body>
+  <div class="app">
+    <header class="topbar">
+      <div class="brand">MidsceneTool</div>
+      <nav class="pipeline" aria-label="流程导航">
+        <span class="pipe-item" data-pipe="config">配置</span>
+        <span class="pipe-sep">→</span>
+        <span class="pipe-item" data-pipe="record">录制生成</span>
+        <span class="pipe-sep">→</span>
+        <span class="pipe-item is-active" data-pipe="select">选择用例</span>
+        <span class="pipe-sep">→</span>
+        <span class="pipe-item" data-pipe="exec">视觉执行</span>
+        <span class="pipe-sep">→</span>
+        <span class="pipe-item" data-pipe="report">报告</span>
+      </nav>
+      <div class="topbar-meta">
+        <div class="agent-picker">
+          <label class="agent-field">
+            视觉 Agent
+            <select id="agentSelect" aria-label="视觉 Agent">
+              <option value="bailian">阿里百炼（默认）</option>
+            </select>
+          </label>
+          <button type="button" class="agent-config-btn" id="agentConfigBtn">配置</button>
+          <div class="agent-popover" id="agentPopover" hidden>
+            <div class="agent-popover-head">
+              <strong id="agentConfigTitle">Agent 配置</strong>
+              <p class="muted" id="agentConfigDesc"></p>
+            </div>
+            <label>
+              Base URL
+              <input id="agentBaseUrl" type="url" placeholder="https://…" autocomplete="off" spellcheck="false">
+            </label>
+            <label>
+              模型名
+              <input id="agentModelName" type="text" placeholder="qwen3-vl-plus / gpt-4o" autocomplete="off" spellcheck="false">
+            </label>
+            <label>
+              模型族
+              <input id="agentModelFamily" type="text" list="agentFamilyList" placeholder="qwen3-vl / gpt-5" autocomplete="off">
+              <datalist id="agentFamilyList">
+                <option value="qwen3-vl"></option>
+                <option value="qwen3"></option>
+                <option value="qwen3.6"></option>
+                <option value="gpt-5"></option>
+                <option value="gemini"></option>
+                <option value="glm-v"></option>
+              </datalist>
+            </label>
+            <label>
+              API Key
+              <input id="agentApiKey" type="password" placeholder="粘贴密钥，保存后不清空则沿用" autocomplete="off">
+            </label>
+            <p class="muted agent-key-hint" id="agentKeyHint"></p>
+            <div class="agent-popover-actions">
+              <button type="button" class="btn primary" id="agentSaveBtn">保存并用于执行</button>
+              <button type="button" class="btn" id="agentCloseBtn">关闭</button>
+            </div>
+          </div>
+        </div>
+        <span class="live-dot" id="liveDot"></span>
+        <span id="connLabel">连接中</span>
+      </div>
+    </header>
+
+    <div class="layout">
+      <aside class="sidebar">
+        <div class="sidebar-head">
+          <h2>测试目录</h2>
+          <input type="search" id="searchInput" placeholder="搜索：包名 / 页面 / 流程 / 独立App / 贷前壳" aria-label="搜索">
+        </div>
+        <div class="filter-row" id="filterRow">
+          <button class="chip is-active" data-filter="all">全部</button>
+          <button class="chip" data-filter="page" title="登录后共享 H5 模版单页">B 面单页</button>
+          <button class="chip" data-filter="flow" title="分段与全流程。单页已在「B 面单页」，此处不再重复">B 面流程</button>
+          <button class="chip" data-filter="explore" title="L3 有界视觉探索">L3 探索</button>
+          <button class="chip" data-filter="aside-standalone" title="Y 包、记账壳等完全独立的业务 App，不进 B 面">独立 App</button>
+          <button class="chip" data-filter="aside-loan" title="贷款 App 原生壳（现仅 T42）：登录前自有页面，登录后可进共享 H5">贷款壳</button>
+        </div>
+        <div class="catalog-meta">
+          <span id="catalogCount">0 项</span>
+          <label class="page-size">
+            每页
+            <select id="catalogPageSize" aria-label="测试目录每页条数">
+              <option value="8" selected>8</option>
+              <option value="12">12</option>
+              <option value="20">20</option>
+            </select>
+          </label>
+        </div>
+        <div class="catalog" id="catalog"></div>
+        <div class="pager" id="catalogPager" hidden></div>
+      </aside>
+
+      <main class="workspace">
+        <section class="run-header">
+          <div>
+            <div class="run-title-row">
+              <h1 id="runTitle">选择左侧测试项开始执行</h1>
+              <span class="tag" id="runTag">待运行</span>
+            </div>
+            <p class="run-desc" id="runDesc">从 YAML 配置驱动的 AI 视觉自动化测试。点击左侧用例后，在此查看实时步骤与 Midscene 调用证据。</p>
+          </div>
+          <div class="step-counter">
+            <span class="step-label">步骤</span>
+            <strong id="stepCounter">0 / 0</strong>
+          </div>
+        </section>
+
+        <section class="status-grid">
+          <div class="status-card">
+            <span class="label">当前步骤</span>
+            <p id="currentStep">—</p>
+          </div>
+          <div class="status-card">
+            <span class="label">当前预期</span>
+            <p id="currentExpectation">—</p>
+          </div>
+          <div class="status-card">
+            <span class="label">当前状态</span>
+            <p><span class="status-pill idle" id="runStatus">空闲</span></p>
+          </div>
+          <div class="status-card">
+            <span class="label">阶段 / 页面</span>
+            <p id="phaseInfo">—</p>
+          </div>
+        </section>
+
+        <section class="actions">
+          <button class="btn secondary" id="addJobBtn" disabled>加入并行队列</button>
+          <button class="btn primary" id="startBtn" disabled>开始并行执行</button>
+          <button class="btn danger" id="stopBtn" disabled>全部停止</button>
+          <label class="check" id="skipLaunchWrap" hidden>
+            <input type="checkbox" id="skipLaunch"> 跳过 App 启动（不清缓存）
+          </label>
+          <label class="pkg-field" id="androidPackageWrap" hidden>
+            <span>测试包名</span>
+            <input type="text" id="androidPackageInput" list="androidPackageList" placeholder="com.example.app" autocomplete="off" spellcheck="false">
+            <datalist id="androidPackageList"></datalist>
+          </label>
+          <label class="pkg-field is-account" id="accountPresetWrap" hidden>
+            <span>测试账号</span>
+            <select id="accountPreset" aria-label="测试账号预设"></select>
+          </label>
+          <label class="pkg-field is-mobile" id="accountMobileWrap" hidden>
+            <span>手机号</span>
+            <input type="text" id="accountMobileInput" inputmode="numeric" autocomplete="off" spellcheck="false" placeholder="9110000000">
+          </label>
+          <label class="pkg-field is-otp" id="accountOtpWrap" hidden>
+            <span>OTP</span>
+            <input type="text" id="accountOtpInput" inputmode="numeric" autocomplete="off" spellcheck="false" placeholder="123456">
+          </label>
+          <label class="check" id="runHandoffWrap" hidden title="仅贷前壳可用；独立 App 禁止交接进 B 面">
+            <input type="checkbox" id="runHandoff"> A→B 交接
+          </label>
+          <p class="domain-hint" id="domainHint" hidden></p>
+          <div class="summary" id="caseSummary">通过 0 · 失败 0 · 跳过 0</div>
+        </section>
+
+        <section class="record-panel" id="recordPanel">
+          <div class="devices-head">
+            <div>
+              <h3>录制生成</h3>
+              <p class="devices-hint">
+                浏览器走 Playwright 点击/填写录制；真机走 Midscene 采集（表单补步）。
+                停止后「转换落盘」写出 <code>packages/{id}/pages/*.yaml</code> 与 <code>tests/aside/{id}.test.ts</code>，不自动试跑。
+              </p>
+            </div>
+            <div class="devices-tools">
+              <span class="record-status" id="recordStatusLabel">空闲</span>
+            </div>
+          </div>
+
+          <div class="record-grid">
+            <label>模式
+              <select id="recordMode">
+                <option value="browser">浏览器（Playwright）</option>
+                <option value="device">真机（Midscene）</option>
+              </select>
+            </label>
+            <label>packageId
+              <input type="text" id="recordPackageId" placeholder="如 demo1 / t99" autocomplete="off">
+            </label>
+            <label>appLabel
+              <input type="text" id="recordAppLabel" placeholder="展示名" autocomplete="off">
+            </label>
+            <label>androidPackage
+              <input type="text" id="recordAndroidPkg" placeholder="com.example.app" autocomplete="off">
+            </label>
+            <label>kind
+              <select id="recordKind">
+                <option value="">自动推断</option>
+                <option value="standalone">standalone</option>
+                <option value="loan-shell">loan-shell</option>
+                <option value="loan-postlogin">loan-postlogin</option>
+              </select>
+            </label>
+            <label id="recordUrlWrap">起始 URL
+              <input type="url" id="recordUrl" placeholder="https://…" autocomplete="off">
+            </label>
+            <label>TEST_MOBILE（可选）
+              <input type="text" id="recordMobile" placeholder="9110001501" autocomplete="off">
+            </label>
+            <label>TEST_OTP（可选）
+              <input type="text" id="recordOtp" placeholder="1234" autocomplete="off">
+            </label>
+          </div>
+
+          <div class="record-actions">
+            <button type="button" class="btn primary" id="recordStartBtn">开始录制</button>
+            <button type="button" class="btn danger" id="recordStopBtn" disabled>停止录制</button>
+            <label class="check">
+              <input type="checkbox" id="recordSkipLaunch"> 真机跳过启动
+            </label>
+            <label class="check">
+              <input type="checkbox" id="recordOverwrite"> 覆盖已有 YAML/TS
+            </label>
+            <button type="button" class="btn secondary" id="recordGenerateBtn" disabled>转换落盘</button>
+          </div>
+
+          <div class="record-device-tools" id="recordDeviceTools" hidden>
+            <div class="record-step-row">
+              <select id="recordStepKind">
+                <option value="tap-text">tap-text</option>
+                <option value="fill">fill</option>
+                <option value="verify">verify</option>
+                <option value="wait-page">wait-page</option>
+                <option value="checkbox">checkbox</option>
+                <option value="native-input">native-input</option>
+              </select>
+              <input type="text" id="recordStepText" placeholder="文案 / 目标" autocomplete="off">
+              <input type="text" id="recordStepValue" placeholder="填值（fill）" autocomplete="off">
+              <button type="button" class="btn ghost" id="recordAddStepBtn">追加步骤</button>
+            </div>
+            <div class="record-step-row">
+              <input type="text" id="recordNewPageKey" placeholder="新 pageKey" autocomplete="off">
+              <button type="button" class="btn ghost" id="recordNewPageBtn">新页面</button>
+              <button type="button" class="btn ghost" id="recordShotBtn">截屏预览</button>
+              <button type="button" class="btn ghost" id="recordSuggestBtn">从当前屏生成 verify</button>
+            </div>
+            <div class="record-shot" id="recordShotWrap" hidden>
+              <img id="recordShotImg" alt="录制截屏预览">
+            </div>
+          </div>
+
+          <pre class="record-result" id="recordResult" hidden></pre>
+        </section>
+
+        <section class="job-queue-panel" id="jobQueuePanel">
+          <div class="devices-head">
+            <div>
+              <h3>并行任务队列</h3>
+              <p class="devices-hint">左侧选用例 → 勾选设备 →「加入并行队列」。每台设备同时只能排一条任务；不同用例可绑不同设备后一起跑。</p>
+            </div>
+            <div class="devices-tools">
+              <button type="button" class="btn ghost" id="clearJobsBtn">清空队列</button>
+            </div>
+          </div>
+          <div class="job-list" id="jobList">
+            <p class="empty">队列为空。可添加多条「用例 × 设备」后开始并行。</p>
+          </div>
+        </section>
+
+        <section class="devices-panel" id="devicesPanel">
+          <div class="devices-head">
+            <div>
+              <h3>可用设备</h3>
+              <p class="devices-hint">勾选要绑定的设备，再点「加入并行队列」。运行中可对单台点「停止」。</p>
+            </div>
+            <div class="devices-tools">
+              <button type="button" class="btn ghost" id="selectAllDevices">全选可用</button>
+              <button type="button" class="btn ghost" id="refreshDevices">刷新设备</button>
+            </div>
+          </div>
+          <div class="device-list" id="deviceList">
+            <p class="empty">正在检测 ADB 设备…</p>
+          </div>
+          <div class="device-run-status" id="deviceRunStatus" hidden></div>
+        </section>
+
+        <section class="evidence">
+          <div class="evidence-head">
+            <span class="live-badge">LIVE</span>
+            <strong>真实 Midscene 运行证据</strong>
+            <span class="hint" id="aiHint">等待执行…</span>
+          </div>
+          <div class="tabs" role="tablist">
+            <button class="tab is-active" data-tab="cases">固定用例</button>
+            <button class="tab" data-tab="ai">视觉请求</button>
+            <button class="tab" data-tab="locate">视觉定位</button>
+            <button class="tab" data-tab="action">操作</button>
+            <button class="tab" data-tab="assert">视觉断言</button>
+            <button class="tab" data-tab="l5">L5 核对</button>
+          </div>
+          <div class="panel" id="panel"></div>
+        </section>
+
+        <section class="reports">
+          <div class="reports-head">
+            <h3>历史报告</h3>
+            <div class="reports-tools">
+              <label class="page-size">
+                每页
+                <select id="reportPageSize" aria-label="历史报告每页条数">
+                  <option value="5">5</option>
+                  <option value="10" selected>10</option>
+                  <option value="20">20</option>
+                </select>
+              </label>
+              <button class="btn ghost" id="refreshReports">刷新</button>
+            </div>
+          </div>
+          <div class="report-list" id="reportList"></div>
+          <div class="pager" id="reportPager" hidden></div>
+        </section>
+
+        <section class="reports" id="l5ReportsPanel">
+          <div class="reports-head">
+            <h3>L5 诊断</h3>
+            <div class="reports-tools">
+              <label class="page-size">
+                每页
+                <select id="l5PageSize" aria-label="L5 诊断每页条数">
+                  <option value="5">5</option>
+                  <option value="10" selected>10</option>
+                  <option value="20">20</option>
+                </select>
+              </label>
+              <button class="btn ghost" id="refreshL5">刷新</button>
+            </div>
+          </div>
+          <p class="devices-hint">checkpoint / 规则不一致 / 步骤失败写入 <code>midscene_run/l5/</code>。LIVE 页签「L5 核对」看实时 API·SQL·规则。</p>
+          <div class="report-list" id="l5List"></div>
+          <div class="pager" id="l5Pager" hidden></div>
+        </section>
+      </main>
+    </div>
+  </div>
+  <script src="/app.js" type="module"></script>
+</body>
+</html>

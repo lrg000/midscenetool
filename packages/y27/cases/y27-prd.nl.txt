@@ -1,0 +1,77 @@
+# ============================================================
+# Y27 Sakhi Rangoli (PicBox) A 面 — 自然语言测试用例（云效 PRD 全量映射）
+# ============================================================
+#
+# 云效: Y27面包开发 | WIFO-1962 | workItemId: f247cecc0ee66a2ea9b3c7d6aa
+# URL: https://devops.aliyun.com/projex/project/f56f3edd04756632f67acd5450/req#openWorkitemIdentifier=f247cecc0ee66a2ea9b3c7d6aa
+# androidPackage: com.sakhiphoto.rangoli.app
+# 产品文档内称 PicBox；应用名 Sakhi Rangoli
+#
+# ============================================================
+
+## 包元信息
+
+| 字段 | 值 |
+|------|-----|
+| packageId | y27 |
+| appLabel | Sakhi Rangoli |
+| androidPackage | com.sakhiphoto.rangoli.app |
+| 包类别 | 图片管理（抬头「图片编辑」与正文「不包含图片编辑」冲突 → 以正文为准） |
+| 自动化 | npm run test:aside:y27 |
+| 云效状态 | 测试中 |
+
+## PRD §33 → 自动化覆盖表
+
+| 节 | PRD 要求 | 自动化 | 说明 |
+|----|----------|--------|------|
+| 33.1 首页 | 进 My Photos；空态/瀑布流；点图全屏 | photos + viewer | |
+| 33.2 上传 | + → Choose from Gallery；单/多张；取消 | photos | seed + pick |
+| 33.3 下载 | Download → Saved to Photos | viewer | |
+| 33.4 删除 | Delete this photo?；只删 App 引用 | viewer | Cancel+Delete |
+| 33.5 相册 | New Album；空名拦截；删相册不删图 | albums | |
+| 33.6 加入相册 | Add Photos；首页图仍在 | albums | |
+| 33.7 加密 | 4 位；错密 Incorrect passcode；🔒 | lock | |
+| 33.8 Download All | N photos saved | albums | |
+| 33.9 权限 | Allow；拒权专项 | photos Allow | 拒权不测 |
+| 33.10 数据 | force-stop 后图/相册/锁仍在 | persist | |
+| 33.11~12 UI/稳定 | Editorial 杂志风 STRICT soft | photos+… | |
+
+## UI 规范（PRD 六~八）
+
+| 项 | PRD |
+|----|-----|
+| 风格 | Editorial Magazine；禁底栏 Tab / 深色 Gallery / 黄便签 |
+| 背景 | #FAFAF8；主操作橙红 #FF6B4A；浅橙 #FFF0EB |
+| 文字 | #181818 / #777777 / #A3A3A3 |
+| 顶切换 | Photos / Albums（横向，非底栏） |
+| 空态 | No Photos Yet / Add your first photos… / + Add Photos |
+| 上传 Sheet | Add Photos / Choose from Gallery / Cancel |
+| 预览 | Download；⋯ → Add to Album / Download / Delete / Cancel |
+| 成功 | Saved to Photos |
+| 删图 | Delete this photo? / This photo will be removed from PicBox. |
+| 新建相册 | New Album / Album name≤30 / Please enter an album name |
+| 加密 | Create Passcode 4 位；Incorrect passcode；Unlock Album |
+| 删相册 | Delete this album? / Photos inside… will not be deleted. |
+
+## 测试流程摘要
+
+1. **photos**：就绪 → My Photos / UI → seed → 取消上传 → 导入  
+2. **viewer**：全屏 → Download → Delete（Cancel+Delete）→ 再导入  
+3. **albums**：Albums → 空名 → Travel → Add Photos → Download All  
+4. **lock**：Lock Album 1234 → 错密 → 对密 → 列表 🔒  
+5. **persist**：force-stop → 图/相册仍在  
+
+## PRD 明确不支持
+
+登录 / 云同步 / 社交 / **图片编辑裁剪滤镜** / AI / 搜索标签 / 视频 / 回收站
+
+## 实机差异
+
+- 应用名 Sakhi Rangoli；文案多用 PicBox / My Photos  
+- `key_oeIX.jks` 仅签名，密码不写 YAML  
+
+## 产物
+
+- packages/y27/pages/photos.yaml, viewer.yaml, albums.yaml, lock.yaml, persist.yaml
+- packages/y27/fixtures/y27-test-photo.png
+- tests/aside/y27.test.ts

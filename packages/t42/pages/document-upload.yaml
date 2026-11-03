@@ -1,0 +1,88 @@
+# T42 — Document Upload（Figma 验证2 / 3:1713）
+# 上传需人工拍照/选图；脚本点开上传区后等待预览/回填
+page:
+  id: aside-t42-document-upload
+  title: Document Upload
+  isNative: true
+  skipNavigation: true
+  navigationPrompt: ""
+  blurTarget: the "Document Upload" title
+  aiContext: >
+    T42 Document Upload (Figma). Instruction about clear images.
+    PAN Card / Aadhaar Card upload zones with "Upload PAN Card" / "Upload Aadhaar Card".
+    Blue Continue at bottom. Camera/gallery permission may appear.
+  bottomFields:
+    - Continue
+
+dropdowns: []
+inputs: []
+
+flow:
+  - section: Document Upload
+    type: verify
+    label: Document Upload 文案对齐 Figma
+    retry: 3
+    assertPrompt: >
+      Page title is exactly "Document Upload". Instruction text mentions uploading
+      clear images of original documents. Sections "PAN Card" and "Aadhaar Card"
+      with "Upload PAN Card" and "Upload Aadhaar Card" are visible, plus blue "Continue".
+
+  - section: Document Upload
+    type: action
+    action: tap-text
+    label: Upload PAN Card
+    assertPrompt: Upload PAN Card
+    locatePrompt: >
+      The dashed upload box or blue text "Upload PAN Card" under the PAN Card section
+      (cloud upload icon). Do NOT tap Upload Aadhaar Card yet.
+
+  - section: Document Upload
+    type: action
+    action: handle-permissions
+    label: 相机/相册权限
+
+  - section: Document Upload
+    type: action
+    action: kyc-manual-until
+    label: 等待 PAN 上传完成
+    manualWaitSec: 240
+    assertPrompt: >
+      Back on Document Upload page: the PAN Card section shows an uploaded
+      document preview / thumbnail (not only the empty dashed box with
+      "Upload PAN Card" cloud placeholder). Gallery/camera picker is closed.
+
+  - section: Document Upload
+    type: action
+    action: tap-text
+    label: Upload Aadhaar Card
+    assertPrompt: Upload Aadhaar Card
+    locatePrompt: >
+      The dashed upload box or blue text "Upload Aadhaar Card" under Aadhaar Card
+      (cloud icon). Do NOT tap Upload PAN Card again.
+
+  - section: Document Upload
+    type: action
+    action: handle-permissions
+    label: Aadhaar 上传权限
+
+  - section: Document Upload
+    type: action
+    action: kyc-manual-until
+    label: 等待 Aadhaar 上传完成
+    manualWaitSec: 240
+    assertPrompt: >
+      Back on Document Upload page: the Aadhaar Card section shows an uploaded
+      document preview / thumbnail (not only the empty dashed box with
+      "Upload Aadhaar Card" cloud placeholder). Gallery/camera picker is closed.
+
+  - section: Document Upload
+    type: action
+    action: tap-text
+    label: Continue
+    assertPrompt: Continue
+    scrollBeforeTap: true
+    locatePrompt: >
+      The solid blue "Continue" button at the bottom of Document Upload
+
+submit:
+  enabled: false

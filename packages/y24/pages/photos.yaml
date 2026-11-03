@@ -1,0 +1,191 @@
+# Y24 Glimmer Frame — Photos 首页（PRD 八~九、TC-001~006、027~029）
+# 云效: e03110351ae85d71af463beadd | com.glimmer.frameexitpic.app
+page:
+  id: aside-y24-photos
+  title: Photos
+  isNative: true
+  skipNavigation: true
+  navigationPrompt: ""
+  blurTarget: the Photos title in the header
+  aiContext: >
+    Glimmer Frame Photos: dark gallery #0B0B0D, purple #8B5CF6 accents, header Photos + import +,
+    3-column square photo grid, bottom tabs Photos / Albums. Empty: No Photos / Add Photos.
+    No login. Ignore vConsole.
+  bottomFields: []
+
+dropdowns: []
+inputs: []
+
+flow:
+  - section: Cold Start
+    type: action
+    action: wait-app-ready
+    label: 等待 App 就绪
+    manualWaitSec: 20
+    assertPrompt: >
+      Glimmer Frame finished loading: Photos home, Albums, photo viewer, or New Album sheet.
+      No endless splash.
+
+  - section: Cold Start
+    type: action
+    action: handle-permissions
+    label: 系统权限弹窗
+
+  - section: Photos
+    type: action
+    action: relaunch-if-not
+    label: 不在 App 内则重开
+    assertPrompt: >
+      Is in-app Glimmer Frame UI visible (Photos / Albums / viewer / New Album),
+      not Android launcher and not solid black
+    locatePrompt: com.glimmer.frameexitpic.app
+
+  - section: Photos
+    type: action
+    action: tap-text
+    label: 底栏 Photos
+    assertPrompt: Photos
+    scrollBeforeTap: false
+    optional: true
+    locatePrompt: >
+      Bottom navigation tab "Photos" (left of Albums). Do NOT tap Albums or photo thumbnails.
+
+  - section: Photos
+    type: verify
+    label: TC-001 默认进入 Photos 无登录
+    retry: 2
+    assertPrompt: >
+      PRD TC-001: Photos home with title "Photos" and bottom Photos/Albums tabs.
+      No login/registration. FAIL for login screens.
+
+  - section: Photos
+    type: verify
+    label: UI Dark Gallery 风格
+    assertPrompt: >
+      STRICT PRD UI (五~七, TC-027/029): dark immersive gallery near #0B0B0D; purple accents ~#8B5CF6;
+      NOT yellow sticky-note cards or light calendar chrome. White/light primary text readable on dark.
+
+  - section: Photos
+    type: verify
+    label: TC-002/003 Grid 或空状态
+    retry: 2
+    assertPrompt: >
+      PRD TC-002 or TC-003: PASS if (A) 3-column photo grid of local images, OR
+      (B) empty state "No Photos" with "Add photos from your device." and/or "Add Photos" button.
+      Fail if neither grid nor empty copy is recognizable.
+
+  - section: Seed
+    type: action
+    action: seed-gallery-image
+    label: 推送测试图到相册
+    assertPrompt: packages/y24/fixtures/y24-test-photo.png
+
+  - section: TC-006
+    type: action
+    action: tap-text
+    label: TC-006 点 + 打开选择器
+    assertPrompt: +
+    scrollBeforeTap: false
+    locatePrompt: >
+      Top-right "+" / import icon on Photos header. Do NOT tap Albums or photo cells.
+      If empty state shows "Add Photos" button, tap that instead.
+
+  - section: TC-006
+    type: action
+    action: handle-permissions
+    label: TC-006 相册权限
+
+  - section: TC-006
+    type: verify
+    label: TC-006 系统选择器打开
+    retry: 3
+    retryDelayMs: 600
+    assertPrompt: >
+      PRD TC-006: Android system image/photo picker is open.
+
+  - section: TC-006
+    type: action
+    action: android-back
+    label: TC-006 取消选择
+
+  - section: TC-006
+    type: action
+    action: android-back
+    label: TC-006 若仍在选择器再返回
+    optional: true
+
+  - section: TC-006
+    type: verify
+    label: TC-006 取消后回 Photos
+    retry: 2
+    assertPrompt: >
+      PRD TC-006: back on in-app Photos (header Photos + bottom Photos/Albums),
+      NOT system photo picker with Done/Preview.
+
+  - section: TC-004
+    type: action
+    action: tap-text
+    label: TC-004 再次点 +
+    assertPrompt: +
+    scrollBeforeTap: false
+    locatePrompt: >
+      Photos header "+" / import, or empty-state "Add Photos". Do NOT tap Albums.
+
+  - section: TC-004
+    type: action
+    action: handle-permissions
+    label: 导入前权限
+
+  - section: TC-004
+    type: action
+    action: pick-gallery-image
+    label: TC-004 选择一张图
+    contactIndex: 0
+
+  - section: TC-004
+    type: action
+    action: wait-page
+    label: 等待回到 Photos
+    manualWaitSec: 10
+    assertPrompt: >
+      Photos home with photo grid visible (imported image present).
+
+  - section: TC-004
+    type: verify
+    label: TC-004 图片加入首页
+    retry: 2
+    assertPrompt: >
+      PRD TC-004: Photos 3-column grid shows at least one photo thumbnail after import.
+
+  - section: TC-005
+    type: action
+    action: tap-text
+    label: TC-005 再导入一张
+    assertPrompt: +
+    scrollBeforeTap: false
+    optional: true
+    locatePrompt: >
+      Photos header "+" to import another photo (batch approximation if multi-select unavailable).
+
+  - section: TC-005
+    type: action
+    action: handle-permissions
+    label: TC-005 权限
+    optional: true
+
+  - section: TC-005
+    type: action
+    action: pick-gallery-image
+    label: TC-005 再选一张
+    contactIndex: 0
+    optional: true
+
+  - section: TC-005
+    type: verify
+    label: TC-005 多图在首页
+    retry: 2
+    assertPrompt: >
+      PRD TC-005 soft: Photos grid shows one or more imported photos (multi-select or sequential imports OK).
+
+submit:
+  enabled: false

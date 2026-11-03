@@ -1,0 +1,230 @@
+# T59 登录 — PRD 4.2–4.8 / AC-03 Not Now / AC-04 OTP
+# 凭证：9110001559 / OTP 1234。不走 Truecaller / Google 真登录。
+page:
+  id: aside-t59-login
+  title: Login
+  isNative: true
+  skipNavigation: true
+  navigationPrompt: ""
+  blurTarget: the login title
+  aiContext: >
+    Viramgam CardVista login: Continue with Truecaller, Continue with Google, Continue with Phone.
+    Phone: "+91", "Enter mobile number", Continue. OTP: "Verify Your Number",
+    "Enter the verification code sent to your mobile number.", "Verify & Continue".
+    Optional sheet "Connect Your Google Account" with Connect Google and Not Now.
+    Not RajWise, not Anantapur Chakra, not Haveri VahanCredit.
+  bottomFields: []
+
+dropdowns: []
+inputs:
+  - label: Enter OTP
+    validValue: "000000"
+    skipEmptyBlurTest: true
+    skipInvalidBlurTest: true
+    skipInputTests: true
+
+checkboxes: []
+
+flow:
+  - section: Login
+    type: action
+    action: wait-page
+    label: 等待登录页
+    optional: true
+    manualWaitSec: 10
+    assertPrompt: >
+      Is Viramgam CardVista login visible with "Continue with Truecaller"
+      and ("Continue with Phone" or "Use Mobile Number" or "Continue with Google")?
+      If already on Home with Total Outstanding, answer true.
+      Answer only true or false.
+
+  - section: Login
+    type: verify
+    label: 登录页主文案
+    optional: true
+    retry: 1
+    assertPrompt: >
+      If still on login: shows "Continue with Truecaller", "Continue with Google",
+      and "Continue with Phone" (or "Use Mobile Number").
+      If already on Home (Total Outstanding / My Cards), pass.
+      Fail if RajWise, Anantapur Chakra, or Haveri VahanCredit branding.
+
+  - section: Login
+    type: verify
+    label: UI Login PRD
+    optional: true
+    assertPrompt: >
+      If on login: light finance UI, brand purple near #5B35D5 on the primary Truecaller or Continue control;
+      title/body near #191922 / #777783. Fail if yellow notes, retro calendar, black gallery.
+      If already on Home, pass.
+
+  - section: Login
+    type: action
+    action: tap-text
+    label: Continue with Phone
+    optional: true
+    scrollBeforeTap: false
+    noScrollRetry: true
+    assertPrompt: Continue with Phone
+    locatePrompt: >
+      If login is visible: the "Continue with Phone" button (or "Use Mobile Number" if that exact label is shown).
+      Do NOT tap Continue with Truecaller or Continue with Google.
+      If already past login on Home, skip.
+
+  - section: OTP
+    type: action
+    action: wait-page
+    label: 等待手机号页
+    optional: true
+    manualWaitSec: 12
+    assertPrompt: >
+      Phone entry is visible: "Continue with Phone" or "Enter mobile number" or "+91" and a Continue/Send OTP button.
+      OR already on OTP / Home. Fail only if still on full login with Truecaller and no phone field.
+
+  - section: OTP
+    type: native-input
+    label: 输入手机号
+    optional: true
+    valueKey: mobile
+    autoDismissKeyboard: false
+    assertPrompt: >
+      Is a mobile number input visible with +91 or "Enter mobile number"
+    locatePrompt: >
+      The mobile number text input (placeholder "Enter mobile number" or Mobile Number).
+      Tap the input center. Do NOT tap Continue, Send OTP, Truecaller, or Google.
+
+  - section: OTP
+    type: action
+    action: dismiss-keyboard
+    label: 收起键盘（手机号）
+    optional: true
+
+  - section: OTP
+    type: action
+    action: tap-text
+    label: 发送 OTP
+    optional: true
+    scrollBeforeTap: false
+    noScrollRetry: true
+    assertPrompt: Continue
+    locatePrompt: >
+      The primary button that sends the OTP: "Continue" or "Send OTP" on the phone number screen.
+      Do NOT tap Truecaller, Google, or back.
+
+  - section: OTP
+    type: action
+    action: wait-page
+    label: 等待 Verify Your Number
+    optional: true
+    manualWaitSec: 12
+    assertPrompt: >
+      OTP UI is visible: "Verify Your Number" or "Enter the verification code sent to your mobile number."
+      or OTP boxes and "Verify & Continue" / "Verify & Login".
+      Fail if still only the phone number field with no OTP boxes.
+
+  - section: OTP
+    type: verify
+    label: OTP 页文案
+    optional: true
+    assertPrompt: >
+      Shows "Verify Your Number" and "Enter the verification code sent to your mobile number."
+      (or equivalent OTP boxes) and a primary "Verify & Continue" or "Verify & Login",
+      plus Resend OTP or a countdown. If already on Home, pass.
+
+  - section: OTP
+    type: action
+    action: fill-input
+    label: 错误 OTP
+    optional: true
+    inputFieldLabel: Enter OTP
+    inputValue: "000000"
+    autoDismissKeyboard: false
+
+  - section: OTP
+    type: action
+    action: dismiss-keyboard
+    label: 收起键盘（错误 OTP）
+    optional: true
+
+  - section: OTP
+    type: action
+    action: tap-text
+    label: 提交错误 OTP
+    optional: true
+    scrollBeforeTap: false
+    noScrollRetry: true
+    assertPrompt: Verify
+    locatePrompt: >
+      The primary OTP submit button ("Verify & Continue" or "Verify & Login" or Verify).
+      Do NOT tap Resend OTP or back.
+
+  - section: OTP
+    type: verify
+    label: 错误 OTP 有提示
+    optional: true
+    assertPrompt: >
+      An incorrect-code / invalid OTP message is visible and Home is NOT showing
+      ("Total Outstanding" not yet the main screen). Still on OTP or phone verify.
+      If already logged in from a previous session (Home visible), pass.
+
+  - section: OTP
+    type: native-input
+    label: 输入正确 OTP
+    optional: true
+    valueKey: otp
+    autoDismissKeyboard: false
+    assertPrompt: >
+      Is the OTP / Verify Your Number UI still visible
+    locatePrompt: >
+      The OTP digit boxes or field. Do NOT tap Resend OTP or back.
+
+  - section: OTP
+    type: action
+    action: dismiss-keyboard
+    label: 收起键盘（正确 OTP）
+    optional: true
+
+  - section: OTP
+    type: action
+    action: tap-text
+    label: Verify & Continue
+    optional: true
+    scrollBeforeTap: false
+    noScrollRetry: true
+    assertPrompt: Verify
+    locatePrompt: >
+      The primary "Verify & Continue" or "Verify & Login" button on the OTP screen.
+      Do NOT tap Resend OTP or back.
+
+  - section: Google Bind
+    type: action
+    action: wait-page
+    label: 等待绑定弹层或首页
+    manualWaitSec: 10
+    assertPrompt: >
+      Either sheet "Connect Your Google Account" is visible, or Home shows
+      "Total Outstanding" / "Your Cards" / bottom tab Home.
+
+  - section: Google Bind
+    type: verify
+    label: Google 绑定弹层文案
+    optional: true
+    assertPrompt: >
+      If "Connect Your Google Account" is visible, it shows
+      "Connect your Google account for easier account access.",
+      "Connect Google", and "Not Now". If the sheet is not shown, pass.
+
+  - section: Google Bind
+    type: action
+    action: tap-text
+    label: Not Now
+    optional: true
+    scrollBeforeTap: false
+    noScrollRetry: true
+    assertPrompt: Not Now
+    locatePrompt: >
+      Only if "Connect Your Google Account" is visible: the "Not Now" text button.
+      Do NOT tap Connect Google.
+
+submit:
+  enabled: false

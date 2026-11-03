@@ -1,0 +1,36 @@
+# 控制台视觉 Agent 预设。仓库内不写密钥。
+# 控制台「配置」可改网关 / 模型 / 密钥，写入 gitignore 的 config/agents.local.yaml。
+# 默认 bailian：沿用 .env 的 MIDSCENE_MODEL_*（当前阿里百炼），也可在控制台覆盖。
+# ChatGPT / Claude 会覆盖 worker 进程的 MIDSCENE_MODEL_*，不影响本机 .env。
+default: bailian
+
+agents:
+  bailian:
+    label: 阿里百炼
+    description: 默认。使用项目 .env 的 MIDSCENE_MODEL_BASE_URL / API_KEY / NAME / FAMILY。
+    fromEnv: true
+
+  chatgpt:
+    label: ChatGPT
+    description: OpenAI 官方接口。密钥读 OPENAI_API_KEY（或 MIDSCENE_CHATGPT_API_KEY）。
+    baseUrl: https://api.openai.com/v1
+    modelName: gpt-4o
+    modelFamily: gpt-5
+    apiKeyEnv:
+      - OPENAI_API_KEY
+      - MIDSCENE_CHATGPT_API_KEY
+    # 可用 .env 覆盖：MIDSCENE_CHATGPT_BASE_URL / MIDSCENE_CHATGPT_MODEL / MIDSCENE_CHATGPT_FAMILY
+
+  claude:
+    label: Claude
+    description: Anthropic Claude（OpenAI 兼容网关）。密钥读 ANTHROPIC_API_KEY 或 MIDSCENE_CLAUDE_API_KEY。
+    baseUrl: https://api.anthropic.com/v1
+    modelName: claude-sonnet-4-5
+    modelFamily: gpt-5
+    apiKeyEnv:
+      - ANTHROPIC_API_KEY
+      - MIDSCENE_CLAUDE_API_KEY
+      - OPENROUTER_API_KEY
+    # 可用 .env 覆盖：MIDSCENE_CLAUDE_BASE_URL / MIDSCENE_CLAUDE_MODEL / MIDSCENE_CLAUDE_FAMILY
+    extraEnv:
+      MIDSCENE_MODEL_INIT_CONFIG_JSON: '{"defaultHeaders":{"anthropic-version":"2023-06-01"}}'

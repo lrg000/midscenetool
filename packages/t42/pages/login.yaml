@@ -1,0 +1,98 @@
+# T42 A 面 — Welcome + 手机号 OTP 登录（对齐 Figma「登录」「手机号验证登录」）
+# 凭证：TEST_MOBILE / TEST_OTP 或 ACCOUNT_PROFILE（native-input → getCredentials）
+page:
+  id: aside-t42-login
+  title: Login
+  isNative: true
+  skipNavigation: true
+  navigationPrompt: ""
+  blurTarget: the login screen header or RajWise title
+  aiContext: >
+    T42.RajWise native Welcome login (A-side). Brand may show "RajWise" or "T42".
+    Buttons: Login with Truecaller, Continue with Google, Login with Mobile Number.
+    Must check bottom Terms circular checkbox before login works.
+    Then "Login with OTP" modal (+91, Enter mobile number, Send OTP),
+    then "Enter OTP" modal (Verify & Login). Never Back/ESC to dismiss keyboard
+    (closes OTP dialogs). Do not tap X, Terms links, Truecaller, or Google in this flow.
+  bottomFields: []
+
+dropdowns: []
+inputs: []
+
+checkboxes:
+  - label: Terms of Service & Privacy Policy
+
+flow:
+  - section: Welcome
+    type: verify
+    label: Welcome 登录页
+    assertPrompt: >
+      Welcome login screen is visible with RajWise or T42 branding, and at least
+      "Login with Mobile Number" button (Truecaller/Google may also show), plus
+      bottom terms checkbox text like "By continuing, you agree"
+
+  - section: Welcome
+    type: checkbox
+    label: Terms of Service & Privacy Policy
+
+  - section: Welcome
+    type: action
+    action: tap-text
+    label: Login with Mobile Number
+    assertPrompt: Login with Mobile Number
+    locatePrompt: >
+      The button whose visible text is exactly "Login with Mobile Number"
+      on the Welcome screen (phone icon; usually under Continue with Google).
+      Do NOT tap Truecaller, Google, or Terms links.
+
+  - section: OTP
+    type: action
+    action: wait-page
+    label: 等待 Login with OTP 弹窗
+    assertPrompt: >
+      The "Login with OTP" dialog is visible with "+91", "Enter mobile number", and "Send OTP"
+
+  - section: OTP
+    type: native-input
+    label: Mobile Number
+    valueKey: mobile
+    locatePrompt: >
+      The mobile number text input inside the white "Login with OTP" dialog/modal:
+      the field shows "+91" on the left and placeholder "Enter mobile number" on the right.
+      Tap the number entry area to the right of "+91" — not Send OTP, not the X close icon
+
+  - section: OTP
+    type: action
+    action: tap-text
+    label: Send OTP
+    assertPrompt: Send OTP
+    locatePrompt: >
+      The solid blue "Send OTP" button at the bottom of the "Login with OTP" dialog
+      (not Change Number, not the X close icon)
+
+  - section: OTP
+    type: action
+    action: wait-page
+    label: 等待 Enter OTP 弹窗
+    assertPrompt: >
+      The "Enter OTP" dialog is visible with an "Enter OTP" input and "Verify & Login" button
+
+  - section: OTP
+    type: native-input
+    label: Enter OTP
+    valueKey: otp
+    locatePrompt: >
+      The text input field with placeholder "Enter OTP" inside the white "Enter OTP" dialog/modal.
+      Tap the input box center — not Change Number, not Resend, not the X close icon
+
+  - section: OTP
+    type: action
+    action: tap-text
+    label: Verify & Login
+    assertPrompt: Verify & Login
+    locatePrompt: >
+      The solid blue "Verify & Login" button at the bottom of the "Enter OTP" dialog
+      (not Resend, not Change Number, not the X close icon)
+
+submit:
+  enabled: false

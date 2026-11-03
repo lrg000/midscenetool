@@ -1,0 +1,100 @@
+# T53 KYC Step 3 — PRD 二十 / 二十四
+page:
+  id: aside-t53-kyc-identity
+  title: Identity Verification
+  isNative: true
+  skipNavigation: true
+  navigationPrompt: ""
+  blurTarget: the title Identity Verification
+  aiContext: >
+    Identity Verification. Verify your identity and address.
+    Pincode 560001 should show State Karnataka and City Bengaluru.
+    Upload Document may show Photo Access then Choose from Photos.
+    Button Continue.
+  bottomFields: [Continue]
+dropdowns: []
+inputs:
+  - label: Pincode
+    validValue: "560001"
+    skipEmptyBlurTest: true
+    skipInvalidBlurTest: true
+    skipInputTests: true
+flow:
+  - section: Identity
+    type: action
+    action: wait-page
+    label: 等待 Identity
+    manualWaitSec: 8
+    assertPrompt: >
+      "Identity Verification" and "Verify your identity and address." are visible.
+  - section: Identity
+    type: verify
+    label: UI Identity PRD
+    assertPrompt: >
+      STRICT: warm off-white background #F4F3EF, primary blue #1D4ED8 buttons with about 6dp corners (not pills), title/amount near #171717, secondary #6B7280. Fail if yellow notes, retro paper, black gallery, or cream sticker theme.
+  - section: Identity
+    type: action
+    action: fill-input
+    label: Pincode
+    inputFieldLabel: Pincode
+    inputValue: "560001"
+    autoDismissKeyboard: true
+  - section: Identity
+    type: verify
+    label: Pincode 回填城市
+    retry: 2
+    assertPrompt: >
+      State "Karnataka" and City "Bengaluru" are visible after pincode 560001.
+  - section: Identity
+    type: action
+    action: tap-text
+    label: Upload Document
+    scrollBeforeTap: false
+    assertPrompt: Upload Document
+    locatePrompt: >
+      The "Upload Document" control. Do NOT tap Continue yet.
+  - section: Identity
+    type: action
+    action: tap-text
+    label: Photo Access Continue
+    optional: true
+    scrollBeforeTap: false
+    noScrollRetry: true
+    assertPrompt: Continue
+    locatePrompt: >
+      If a "Photo Access" dialog is visible ("Allow FlexiCredit to access your photos to upload your document."),
+      tap its "Continue". Do NOT tap system Deny. If the dialog is absent, skip.
+  - section: Identity
+    type: action
+    action: handle-permissions
+    label: 系统相册权限
+    optional: true
+  - section: Identity
+    type: action
+    action: tap-text
+    label: Choose from Photos
+    optional: true
+    scrollBeforeTap: false
+    noScrollRetry: true
+    assertPrompt: Choose from Photos
+    locatePrompt: >
+      If "Choose from Photos" is visible, tap it. Do NOT tap camera-only options if a document picker is the PRD path.
+  - section: Identity
+    type: action
+    action: pick-gallery-image
+    label: 选择一张图片
+    optional: true
+    contactIndex: 0
+  - section: Identity
+    type: verify
+    label: Document uploaded
+    optional: true
+    assertPrompt: >
+      "Document uploaded" is visible, or a chosen image thumbnail is shown on Identity Verification.
+  - section: Identity
+    type: action
+    action: tap-text
+    label: Continue
+    scrollBeforeTap: true
+    assertPrompt: Continue
+    locatePrompt: The bottom "Continue" on Identity Verification. Do NOT tap Upload Document again.

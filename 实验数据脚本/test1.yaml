@@ -1,0 +1,7 @@
+web:
+  url: https://www.baidu.com
+
+tasks:
+  - name: 打开百度
+    flow:
+      - sleep: 5000

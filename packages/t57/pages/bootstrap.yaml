@@ -1,0 +1,83 @@
+# T57 冷启协议 — 录制实机：Before you continue
+# 勾选 "I have read and agree to the documents above." 后再点 Continue（勿点 Decline / 蓝字协议行）
+page:
+  id: aside-t57-bootstrap
+  title: Before you continue
+  isNative: true
+  skipNavigation: true
+  navigationPrompt: ""
+  blurTarget: the dialog title Before you continue
+  aiContext: >
+    Haveri VahanCredit first launch. Modal "Before you continue" with rows
+    Terms of Service, Privacy Policy, Permissions Declaration.
+    Checkbox: "I have read and agree to the documents above."
+    Continue enables after check. Decline below. Not Anantapur Chakra, not RajWise.
+  bottomFields: []
+
+dropdowns: []
+inputs: []
+
+checkboxes:
+  - label: I have read and agree to the documents above.
+    locatePrompt: >
+      On the white "Before you continue" modal: the EMPTY square checkbox immediately LEFT of
+      "I have read and agree to the documents above."
+      Tap ONLY the small empty square. Do NOT tap Terms of Service / Privacy Policy / Permissions
+      Declaration list rows, Continue, Decline, or the X close icon.
+    checkedPrompt: >
+      On the "Before you continue" modal: is the square checkbox LEFT of
+      "I have read and agree to the documents above." checked (tick inside the box)?
+      Answer only true or false.
+
+flow:
+  - section: Cold Start
+    type: action
+    action: wait-app-ready
+    label: 等待 T57 冷启就绪
+    manualWaitSec: 15
+    assertPrompt: >
+      Has Haveri VahanCredit finished splash and is NOW showing ANY of:
+      (1) "Before you continue" agreement,
+      (2) login "Welcome to Haveri VahanCredit" / "Use Mobile Number",
+      (3) a system permission Allow dialog?
+      Answer false only for pure splash, launcher, or endless spinner. Answer only true or false.
+
+  - section: Permissions
+    type: action
+    action: handle-permissions
+    label: 系统权限（若有）
+    optional: true
+
+  - section: Agreement
+    type: verify
+    label: 首次协议弹窗
+    optional: true
+    retry: 1
+    assertPrompt: >
+      If "Before you continue" is visible, it shows protocol rows
+      "Terms of Service", "Privacy Policy", "Permissions Declaration",
+      a checkbox next to "I have read and agree to the documents above.",
+      a "Continue" button, and "Decline".
+      If the modal is already gone and login Welcome is showing, pass.
+      Fail if this is Anantapur Chakra or RajWise.
+
+  - section: Agreement
+    type: checkbox
+    label: I have read and agree to the documents above.
+    optional: true
+
+  - section: Agreement
+    type: action
+    action: tap-text
+    label: 协议 Continue
+    optional: true
+    scrollBeforeTap: false
+    noScrollRetry: true
+    assertPrompt: Continue
+    locatePrompt: >
+      Only if "Before you continue" modal is still visible: the primary "Continue" button
+      at the bottom of that modal (enabled after the documents checkbox is checked).
+      Do NOT tap Decline, X close, or protocol list rows.
+
+submit:
+  enabled: false

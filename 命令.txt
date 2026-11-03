@@ -1,0 +1,24 @@
+#安装midscene
+
+npm i -g @midscene/cli
+midscene --version
+
+#安装依赖
+npm install @midscene/android dotenv --save-dev
+
+#启动playground
+npx --yes @midscene/android-playground
+
+#运行
+set PUPPETEER_EXECUTABLE_PATH=C:\Program Files\Google\Chrome\Application\chrome.exe
+
+midscene test1.yaml --headed --keep-window
+
+
+npx tsx basic-info.test.ts
+
+
+#测试控制台运行
+npm run dashboard
+
+

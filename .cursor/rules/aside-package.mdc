@@ -1,0 +1,65 @@
+---
+description: A 面按包测试约定 — packages/ 与 tests/aside/ 生成或修改时遵循；云效 PRD 为 A 面标准需求入口
+globs: packages/**/*.{yaml,md},tests/aside/**/*.ts,config/packages.yaml,core/aside-runner.ts,core/package-profile.ts,templates/aside-nl-case*.txt
+alwaysApply: false
+---
+
+# A 面（aside）扩展约定
+
+## 边界（三域）
+
+| 域 | kind | 说明 |
+|----|------|------|
+| **独立 App** | `standalone` | **Y** 开头包；**禁止** `handoffFlow` |
+| **贷款壳** | `loan-shell` / `loan-postlogin` | **T** 开头包；可配置 `handoffFlow` 进 B 面 |
+| **B 面模版** | （非本文件） | `data/*.yaml` + `flows.yaml`；**不要为 A 面改 B 面** |
+
+- 约定：包 id `t*` → 贷款壳，`y*` → 独立 App（未写 kind 时按此前缀推断）
+- 入口：`runAsidePackage(packageId)`；复用 `executePageFlow`
+- `actionDomains`：仅声明本包可用的 action 域（`common` / `loan` / `calendar` / `notes` / `gallery` / `stickers`）
+- 登录前 YAML 放在 `packages/{id}/pages/bootstrap.yaml`、`login.yaml`；B 全流程按 `androidPackage` 优先用包内页，否则回退 `data/app-bootstrap`、`data/login`
+
+## 云效 PRD（独立 App / Y 包标准入口）
+
+用户给出 `devops.aliyun.com/projex/.../openWorkitemIdentifier=...` 时：
+
+1. 用 **user-yunxiao** MCP：`get_current_organization_info` → `get_work_item`
+2. 按 skill `aside-package-test/yunxiao-prd.md` 生成 NL 用例 + YAML + 脚本
+3. 产物：`packages/{id}/cases/{id}-prd.nl.txt` 必须含 workItemId 与 AC 映射
+4. `kind: standalone`，按业务选 `actionDomains`（日历→calendar，便签→notes，图库→gallery…）
+
+## 贷款壳（T 开头 / Figma）
+
+- `kind: loan-shell`，`actionDomains: [common, loan]`
+- **禁止**把某一 T 包登录文案抄进其它 T/Y 包
+
+## 一包一脚本
+
+新增包必须同时具备：
+
+1. `config/packages.yaml`：`kind` + `actionDomains` + `pages[]`
+2. `packages/{id}/pages/*.yaml`（`isNative: true`，`skipNavigation: true`）
+3. `packages/{id}/cases/*.nl.txt`（产品可维护）
+4. `tests/aside/{id}.test.ts`
+5. `package.json` → `test:aside:{id}`
+
+组件与 Prompt 句式见 skill `aside-package-test`（含 `components.md`、`yunxiao-prd.md`）。
+
+## Prompt 硬规则
+
+- **用例覆盖**：严格按 PRD TC/AC 映射（见全局 rule `prd-case-and-fix.mdc`）；不得擅自跳过上传/删除等 PRD 已列路径
+- 每个可点控件写 `locatePrompt`，并写 **Do NOT tap …**
+- 断言跟 PRD/Figma **精确英文字符串**
+- **UI 规范**：云效 PRD 含颜色/字号/dp 时，每页加 `UI … PRD` 独立 verify，assertPrompt 写 STRICT + Fail if（见 `yunxiao-prd.md` §8）
+- Delete 类：PRD 要求测删除则执行 Delete；否则默认 **Cancel**
+- Get Cash Now / Continue 进 H5：贷款壳冒烟只 verify；**T42** 须走完原生主流程
+- **T46** 为贷款壳记账形态，无 handoff 时不要强行交接
+- **复跑失败**：非 token 额度错误 → 先看截图再修脚本后继续（同 `prd-case-and-fix.mdc`）
+
+## 包示例
+
+| packageId | kind | 说明 |
+|-----------|------|------|
+| t42 | loan-shell | RajWise 贷款壳 |
+| t46 | loan-shell | Sree Dhan Lekha |
+| y20 | standalone | Daily Grid 日历 |

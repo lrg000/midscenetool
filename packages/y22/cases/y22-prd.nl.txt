@@ -1,0 +1,106 @@
+# ============================================================
+# Y22 Daily Scribble Pad A 面 — 自然语言测试用例（云效 PRD 全量映射）
+# ============================================================
+#
+# 云效: Y22面包开发 | WIFO-1862 | workItemId: 9da8087be8f5e358d958a82bb1
+# URL: https://devops.aliyun.com/projex/project/f56f3edd04756632f67acd5450/req#openWorkitemIdentifier=9da8087be8f5e358d958a82bb1
+# Figma（PRD 标注）: https://www.figma.com/design/m8elDk0Rg8xCKqNQlTD4HJ/Y10-Akshar-Note
+# androidPackage: com.dailyscribble.writepad.app
+#
+# ============================================================
+
+## 包元信息
+
+| 字段 | 值 |
+|------|-----|
+| packageId | y22 |
+| appLabel | Daily Scribble Pad |
+| androidPackage | com.dailyscribble.writepad.app |
+| 包类别 | 便签本 |
+| 自动化 | npm run test:aside:y22 |
+| 状态 | 待开发（云效） |
+
+## PRD 验收标准 → 自动化覆盖表
+
+| TC | PRD 要求 | 自动化 | 说明 |
+|----|----------|--------|------|
+| TC-001 | 首次打开进 Notes 首页，无登录/引导 | home | |
+| TC-002 | 多条便签按创建时间倒序，最新在顶 | notes | 两条 Y22 测试便签 |
+| TC-003 | 空状态 No Notes Yet | notes | 清理后 / 删尽后 |
+| TC-004 | 点击 + 弹出 New Note Bottom Sheet | notes | |
+| TC-005 | 正常新增 Save 后置顶 | notes | |
+| TC-006 | 空 Save → Please enter your note. | notes | |
+| TC-007 | >500 字 → Maximum 500 characters. | notes | |
+| TC-008 | 点击便签进详情看全文 | notes | |
+| TC-009 | 删除确认 Delete this note? | notes | |
+| TC-010 | Cancel 取消删除 | notes | |
+| TC-011 | Delete 确认删除 | notes | |
+| TC-012 | 删最后一条 → 空状态 | notes | |
+| TC-013 | force-stop 后数据仍在 | notes | |
+| TC-014 | 删除后重开不再显示 | notes | 随 TC-011/013 |
+| TC-015 | 卸载清数据 | ac015-uninstall | 专项 `Y22_RUN_UNINSTALL=1` |
+| TC-016/017 | Save/Delete failed | — | 需注入异常 |
+| TC-018~019 | UI 风格/圆角动画 | home+notes | STRICT verify |
+| TC-020 | 深色模式 | — | 需切系统主题 |
+
+## UI 规范（PRD 五~七）
+
+| 项 | PRD |
+|----|-----|
+| 背景 | #FFFBF2 |
+| 品牌黄 | #FACC15 |
+| 卡片浅黄 | #FEF3C7 |
+| 标题/正文/次级 | #18181B / #52525B / #A1A1AA |
+| 分割线 | #F4E8C1 |
+| 删除 | #EF4444 |
+| Header | 56dp；标题 Notes 28sp |
+| 卡片 | 圆角 16dp，边距 16dp，最小高 96dp，间距 12dp |
+| Sheet | ~50% 屏高；Save 全宽 48dp 黄底 |
+| 输入 | Placeholder Write something...；最多 500 字 |
+| 空状态 | No Notes Yet / Tap "+" to create your first note. |
+| 异常文案 | Please enter your note. / Maximum 500 characters. |
+
+## 测试流程摘要
+
+### 首页（home.yaml）
+1. wait-app-ready → Notes 首页
+2. TC-001 无登录/无 Tab
+3. UI STRICT（黄品牌、浅底、圆角卡片风格）
+
+### 便签 CRUD（notes.yaml）
+1. ensure-y22-clean-state → TC-003 空状态
+2. + → New Note → TC-006 空 Save
+3. 填 Y22Test Note A → Save → TC-005 置顶
+4. 再增 Y22Test Note B → TC-002 B 在 A 上方
+5. force-stop + relaunch → TC-013
+6. 点 B → 详情 TC-008 → 返回
+7. 删 B：确认框 TC-009 → Cancel TC-010 → Delete TC-011
+8. 删 A → TC-012 空状态
+9. Sheet 边界：TC-007 超 500 字（独立 phase）
+
+### TC-015 卸载（破坏性）
+
+```powershell
+$env:Y22_APK_PATH = "F:\path\to\dailyscribble.apk"
+$env:Y22_RUN_UNINSTALL = "1"
+npm run test:aside:y22:uninstall
+```
+
+## PRD 明确不支持（不测）
+
+登录 / 云同步 / 提醒 / 分类 / 标签 / 搜索 / 编辑 / 分享 / 设置 / 多账号
+
+## 实机差异
+
+- 云效状态「待开发」：App 未装好时 `test:aside:y22` 会失败，属预期
+- Figma 文件名 Y10-Akshar-Note，产品文案以本 PRD 为准
+- 附件 `key_h7O5.jks` 仅签名用，不写入 YAML
+
+## 产物
+
+- packages/y22/pages/home.yaml
+- packages/y22/pages/notes.yaml
+- packages/y22/pages/ac015-uninstall.yaml
+- tests/aside/y22.test.ts
+- tests/aside/y22-uninstall.test.ts
+- config/packages.yaml → y22 / y22-uninstall

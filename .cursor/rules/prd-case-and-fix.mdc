@@ -1,0 +1,26 @@
+---
+description: A/B 面用例与脚本必须严格按 PRD；非额度类失败先看截图修复再继续
+alwaysApply: true
+---
+
+# PRD 用例与失败修复（A/B 面通用）
+
+适用于 **A 面**（`packages/`、`tests/aside/`）与 **B 面**（`data/*.yaml`、`flows.yaml`、`tests/business-*`）的用例设计、YAML/脚本生成与实机复跑。
+
+## 1. 严格按 PRD 测试用例
+
+- 设计用例、写 NL、生成/改 YAML 与脚本时，**必须以 PRD（云效 work item / 仓库内 PRD 快照）中的测试用例（TC/AC）为准**，逐条映射，不得擅自删减、合并或跳过 PRD 已列出的核心路径。
+- 断言与可点文案跟 PRD **精确字符串**（含大小写、标点）；UI 规范（色值/字号/dp）按 PRD 写独立 STRICT verify。
+- PRD 要求测删除/上传等破坏性或完整路径时必须执行；仅当 PRD 未要求时才默认 Cancel / 冒烟跳过。
+- 无法自动化的条目（需拒权、超大图、故障注入等）须在 NL 覆盖表标明「未自动化 + 原因」，**禁止假装已覆盖**。
+
+## 2. 非 token 额度故障：先识图修复再继续
+
+实机/脚本执行失败时：
+
+| 失败类型 | 处理 |
+|----------|------|
+| **Token / 免费额度耗尽**（如 403 Free quota exhausted、AllocationQuota） | **停止重试**；告知用户恢复额度或关闭 free-tier-only 后再跑。不把额度问题当成脚本缺陷改 YAML。 |
+| **其它失败**（定位失败、断言失败、页面不对、超时等） | **先读失败截图**（`midscene_run/screenshots/` 或报告内图）与日志，识别真实 UI/文案/流程偏差 → **修复 locatePrompt / assertPrompt / flow / 引擎动作** → **再继续执行或复跑**，直到该步按 PRD 通过或确认是产品缺陷并记录。 |
+
+禁止：不看截图就改断言放宽；额度故障时反复空跑或乱改用例。

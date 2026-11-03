@@ -1,0 +1,78 @@
+# T46 A 面 — 首页 + 记一笔冒烟（精简：合并校验、收紧 wait）
+page:
+  id: aside-t46-home
+  title: Home
+  isNative: true
+  skipNavigation: true
+  navigationPrompt: ""
+  blurTarget: the TOTAL INCOME card header
+  aiContext: >
+    Home: TOTAL INCOME / TOTAL EXPENSE, TRANSACTIONS JOURNAL, + ADD ACTION.
+    ADD ACTION opens Record Transaction with EXPENSE/INCOME toggle, TRANSACTION VALUE,
+    EPOCH PERIOD (DATE), CATEGORY BEZEL SELECT, COMMIT TRANSACTION ACTION.
+    Smoke: open Record Transaction, verify copy, go back — do NOT commit. Ignore vConsole.
+  bottomFields:
+    - TRANSACTIONS JOURNAL
+    - ADD ACTION
+
+dropdowns: []
+inputs: []
+
+flow:
+  - section: Home
+    type: action
+    action: wait-page
+    label: 等待 Home 就绪
+    manualWaitSec: 10
+    assertPrompt: >
+      Home shows TRANSACTIONS JOURNAL or TOTAL INCOME / TOTAL EXPENSE.
+      Not Welcome, not Phone Code login.
+
+  - section: Home
+    type: verify
+    label: Home 主文案
+    retry: 1
+    assertPrompt: >
+      Home shows "TOTAL INCOME" and "TOTAL EXPENSE" (₹ amounts OK including 0.00),
+      "TRANSACTIONS JOURNAL", and "+ ADD ACTION" / "ADD ACTION".
+      Fail if still on Welcome / Phone Code / login.
+
+  - section: Add Action
+    type: action
+    action: tap-text
+    label: ADD ACTION
+    assertPrompt: ADD ACTION
+    scrollBeforeTap: false
+    locatePrompt: >
+      The black rectangular "+ ADD ACTION" button on the right of the TRANSACTIONS JOURNAL
+      header row. Do NOT tap list rows or bottom tabs.
+
+  - section: Add Action
+    type: action
+    action: wait-page
+    label: 等待 Record Transaction
+    manualWaitSec: 8
+    assertPrompt: >
+      Record Transaction is open: title "Record Transaction" or EXPENSE/INCOME toggle
+      with TRANSACTION VALUE and COMMIT TRANSACTION ACTION (or COMMIT). Not journal-only.
+
+  - section: Add Action
+    type: action
+    action: tap-text
+    label: 返回 Home
+    assertPrompt: back
+    scrollBeforeTap: false
+    locatePrompt: >
+      The top-left back arrow on the Record Transaction header
+      (NOT COMMIT TRANSACTION ACTION, NOT category chips)
+
+  - section: Add Action
+    type: action
+    action: wait-page
+    label: 回到 Transactions Journal
+    manualWaitSec: 5
+    assertPrompt: >
+      Home TRANSACTIONS JOURNAL (or TOTAL INCOME summary) is visible again
+
+submit:
+  enabled: false

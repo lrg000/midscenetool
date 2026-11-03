@@ -1,0 +1,118 @@
+# Y25 — My Stickers（PRD 十三、TC-015、TC-019）
+page:
+  id: aside-y25-my
+  title: My Stickers
+  isNative: true
+  skipNavigation: true
+  navigationPrompt: ""
+  blurTarget: the My Stickers page title
+  aiContext: >
+    My Stickers: title My Stickers; tabs Downloaded / Uploaded; 3-col grids;
+    bottom My tab selected. Downloaded holds official downloads.
+  bottomFields: []
+
+dropdowns: []
+inputs: []
+
+flow:
+  - section: Navigation
+    type: action
+    action: tap-text
+    label: 底部 My Tab
+    assertPrompt: My
+    scrollBeforeTap: false
+    locatePrompt: >
+      Bottom navigation tab "My" (right of Explore). Do NOT tap Explore or stickers.
+
+  - section: My
+    type: action
+    action: wait-page
+    label: 等待 My Stickers
+    manualWaitSec: 8
+    assertPrompt: >
+      My Stickers page with title "My Stickers" and tabs Downloaded / Uploaded (or similar).
+
+  - section: My
+    type: action
+    action: tap-text
+    label: Downloaded Tab
+    assertPrompt: Downloaded
+    scrollBeforeTap: false
+    optional: true
+    locatePrompt: >
+      Tab labeled "Downloaded" under My Stickers. Skip if already selected.
+
+  - section: My
+    type: verify
+    label: TC-015 Downloaded 列表
+    retry: 2
+    assertPrompt: >
+      PRD TC-015: Downloaded tab shows at least one sticker thumbnail (just downloaded).
+      Fail if empty-only with no stickers after a successful download in this run.
+
+  - section: My
+    type: action
+    action: tap-text
+    label: Uploaded Tab
+    assertPrompt: Uploaded
+    scrollBeforeTap: false
+    locatePrompt: >
+      Tab labeled "Uploaded" under My Stickers. Do NOT tap stickers.
+
+  - section: My
+    type: verify
+    label: Uploaded 区可见
+    assertPrompt: >
+      Uploaded tab content visible (grid and/or empty state and/or "Upload Sticker" entry).
+      Fail if still clearly on Explore home.
+
+  - section: Persist
+    type: action
+    action: force-stop-app
+    label: TC-019 关闭 App
+    assertPrompt: com.chitrachitra.stickers.app
+
+  - section: Persist
+    type: action
+    action: relaunch-app
+    label: TC-019 重开 App
+    assertPrompt: com.chitrachitra.stickers.app
+
+  - section: Persist
+    type: action
+    action: wait-app-ready
+    label: TC-019 等待重开就绪
+    manualWaitSec: 15
+    assertPrompt: >
+      App loaded to Explore or My Stickers after relaunch.
+
+  - section: Persist
+    type: action
+    action: tap-text
+    label: 重开后进 My
+    assertPrompt: My
+    scrollBeforeTap: false
+    optional: true
+    locatePrompt: >
+      Bottom "My" tab if not already on My Stickers.
+
+  - section: Persist
+    type: action
+    action: tap-text
+    label: 重开后 Downloaded
+    assertPrompt: Downloaded
+    scrollBeforeTap: false
+    optional: true
+    locatePrompt: >
+      "Downloaded" tab on My Stickers if visible.
+
+  - section: Persist
+    type: verify
+    label: TC-019 本地持久化
+    retry: 2
+    assertPrompt: >
+      PRD TC-019: after relaunch, Downloaded still shows previously downloaded sticker(s).
+      Fail if Downloaded is empty after a download in this session.
+
+submit:
+  enabled: false

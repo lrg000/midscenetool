@@ -1,0 +1,52 @@
+# 申请成功 — Apply → 权限 → Success → Confirm
+# 新用户 KYC 五步结束后会回到首页额度卡（Amount / Tenure / Apply），必须先点 Apply。
+# 老用户首页分流可能已点过 Apply：tap-apply-if-visible 见不到按钮则跳过。
+page:
+  id: apply-success
+  title: Apply Success
+  skipNavigation: true
+  navigationPrompt: ""
+  blurTarget: the page header
+  aiContext: >
+    After KYC the app may return to H5 home: Amount slider, Tenure, black Apply button.
+    If Apply is visible, tap it (not vConsole, not tab bar). Then handle Android
+    permission dialogs and optional Usage Access. Wait for Success page/dialog
+    and tap Confirm. Do not treat the home Apply card as Success.
+  bottomFields: []
+
+dropdowns: []
+inputs: []
+
+flow:
+  - section: Home
+    type: action
+    action: dismiss-home-popup
+    label: 关闭可选弹窗
+  - section: Home
+    type: action
+    action: tap-apply-if-visible
+    label: 点击 Apply
+  - section: Permissions
+    type: action
+    action: handle-permissions
+    label: 申请权限弹窗
+  - section: Usage Access
+    type: action
+    action: usage-access
+    label: Usage Access
+  - section: Success
+    type: verify
+    label: Success 页面
+    retry: 8
+    retryDelayMs: 2000
+    assertPrompt: >
+      A loan application Success page or dialog is visible (title Success,
+      success message, and/or Confirm). This is NOT the home Amount slider
+      with the black Apply button.
+  - section: Success
+    type: action
+    action: tap-confirm
+    label: Confirm 确认
+
+submit:
+  enabled: false

@@ -1,0 +1,51 @@
+# T53 登录后 Google 绑定 — PRD 十五。OTP 登录后若出现则点 Not Now。
+page:
+  id: aside-t53-account-connect
+  title: Keep your account connected
+  isNative: true
+  skipNavigation: true
+  navigationPrompt: ""
+  blurTarget: the screen title
+  aiContext: >
+    Optional "Keep your account connected" / "Connect your Google account to make account recovery easier."
+    Buttons "Connect Google" and "Not Now". Do not connect Google in this run.
+  bottomFields: []
+
+dropdowns: []
+inputs: []
+
+flow:
+  - section: Bind
+    type: action
+    action: wait-page
+    label: 等待绑定页或 KYC
+    manualWaitSec: 8
+    assertPrompt: >
+      Either "Keep your account connected" is visible,
+      or KYC "About You" / "Your Verification" is visible,
+      or home "AVAILABLE CREDIT" is visible.
+
+  - section: Bind
+    type: verify
+    label: Google 绑定文案
+    optional: true
+    assertPrompt: >
+      If "Keep your account connected" is showing, it also shows
+      "Connect your Google account to make account recovery easier."
+      with "Connect Google" and "Not Now".
+      If this screen is absent, pass.
+
+  - section: Bind
+    type: action
+    action: tap-text
+    label: Not Now
+    optional: true
+    scrollBeforeTap: false
+    noScrollRetry: true
+    assertPrompt: Not Now
+    locatePrompt: >
+      Only if "Keep your account connected" is visible: tap "Not Now".
+      Do NOT tap "Connect Google".
+
+submit:
+  enabled: false

@@ -1,0 +1,32 @@
+# T53 重启后额度仍在 — PRD 60.13（状态保持）。不测狂点防重。
+page:
+  id: aside-t53-persist
+  title: Persist
+  isNative: true
+  skipNavigation: true
+  navigationPrompt: ""
+  blurTarget: AVAILABLE CREDIT
+  aiContext: After relaunch, home credit state remains. No outstanding if full repayment completed.
+  bottomFields: []
+dropdowns: []
+inputs: []
+flow:
+  - section: Persist
+    type: action
+    action: relaunch-app
+    label: 冷启重开
+    assertPrompt: com.anantapurchakra.flexicredit.app
+  - section: Persist
+    type: action
+    action: wait-app-ready
+    label: 等待回到首页
+    manualWaitSec: 15
+    assertPrompt: >
+      Home shows AVAILABLE CREDIT. Used is ₹0 and Available is ₹30,000
+      after the full repayment in this run. Answer only true or false.
+  - section: Persist
+    type: verify
+    label: 重启后额度仍为已还清
+    retry: 2
+    assertPrompt: >
+      After relaunch, Total Limit is "₹30,000", Used is "₹0", Available is "₹30,000".

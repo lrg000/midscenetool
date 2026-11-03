@@ -1,0 +1,163 @@
+# Y27 — 持久化 + 删相册不删图（PRD 二十四、33.5、33.10）
+page:
+  id: aside-y27-persist
+  title: Persist Delete Album
+  isNative: true
+  skipNavigation: true
+  navigationPrompt: ""
+  blurTarget: the Albums or My Photos title
+  aiContext: >
+    After force-stop: photos and albums (incl. lock) remain. Delete album keeps My Photos.
+  bottomFields: []
+
+dropdowns: []
+inputs: []
+
+flow:
+  - section: Persist
+    type: action
+    action: force-stop-app
+    label: 33.10 关闭 App
+    assertPrompt: com.sakhiphoto.rangoli.app
+
+  - section: Persist
+    type: action
+    action: relaunch-app
+    label: 33.10 重开
+    assertPrompt: com.sakhiphoto.rangoli.app
+
+  - section: Persist
+    type: action
+    action: wait-app-ready
+    label: 33.10 就绪
+    manualWaitSec: 15
+    assertPrompt: >
+      PicBox/Sakhi My Photos or Albums after relaunch.
+
+  - section: Persist
+    type: action
+    action: tap-text
+    label: 顶栏 Photos
+    assertPrompt: Photos
+    scrollBeforeTap: false
+    optional: true
+    locatePrompt: >
+      Top Photos segment.
+
+  - section: Persist
+    type: verify
+    label: 33.10 图片仍在
+    retry: 2
+    assertPrompt: >
+      PRD 33.10: My Photos still shows previously imported photo(s).
+
+  - section: Persist
+    type: action
+    action: tap-text
+    label: 顶栏 Albums
+    assertPrompt: Albums
+    scrollBeforeTap: false
+    locatePrompt: >
+      Top Albums segment.
+
+  - section: Persist
+    type: verify
+    label: 33.10 相册仍在
+    retry: 2
+    assertPrompt: >
+      PRD 33.10: Albums still lists Travel (lock state may persist).
+
+  - section: DeleteAlbum
+    type: action
+    action: tap-text
+    label: 打开 Travel（可能要密码）
+    assertPrompt: Travel
+    scrollBeforeTap: false
+    locatePrompt: >
+      Travel album card.
+
+  - section: DeleteAlbum
+    type: action
+    action: tap-text
+    label: 若密码页则输入 1234
+    assertPrompt: pin
+    scrollBeforeTap: false
+    optional: true
+    locatePrompt: >
+      If Enter Passcode shown, enter 1-2-3-4. Skip if already in album detail.
+
+  - section: DeleteAlbum
+    type: action
+    action: wait-page
+    label: 等待相册详情
+    manualWaitSec: 8
+    assertPrompt: >
+      Travel album detail (unlocked).
+
+  - section: DeleteAlbum
+    type: action
+    action: tap-text
+    label: 打开 •••
+    assertPrompt: overflow
+    scrollBeforeTap: false
+    locatePrompt: >
+      ••• on album detail.
+
+  - section: DeleteAlbum
+    type: action
+    action: tap-text
+    label: Delete Album
+    assertPrompt: Delete Album
+    scrollBeforeTap: false
+    locatePrompt: >
+      Menu "Delete Album".
+
+  - section: DeleteAlbum
+    type: verify
+    label: 删相册确认文案
+    retry: 2
+    assertPrompt: >
+      Dialog "Delete this album?" noting photos inside will not be deleted; Cancel / Delete.
+
+  - section: DeleteAlbum
+    type: action
+    action: tap-text
+    label: 确认 Delete Album
+    assertPrompt: Delete
+    scrollBeforeTap: false
+    locatePrompt: >
+      Confirm Delete (NOT Cancel).
+
+  - section: DeleteAlbum
+    type: action
+    action: wait-page
+    label: 删除后 Albums
+    manualWaitSec: 8
+    assertPrompt: >
+      Albums list without Travel.
+
+  - section: DeleteAlbum
+    type: verify
+    label: 33.5 相册已删
+    retry: 2
+    assertPrompt: >
+      Travel album gone from Albums list.
+
+  - section: DeleteAlbum
+    type: action
+    action: tap-text
+    label: 回 Photos
+    assertPrompt: Photos
+    scrollBeforeTap: false
+    locatePrompt: >
+      Top Photos segment.
+
+  - section: DeleteAlbum
+    type: verify
+    label: 33.5/33.4 删相册不删首页图
+    retry: 2
+    assertPrompt: >
+      PRD: My Photos still shows photo(s) after Delete Album (album delete must not wipe library).
+
+submit:
+  enabled: false

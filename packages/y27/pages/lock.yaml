@@ -1,0 +1,182 @@
+# Y27 — 相册加密（PRD 二十一~二十三、33.7）
+page:
+  id: aside-y27-lock
+  title: Album Lock
+  isNative: true
+  skipNavigation: true
+  navigationPrompt: ""
+  blurTarget: the Albums or Private Album title
+  aiContext: >
+    Lock Album → Create Passcode 4-digit twice → Done. Locked shows 🔒.
+    Unlock: Enter Passcode; Incorrect passcode on wrong PIN.
+  bottomFields: []
+
+dropdowns: []
+inputs: []
+
+flow:
+  - section: Nav
+    type: action
+    action: tap-text
+    label: 确保 Albums
+    assertPrompt: Albums
+    scrollBeforeTap: false
+    optional: true
+    locatePrompt: >
+      Top Albums segment.
+
+  - section: Open
+    type: action
+    action: tap-text
+    label: 打开 Travel 相册
+    assertPrompt: Travel
+    scrollBeforeTap: false
+    locatePrompt: >
+      Album card "Travel". Do NOT tap New Album.
+
+  - section: Open
+    type: action
+    action: wait-page
+    label: 等待详情
+    manualWaitSec: 8
+    assertPrompt: >
+      Travel album detail open.
+
+  - section: Lock
+    type: action
+    action: tap-text
+    label: 打开 •••
+    assertPrompt: overflow
+    scrollBeforeTap: false
+    locatePrompt: >
+      Top-right ••• on album detail.
+
+  - section: Lock
+    type: action
+    action: tap-text
+    label: Lock Album
+    assertPrompt: Lock Album
+    scrollBeforeTap: false
+    locatePrompt: >
+      Menu "Lock Album".
+
+  - section: Lock
+    type: action
+    action: wait-page
+    label: 等待 Create Passcode
+    manualWaitSec: 6
+    assertPrompt: >
+      Create Passcode / Enter a 4-digit passcode UI.
+
+  - section: Lock
+    type: action
+    action: tap-text
+    label: 输入密码 1234
+    assertPrompt: pin
+    scrollBeforeTap: false
+    locatePrompt: >
+      Enter 4-digit passcode 1-2-3-4 in first PIN field (tap digit keys).
+
+  - section: Lock
+    type: action
+    action: tap-text
+    label: 确认密码 1234
+    assertPrompt: confirm
+    scrollBeforeTap: false
+    locatePrompt: >
+      Confirm Passcode field: enter 1-2-3-4 again, then Done if needed.
+
+  - section: Lock
+    type: action
+    action: tap-text
+    label: Done
+    assertPrompt: Done
+    scrollBeforeTap: false
+    optional: true
+    locatePrompt: >
+      Done button on Create Passcode sheet.
+
+  - section: Lock
+    type: action
+    action: wait-page
+    label: 等待加密完成
+    manualWaitSec: 6
+    assertPrompt: >
+      Back on album detail or Albums list; Travel may show lock.
+
+  - section: Lock
+    type: action
+    action: tap-text
+    label: 回 Albums 列表
+    assertPrompt: back
+    scrollBeforeTap: false
+    optional: true
+    locatePrompt: >
+      Back to Albums list if still in detail.
+
+  - section: Lock
+    type: verify
+    label: 33.7 锁定 Icon
+    retry: 2
+    assertPrompt: >
+      PRD 33.7: Travel (or locked album) shows lock 🔒 on Albums list.
+
+  - section: Unlock Wrong
+    type: action
+    action: tap-text
+    label: 点击加密相册
+    assertPrompt: Travel
+    scrollBeforeTap: false
+    locatePrompt: >
+      Locked Travel album card.
+
+  - section: Unlock Wrong
+    type: action
+    action: wait-page
+    label: 等待密码页
+    manualWaitSec: 8
+    assertPrompt: >
+      Private Album / Enter Passcode screen (not photo grid yet).
+
+  - section: Unlock Wrong
+    type: action
+    action: tap-text
+    label: 输入错误密码 0000
+    assertPrompt: pin
+    scrollBeforeTap: false
+    locatePrompt: >
+      Enter wrong PIN 0-0-0-0.
+
+  - section: Unlock Wrong
+    type: verify
+    label: 33.7 Incorrect passcode
+    retry: 2
+    assertPrompt: >
+      PRD: "Incorrect passcode" shown; still on passcode screen.
+
+  - section: Unlock Ok
+    type: action
+    action: tap-text
+    label: 输入正确密码 1234
+    assertPrompt: pin
+    scrollBeforeTap: false
+    locatePrompt: >
+      Enter correct PIN 1-2-3-4 (clear wrong PIN first if needed).
+
+  - section: Unlock Ok
+    type: action
+    action: wait-page
+    label: 等待进入相册
+    manualWaitSec: 8
+    assertPrompt: >
+      Inside Travel album detail past passcode gate.
+
+  - section: Unlock Ok
+    type: verify
+    label: 33.7 正确密码进入
+    retry: 2
+    assertPrompt: >
+      PRD: unlocked into locked album successfully.
+
+submit:
+  enabled: false

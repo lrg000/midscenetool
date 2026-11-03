@@ -1,0 +1,121 @@
+# T42 — Get Cash Now 主流程：Personal Information（Figma 验证1 / 1:373）
+page:
+  id: aside-t42-personal-information
+  title: Personal Information
+  isNative: true
+  skipNavigation: true
+  navigationPrompt: ""
+  blurTarget: the "Personal Information" title in the header
+  aiContext: >
+    T42 Get Cash Now flow — Personal Information form (Figma). Fields:
+    Full Name (As per PAN), Mobile Number +91, Date of Birth DD/MM/YYYY,
+    Employment Type dropdown (Salaried / Self Employed / Business Owner),
+    blue Continue at bottom. Progress bar ~1/3. Ignore vConsole.
+  bottomFields:
+    - Continue
+
+dropdowns: []
+
+inputs:
+  - label: Full Name (As per PAN)
+    validValue: Test User PAN
+    skipEmptyBlurTest: true
+    skipInvalidBlurTest: true
+    locatePrompt: >
+      The "Full Name (As per PAN)" text input with placeholder "Enter full name"
+      (person icon). Do NOT tap Mobile Number or Date of Birth.
+  - label: Mobile Number
+    validValue: "9110001369"
+    skipEmptyBlurTest: true
+    skipInvalidBlurTest: true
+    locatePrompt: >
+      The "Mobile Number" input showing "+91" and placeholder like "00000 00000".
+      Do NOT tap Full Name or Employment Type.
+
+flow:
+  - section: Personal Information
+    type: verify
+    label: Personal Information 页文案
+    retry: 3
+    retryDelayMs: 1000
+    assertPrompt: >
+      Page title is exactly "Personal Information". Fields labeled
+      "Full Name (As per PAN)", "Mobile Number", "Date of Birth", "Employment Type"
+      are visible, and a blue "Continue" button is at the bottom.
+      Fail if title or labels differ from Figma.
+
+  - section: Personal Information
+    type: input
+    label: Full Name (As per PAN)
+
+  - section: Personal Information
+    type: input
+    label: Mobile Number
+
+  - section: Personal Information
+    type: action
+    action: tap-text
+    label: Date of Birth
+    assertPrompt: Date of Birth
+    locatePrompt: >
+      The "Date of Birth" row with placeholder "DD/MM/YYYY" and chevron
+      (calendar icon). Do NOT tap Employment Type.
+
+  - section: Personal Information
+    type: action
+    action: tap-text
+    label: 选择日期（日）
+    assertPrompt: "15"
+    locatePrompt: >
+      Inside the open date picker / calendar dialog: tap a selectable day number
+      such as 15 (or any enabled day cell in the month grid / wheel).
+      Do NOT tap Cancel, OK, or the year header yet.
+
+  - section: Personal Information
+    type: action
+    action: tap-text
+    label: OK 确认日期
+    assertPrompt: OK
+    locatePrompt: >
+      The "OK" (or "Done" / "Confirm") button on the date picker dialog
+      (not Cancel, not Clear). Must close the picker and apply the selected date.
+
+  - section: Personal Information
+    type: verify
+    label: DOB 已回填
+    retry: 2
+    assertPrompt: >
+      On Personal Information, the Date of Birth field no longer shows only the
+      empty placeholder "DD/MM/YYYY" — a concrete date value is visible
+      (digits and / separators). Fail if still empty placeholder only.
+
+  - section: Personal Information
+    type: action
+    action: tap-text
+    label: Employment Type
+    assertPrompt: Employment Type
+    locatePrompt: >
+      The "Employment Type" dropdown row (briefcase icon, Select or value).
+      Do NOT tap Continue yet.
+
+  - section: Personal Information
+    type: action
+    action: tap-text
+    label: Salaried
+    assertPrompt: Salaried
+    locatePrompt: >
+      The option "Salaried" in the open Employment Type list
+      (not Self Employed, not Business Owner)
+
+  - section: Personal Information
+    type: action
+    action: tap-text
+    label: Continue
+    assertPrompt: Continue
+    scrollBeforeTap: true
+    locatePrompt: >
+      The solid blue "Continue" button at the bottom of Personal Information
+      (not back arrow)
+
+submit:
+  enabled: false

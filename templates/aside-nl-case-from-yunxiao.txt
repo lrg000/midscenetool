@@ -1,0 +1,45 @@
+# ============================================================
+# A 面自然语言用例 — 从云效 PRD 生成（模板）
+# ============================================================
+#
+# 云效需求: {subject}
+# URL: {yunxiaoUrl}
+# workItemId: {workItemId}
+# projectId: {projectId}
+#
+# ============================================================
+
+## 包元信息
+
+| 字段 | 值 |
+|------|-----|
+| packageId | {packageId} |
+| appLabel | {appLabel} |
+| androidPackage | {androidPackage} |
+| 自动化 | npm run test:aside:{packageId} |
+
+## 前置条件
+
+1. adb 已连接，{appLabel} 已安装
+2. {preconditions}
+
+## PRD 验收标准 → 自动化映射
+
+| PRD AC | 模块 | 步骤摘要 | YAML |
+|--------|------|----------|------|
+| AC-001 | | | pages/....yaml |
+
+## 步骤（自然语言）
+
+### TC-01 ...
+1. ...
+
+## PRD 明确不支持（不测）
+
+- ...
+
+## 生成产物
+
+- packages/{packageId}/pages/*.yaml
+- tests/aside/{packageId}.test.ts
+- config/packages.yaml → packages.{packageId}

@@ -1,0 +1,45 @@
+# T53 确认借款与成功 — PRD 三十三、三十四
+page:
+  id: aside-t53-borrow-confirm
+  title: Confirm Borrowing
+  isNative: true
+  skipNavigation: true
+  navigationPrompt: ""
+  blurTarget: Confirm Borrowing
+  aiContext: Confirm Borrowing. You are borrowing ₹10,000. Confirm & Borrow. Then Loan Successful and View Loan.
+  bottomFields: []
+dropdowns: []
+inputs: []
+flow:
+  - section: Confirm
+    type: action
+    action: wait-page
+    label: 等待 Confirm Borrowing
+    manualWaitSec: 8
+    assertPrompt: '"Confirm Borrowing" and "You are borrowing" with "₹10,000" are visible.'
+  - section: Confirm
+    type: verify
+    label: UI Confirm PRD
+    assertPrompt: >
+      STRICT: warm off-white background #F4F3EF, primary blue #1D4ED8 buttons with about 6dp corners (not pills), title/amount near #171717, secondary #6B7280. Fail if yellow notes, retro paper, black gallery, or cream sticker theme.
+  - section: Confirm
+    type: action
+    action: tap-text
+    label: Confirm & Borrow
+    scrollBeforeTap: true
+    assertPrompt: Confirm & Borrow
+    locatePrompt: The "Confirm & Borrow" button. Do NOT tap back or cancel.
+  - section: Success
+    type: verify
+    label: Loan Successful
+    retry: 3
+    retryDelayMs: 1000
+    assertPrompt: >
+      "Loan Successful" shows "₹10,000" and "Your loan has been processed."
+  - section: Success
+    type: action
+    action: tap-text
+    label: View Loan
+    scrollBeforeTap: false
+    assertPrompt: View Loan
+    locatePrompt: The "View Loan" button. Do NOT tap a second borrow action.

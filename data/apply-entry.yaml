@@ -1,0 +1,49 @@
+# 申请入口（Next 流程）— 权限 → Usage Access → 入口按钮二选一
+# 有的包是 Begin Verification，有的包是 Get Started；单页与全流程都走本文件
+page:
+  id: apply-entry
+  title: Apply Entry
+  skipNavigation: true
+  navigationPrompt: ""
+  blurTarget: the page header
+  aiContext: >
+    After clicking Next on home. Handle Android permission popups, then Usage Access:
+    tap Setting on the in-app guide popup, enable "Allow usage tracking" if off, back to app.
+    The KYC entry button is one of two labels, never both: "Begin Verification" or "Get Started".
+    Tap whichever of those two is on screen, then the first KYC step appears.
+  bottomFields: []
+
+dropdowns: []
+inputs: []
+
+flow:
+  - section: Permissions
+    type: action
+    action: handle-permissions
+    label: 处理系统权限弹窗
+  - section: Usage Access
+    type: action
+    action: usage-access
+    label: Usage Access 授权
+  - section: KYC Entry
+    type: action
+    action: tap-text
+    label: Begin Verification / Get Started
+    optional: true
+    assertPrompt: Begin Verification or Get Started
+    locatePrompt: >
+      If a primary button labeled exactly "Begin Verification" or exactly "Get Started"
+      is visible, tap that one button. Only one of these two labels appears.
+      Do NOT tap Next, Apply, Decline, vConsole, permission dialogs, or system navigation.
+  - section: KYC Entry
+    type: verify
+    label: 进入 KYC 第一步
+    retry: 3
+    retryDelayMs: 1000
+    assertPrompt: >
+      The first KYC step is visible as the primary screen — any of: Basic info form,
+      Reference Contacts, Identity Verification / Aadhaar OCR, Upload your selfie,
+      or Bank information / IFSC (product step order may vary)
+
+submit:
+  enabled: false

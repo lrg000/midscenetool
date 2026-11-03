@@ -1,0 +1,148 @@
+# L3 / L4 / L5 配置（日常只改这一份 + .env）
+#
+# 架构（无 Appium）：
+#   App  → Midscene 视觉执行
+#   API  → 下方 apis.* HTTP
+#   Data → 下方 sqls.* MySQL
+#   checkpoint 步骤把三端快照交给 rules.* ，不一致则写 midscene_run/l5/*-diagnose.md
+#   explore  → L3 有界探索（config.explore）
+#
+# 占位符：{{mobile}} {{otp}} {{env:MYSQL_HOST}}
+# 原生 OTP → B 面 H5 localStorage.BaseInfo：token / appCode / customerId(=userCode) / versionCode(=APP_VERSION) / phone / mColor
+# APP_CODE 与 MARKET_ID 均取 BaseInfo.appCode；SQL {{mobile}} 取 BaseInfo.phone
+#
+# 申请前额度：屏上默认展示 loanAmountList 的 max（0/1 仅为可滑选项，不对齐那一档）
+
+enabled: true
+
+http:
+  timeoutMs: 15000
+  headers: {}
+
+# MySQL（密码走 .env，不要把真实口令提交进仓库）
+databases:
+  default:
+    host: "{{env:MYSQL_HOST}}"
+    port: 3306
+    user: "{{env:MYSQL_USER}}"
+    password: "{{env:MYSQL_PASSWORD}}"
+    database: "{{env:MYSQL_DATABASE}}"
+
+apis:
+  product-list-merge:
+    method: POST
+    url: "{{env:API_BASE_URL}}/api/biz/product/huoQuChanPinListMerge"
+    expectStatus: 200
+    headers:
+      Cookie: "HEADER_APP_AUTH_TOKEN={{env:APP_AUTH_TOKEN}}"
+      Content-Type: application/json
+    body:
+      appCode: "{{env:APP_CODE}}"
+      version: "{{env:APP_VERSION}}"
+      userCode: "{{env:USER_CODE}}"
+      token: "{{env:APP_AUTH_TOKEN}}"
+      mColor: "{{env:M_COLOR}}"
+    jsonPath: data.loanAmountList
+    jsonReduce: max
+
+sqls:
+  credit-by-mobile-market:
+    database: default
+    sql: >
+      SELECT SUM(cps.loan_amount- cps.spent_amount) AS credit_limit
+      FROM customer c
+      LEFT JOIN customer_product_status cps ON c.id = cps.customer_id
+      WHERE c.customer_mobile = ?
+        AND c.market_id = ?
+        AND cps.show_flag = 1
+      LIMIT 1
+    params:
+      - "{{mobile}}"
+      - "{{env:MARKET_ID}}"
+    column: credit_limit
+
+  contacts-by-customer:
+    database: default
+    extractAll: true
+    sql: >
+      SELECT relation, contact_name, contact_phone
+      FROM customer_contact
+      WHERE customer_id = ?
+      ORDER BY relation, contact_phone
+    params:
+      - "{{env:USER_CODE}}"
+
+# H5 localStorage：登录后识别到 Next/Apply/Go to repay 即抽取（不绑 Apply）
+# 额度三端：仅在看到借款卡 Apply、点击之前核对
+beforeApply:
+  enabled: true
+  optional: true
+  waitForApply: false
+  jsExtract: true
+  label: 申请前额度三端一致
+  uiExtract:
+    creditLimit: >
+      On the H5 loan home card, the currently displayed default maximum Amount
+      as digits only (e.g. 5000 from ₹ 5000). This is the slider max / selected
+      default, not the left min. The primary Apply button is still visible and
+      must not be treated as already tapped. No currency symbol.
+  apis:
+    - product-list-merge
+  sqls:
+    - credit-by-mobile-market
+  rules:
+    - credit-match
+
+# 紧急联系人 Next 成功后只做 UI ↔ 库表（saveLianXiRenList 是写入，不拿来核对）
+# 库表会多一行 relation=0、contact_phone=当前登录号，不与屏上 Primary/Secondary 比对，但必须存在
+# 关系码：father/mother=10 husband/wife=20 son/daughter=30 friend=40 Uncle/Aunt=50
+afterEmergencyContacts:
+  enabled: true
+  optional: true
+  jsExtract: false
+  label: 紧急联系人 UI/库一致
+  apis: []
+  sqls:
+    - contacts-by-customer
+  rules:
+    - emergency-contacts-match
+
+rules:
+  credit-match:
+    description: 屏上默认最大额度 = loanAmountList.max = 库表可用额度
+    coerce: number
+    tolerance: 0
+    compare:
+      - source: ui
+        key: creditLimit
+      - source: api
+        query: product-list-merge
+      - source: sql
+        query: credit-by-mobile-market
+
+  emergency-contacts-match:
+    description: 紧急联系人 屏上=库表（库表另含 relation=0 登录号）
+    coerce: contacts
+    compare:
+      - source: ui
+        key: emergencyContacts
+      - source: sql
+        query: contacts-by-customer
+
+explore:
+  enabled: false
+  packageId: t57
+  maxSteps: 6
+  stopPrompt: >
+    Is a system permission Allow dialog, crash, or force-close visible?
+    Answer only true or false.
+  denyTap:
+    - Decline
+    - Delete
+    - Uninstall
+    - Logout
+    - 拒绝
+  checkpoints: []
+
+diagnose:
+  enabled: true

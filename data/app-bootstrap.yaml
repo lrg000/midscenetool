@@ -1,0 +1,54 @@
+# App 冷启动 / 登录前操作
+# 冷启常见：权限弹窗 → 「Welcome to {品牌}」协议弹窗 Agree & Continue → Welcome 登录页
+# 马甲包品牌/主色会变（RajWise 蓝、DhanVehicle 黄等），不要写死品牌名或按钮颜色
+page:
+  id: app-bootstrap
+  title: App Bootstrap
+  isNative: true
+  skipNavigation: true
+  navigationPrompt: ""
+  blurTarget: the app screen
+  aiContext: >
+    Android loan-app cold start (white-label skins). After splash/permissions, a centered
+    "Welcome to {brand}" agreement dialog may show: Terms of Service / Privacy Policy /
+    Permissions Declaration as underlined links, a filled primary "Agree & Continue"
+    (color varies by skin), and outlined "Decline". There is NO checkbox on this dialog.
+    Tap Agree & Continue to reach the Welcome login screen. If the dialog is already gone,
+    continue without failing. Login-page Terms checkbox is handled in login.yaml.
+  bottomFields: []
+
+dropdowns: []
+inputs: []
+
+flow:
+  - section: Cold Start
+    type: action
+    action: wait-app-ready
+    label: 等待 App 主界面就绪
+    # 权限弹窗 / Welcome to {品牌} 协议 / Welcome 登录页 都算就绪（见 action-step 默认 prompt）
+    # assertPrompt: 可覆盖默认判定语
+    # manualWaitSec: 20   # 最大检测次数（默认用 environment timing.appReadyMaxAttempts）
+  - section: Permissions
+    type: action
+    action: handle-permissions
+    label: 系统权限弹窗（通知/存储等）
+  - section: Onboarding
+    type: action
+    action: tap-text
+    label: Agree & Continue
+    assertPrompt: Agree & Continue
+    optional: true
+    # 居中弹窗：勿 scrollBeforeTap（默认直接点，避免下滑误触 Decline/链接）
+    locatePrompt: >
+      On the centered first-launch agreement dialog whose title starts with "Welcome to"
+      (any brand): the filled primary button whose visible text is exactly "Agree & Continue".
+      Ignore button color. Do NOT tap Decline, the X close icon, or the underlined
+      Terms of Service / Privacy Policy / Permissions Declaration rows. This dialog has no checkbox.
+  - section: Onboarding
+    type: action
+    action: handle-permissions
+    label: 协议后系统权限
+    skip: false
+
+submit:
+  enabled: false

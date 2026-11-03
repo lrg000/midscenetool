@@ -1,0 +1,156 @@
+# Y26 Aarambh Calendar — 首页月历（PRD 八~十、十九~二十、TC-001~006、026~028）
+# 云效: 11bbbf3e77b6062cba6f067efd | com.aarambhdailycalendar.app
+page:
+  id: aside-y26-home
+  title: Calendar Home
+  isNative: true
+  skipNavigation: true
+  navigationPrompt: ""
+  blurTarget: the month title in the calendar header
+  aiContext: >
+    Aarambh Calendar: 2 pages only, no login/Tabs/bottom nav.
+    Retro paper: bg #F7F3EA, forest green #245C4A; today green outline circle (NOT blue fill);
+    selected #DDE9E1; schedule dot green. Header 64dp: Today | month | prev/next.
+  bottomFields:
+    - Today
+
+dropdowns: []
+inputs: []
+
+flow:
+  - section: Calendar
+    type: action
+    action: wait-app-ready
+    label: 等待 App 就绪
+    manualWaitSec: 25
+    assertPrompt: >
+      Aarambh Calendar finished loading: month calendar OR day schedule.
+      No endless splash. FAIL if Android launcher only.
+
+  - section: Calendar
+    type: action
+    action: relaunch-if-not
+    label: 若不在 App 内则重开
+    assertPrompt: >
+      Is Aarambh Calendar in-app UI visible (paper calendar or day schedule),
+      NOT Android home/launcher with app icons
+    locatePrompt: com.aarambhdailycalendar.app
+
+  - section: Calendar
+    type: action
+    action: ensure-calendar-home
+    label: 确保回到月历首页
+    assertPrompt: com.aarambhdailycalendar.app
+
+  - section: Calendar
+    type: verify
+    label: TC-001 默认进入当前月历无登录
+    retry: 2
+    assertPrompt: >
+      PRD TC-001: current month calendar, no login/registration/splash.
+      No bottom Tab bar (Photos/Albums etc.). FAIL for login or 3+ icon bottom nav.
+
+  - section: Calendar
+    type: verify
+    label: TC-002 月历结构
+    retry: 2
+    assertPrompt: >
+      PRD TC-002: month/year header, weekday row SUN–SAT (or Sun–Sat), date number grid visible.
+
+  - section: Calendar
+    type: verify
+    label: UI Retro Paper 风格
+    assertPrompt: >
+      STRICT PRD UI (五~七, TC-026): warm paper bg near #F7F3EA; forest green accents ~#245C4A.
+      FAIL if blue #3B82F6 calendar chrome, yellow sticky notes, dark gallery, or colorful sticker UI.
+
+  - section: Calendar
+    type: verify
+    label: TC-028 今日/选中态可区分
+    assertPrompt: >
+      PRD TC-028 soft: today cell uses green outline circle (#245C4A) — NOT filled blue circle.
+      Selected date may use light green fill #DDE9E1. Fail only if today looks like blue tech calendar.
+
+  - section: Calendar
+    type: action
+    action: tap-text
+    label: TC-003 上一月
+    assertPrompt: Previous
+    locatePrompt: >
+      Previous month chevron/arrow in calendar header (left of or beside month title).
+      Do NOT tap Today or date cells.
+
+  - section: Calendar
+    type: verify
+    label: TC-003 进入上一月
+    retry: 3
+    retryDelayMs: 600
+    assertPrompt: >
+      PRD TC-003: header month moved one month backward; grid matches that month.
+
+  - section: Calendar
+    type: action
+    action: tap-text
+    label: TC-004 下一月
+    assertPrompt: Next
+    locatePrompt: >
+      Next month chevron in calendar header. Do NOT tap Today or dates.
+
+  - section: Calendar
+    type: verify
+    label: TC-004 进入下一月
+    retry: 3
+    retryDelayMs: 600
+    assertPrompt: >
+      PRD TC-004: header advanced one month forward from previous step; grid matches.
+
+  - section: Calendar
+    type: action
+    action: tap-text
+    label: TC-005 Today
+    assertPrompt: Today
+    locatePrompt: >
+      Header text button "Today" (left). Do NOT tap date cells.
+
+  - section: Calendar
+    type: verify
+    label: TC-005 回当前月并选中今天
+    retry: 4
+    retryDelayMs: 800
+    assertPrompt: >
+      PRD TC-005: header is real current month; today cell highlighted (green outline and/or selected fill).
+
+  - section: Calendar
+    type: action
+    action: tap-text
+    label: TC-006 点击非今日日期
+    assertPrompt: "15"
+    locatePrompt: >
+      Tap a NON-today date cell (e.g. "15"). Do NOT tap Today text, month arrows, or today cell.
+
+  - section: Day
+    type: verify
+    label: TC-006 进入当日行程页
+    retry: 2
+    assertPrompt: >
+      PRD TC-006: Day Schedule for tapped date (date + weekday header, back arrow).
+      May show empty "Nothing planned" or schedule list. Fail if still calendar-grid only.
+
+  - section: Day
+    type: action
+    action: tap-text
+    label: 非今日页返回月历
+    assertPrompt: Back
+    locatePrompt: >
+      Back arrow top-left of day schedule header.
+
+  - section: Calendar
+    type: action
+    action: tap-text
+    label: TC-006 点击今日进入行程
+    assertPrompt: Today
+    locatePrompt: >
+      Tap today's date cell (green outline). Do NOT tap "Today" text or arrows.
+
+submit:
+  enabled: false

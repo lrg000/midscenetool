@@ -1,0 +1,51 @@
+# T53 KYC Step 4 — PRD 二十一
+page:
+  id: aside-t53-kyc-employment
+  title: Your Work & Income
+  isNative: true
+  skipNavigation: true
+  navigationPrompt: ""
+  blurTarget: the title Your Work & Income
+  aiContext: Employment Status Salaried, Self-employed, Business, Other. Monthly Income. Continue.
+  bottomFields: [Continue]
+dropdowns: []
+inputs:
+  - label: Monthly Income
+    validValue: "50000"
+    skipEmptyBlurTest: true
+    skipInvalidBlurTest: true
+    skipInputTests: true
+flow:
+  - section: Work
+    type: action
+    action: wait-page
+    label: 等待 Work
+    manualWaitSec: 8
+    assertPrompt: '"Your Work & Income" is visible.'
+  - section: Work
+    type: verify
+    label: UI Work PRD
+    assertPrompt: >
+      STRICT: warm off-white background #F4F3EF, primary blue #1D4ED8 buttons with about 6dp corners (not pills), title/amount near #171717, secondary #6B7280. Fail if yellow notes, retro paper, black gallery, or cream sticker theme.
+  - section: Work
+    type: action
+    action: tap-text
+    label: Salaried
+    scrollBeforeTap: false
+    assertPrompt: Salaried
+    locatePrompt: >
+      The "Salaried" employment option. Do NOT tap Self-employed, Business, or Other.
+  - section: Work
+    type: action
+    action: fill-input
+    label: Monthly Income
+    inputFieldLabel: Monthly Income
+    inputValue: "50000"
+    autoDismissKeyboard: true
+  - section: Work
+    type: action
+    action: tap-text
+    label: Continue
+    scrollBeforeTap: true
+    assertPrompt: Continue
+    locatePrompt: The "Continue" button on Your Work & Income. Do NOT tap back.

@@ -1,0 +1,59 @@
+# 还款流程 — 对齐 Appium run_go_to_repay_flow
+# Repay 后可能弹出 Enable Auto-disburse → 点 Enable 再进入支付
+page:
+  id: repay
+  title: Repay
+  skipNavigation: true
+  navigationPrompt: ""
+  blurTarget: the home page header
+  aiContext: >
+    Repayment flow on H5 home. User has active loan. Tap Repay Loan card, verify
+    Repayment Details page, tap bottom Repay button. After Repay, an optional popup
+    "Enable Auto-disburse on schedule" may appear — tap dark "Enable Auto-disburse"
+    (not Cancel, not the agreement link). Then payment chooser or confirmation may show.
+    Dismiss optional marketing popups first. Ignore green vConsole.
+  bottomFields: []
+
+dropdowns: []
+inputs: []
+
+flow:
+  - section: Home
+    type: action
+    action: dismiss-home-popup
+    label: 关闭可选弹窗
+  - section: Repay List
+    type: verify
+    label: Repay Loan 可见
+    assertPrompt: >
+      "Repay Loan" text or repay loan card is visible on the home page
+  - section: Repay List
+    type: action
+    action: tap-repay-loan
+    label: 点击 Repay Loan
+  - section: Repayment Details
+    type: verify
+    label: 进入还款详情
+    assertPrompt: >
+      "Repayment Details" page is visible with repayment amount and "Repay" button at bottom
+  - section: Repayment Details
+    type: action
+    action: tap-repay
+    label: 点击 Repay 还款
+  - section: Payment
+    type: action
+    action: handle-auto-disburse-popup
+    label: Enable Auto-disburse 弹窗
+  - section: Payment
+    type: verify
+    label: 还款操作已触发
+    retry: 3
+    retryDelayMs: 1000
+    assertPrompt: >
+      After tapping Repay (and Enable Auto-disburse if that popup was shown):
+      payment method selection, UPI/app chooser, browser chooser, repayment confirmation,
+      OR the Enable Auto-disburse popup has been dismissed and the page progressed —
+      NOT still stuck only on Repayment Details with the bottom Repay button as the only CTA
+
+submit:
+  enabled: false

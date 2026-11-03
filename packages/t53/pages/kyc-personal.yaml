@@ -1,0 +1,64 @@
+# T53 KYC Step 1 — PRD 十八 / 60.5
+page:
+  id: aside-t53-kyc-personal
+  title: About You
+  isNative: true
+  skipNavigation: true
+  navigationPrompt: ""
+  blurTarget: the title About You
+  aiContext: >
+    Your Verification, Step 1 of 6. About You. Let's start with some basic details.
+    Fields Full Name, Date of Birth, Gender, Purpose of Loan (Personal, Medical, Education, Household, Other).
+    Button Continue.
+  bottomFields: [Continue]
+dropdowns: []
+inputs:
+  - label: Full Name
+    validValue: Ravi Kumar
+    skipEmptyBlurTest: true
+    skipInvalidBlurTest: true
+    skipInputTests: true
+flow:
+  - section: KYC
+    type: action
+    action: wait-page
+    label: 等待 About You
+    manualWaitSec: 12
+    assertPrompt: >
+      "About You" and "Let's start with some basic details." are visible,
+      with "Step 1 of 6" or "Your Verification".
+  - section: KYC
+    type: verify
+    label: Step 1 字段
+    assertPrompt: >
+      Fields "Full Name", "Date of Birth", "Gender", and "Purpose of Loan" are visible.
+  - section: KYC
+    type: verify
+    label: UI About You PRD
+    assertPrompt: >
+      STRICT: warm off-white background #F4F3EF, primary blue #1D4ED8 buttons with about 6dp corners (not pills), title/amount near #171717, secondary #6B7280. Fail if yellow notes, retro paper, black gallery, or cream sticker theme.
+  - section: KYC
+    type: action
+    action: fill-input
+    label: Full Name
+    inputFieldLabel: Full Name
+    inputValue: Ravi Kumar
+    autoDismissKeyboard: true
+  - section: KYC
+    type: action
+    action: tap-text
+    label: Purpose Personal
+    scrollBeforeTap: false
+    assertPrompt: Personal
+    locatePrompt: >
+      Open "Purpose of Loan" if needed and choose "Personal".
+      Do NOT tap Medical, Education, Household, Other, or Continue.
+  - section: KYC
+    type: action
+    action: tap-text
+    label: Continue
+    scrollBeforeTap: true
+    assertPrompt: Continue
+    locatePrompt: >
+      The primary "Continue" button at the bottom of About You.
+      Do NOT tap back.

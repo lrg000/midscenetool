@@ -1,0 +1,31 @@
+# T53 Personal Information — PRD 四十三
+page:
+  id: aside-t53-personal
+  title: Personal Information
+  isNative: true
+  skipNavigation: true
+  navigationPrompt: ""
+  blurTarget: Personal Information
+  aiContext: Full Name, Mobile Number, Email, optional Edit.
+  bottomFields: []
+dropdowns: []
+inputs: []
+flow:
+  - section: Profile
+    type: action
+    action: tap-text
+    label: Personal Information
+    scrollBeforeTap: false
+    assertPrompt: Personal Information
+    locatePrompt: >
+      The "Personal Information" row on My Account. Do NOT tap SMS Permission or Logout.
+  - section: Profile
+    type: verify
+    label: 资料字段
+    assertPrompt: >
+      Shows "Full Name", "Mobile Number", and "Email".
+      "Ravi Kumar" may be shown if KYC name was saved.
+  - section: Profile
+    type: action
+    action: android-back
+    label: 返回 My

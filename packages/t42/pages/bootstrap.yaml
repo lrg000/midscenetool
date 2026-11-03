@@ -1,0 +1,54 @@
+# T42 A 面 — 冷启动 / 协议（对齐 Figma「协议」「LOGO」）
+page:
+  id: aside-t42-bootstrap
+  title: App Bootstrap
+  isNative: true
+  skipNavigation: true
+  navigationPrompt: ""
+  blurTarget: the app screen
+  aiContext: >
+    T42.RajWise Android cold start (A-side shell, not H5). After splash logo,
+    a centered "Welcome to RajWise" agreement dialog may show with primary
+    "Accept & Continue" or "Agree & Continue" and outlined "Decline".
+    System permission dialogs may appear before/after. Ignore green vConsole.
+  bottomFields: []
+
+dropdowns: []
+inputs: []
+
+flow:
+  - section: Cold Start
+    type: action
+    action: wait-app-ready
+    label: 等待 App 主界面就绪
+    assertPrompt: >
+      Has the T42/RajWise app finished pure splash/blank loading and is NOW showing ANY of:
+      (1) system permission Allow dialog,
+      (2) "Welcome to RajWise" agreement with Accept & Continue or Agree & Continue,
+      (3) Welcome login with Login with Mobile Number / Google / Truecaller?
+      Answer false ONLY for pure logo splash or endless spinner. Answer only true or false.
+
+  - section: Permissions
+    type: action
+    action: handle-permissions
+    label: 系统权限弹窗
+
+  - section: Onboarding
+    type: action
+    action: tap-text
+    label: Accept & Continue
+    assertPrompt: Accept & Continue
+    optional: true
+    locatePrompt: >
+      The solid blue primary button on the centered "Welcome to RajWise" agreement dialog
+      whose text is "Accept & Continue" OR "Agree & Continue"
+      (NOT Decline, NOT the X close icon, NOT Terms/Privacy/Permissions text links,
+      NOT the checkbox under the dialog on the Welcome screen behind the modal)
+
+  - section: Onboarding
+    type: action
+    action: handle-permissions
+    label: 协议后系统权限
+
+submit:
+  enabled: false

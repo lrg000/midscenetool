@@ -1,0 +1,52 @@
+# KYC Silent Liveness — 对齐 Appium fill_kyc_silent_liveness
+# 用例设计：引导页 → Next → 相机权限 → 自拍预览 → Submit
+page:
+  id: kyc-liveness
+  title: Upload your selfie
+  route: face
+  skipNavigation: true
+  navigationPrompt: Navigate to KYC "Upload your selfie" silent liveness page
+  blurTarget: the KYC header or "Upload your selfie" title area
+  aiContext: >
+    KYC silent liveness selfie on Android. On entry, an optional "10 MINUTES LEFT" modal
+    with red "Complete Now" may appear — tap Complete Now first if shown (not required),
+    do not confuse it with the black Next. Guide page with Next, then native camera capture,
+    then preview with Submit/Retake. Handle camera permission Allow dialogs.
+  bottomFields: []
+
+dropdowns: []
+inputs: []
+
+flow:
+  - section: Guide
+    type: verify
+    label: Upload your selfie 引导页
+    assertPrompt: >
+      The "Upload your selfie" guide page is visible with Next button at the bottom
+  - section: Guide
+    type: action
+    action: tap-next
+    label: 进入自拍采集
+    assertPrompt: The "Next" button on Upload your selfie guide page
+  - section: Camera
+    type: action
+    action: tap-allow
+    label: 相机权限 Allow
+  - section: Capture
+    type: action
+    action: kyc-selfie-capture
+    label: 静默活体自拍
+    manualWaitSec: 45
+  - section: Preview
+    type: action
+    action: tap-submit
+    label: 自拍预览 Submit
+  - section: Done
+    type: verify
+    label: 活体检测完成
+    assertPrompt: >
+      The "Upload your selfie" guide, camera capture, and selfie preview are no longer the
+      primary screen — the app has left this liveness page (progress-bar labels do not count)
+
+submit:
+  enabled: false

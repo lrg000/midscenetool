@@ -1,0 +1,110 @@
+# Bank information — 对齐 Appium fill_kyc_bank_account_form
+# 实机：IFSC 短码/符号不报红字；SBIN 前缀为橙色放款失败警告。账号合法断言勿把确认栏红字算进来。
+page:
+  id: bank-info
+  title: Bank information
+  route: bank
+  skipNavigation: true
+  navigationPrompt: Navigate to the "Bank information" or "Bank Account" KYC page
+  blurTarget: the "Bank information" or "Bank Account" title in the top header bar
+  aiContext: >
+    Testing Bank information bind-card page on Android. Fields: IFSC code,
+    Account No., Account No. confirmation. On entry (or after Next), an optional
+    "Only 10 Slots Left Today" modal with red "Continue Now" and Daily Quota bar
+    may appear — tap Continue Now first if shown (not required), not the black Next.
+    IFSC incomplete values may show orange disbursement warning instead of red error.
+    Must check authorization checkbox at the bottom before Next.
+  bottomFields:
+    - Account No. confirmation
+
+dropdowns: []
+
+inputs:
+  - label: IFSC code
+    invalidValues:
+      - "123"
+      - "SBIN"
+      - "!!!!!!!!!"
+    validValues:
+      - "SBIN0010913"
+      - "HDFC0000001"
+    skipInvalidBlurTest: false
+    locatePrompt: >
+      The "IFSC code" text input — the FIRST field on Bank information
+      (NOT Account No., NOT Account No. confirmation). Tap only the IFSC value area.
+    invalidErrorPrompt: >
+      Look ONLY at the IFSC code row. Ignore Account No. red hints below.
+      After blur, IFSC is not accepted as a complete valid 11-character code:
+      orange/amber warning like "*Disbursements to this bank often fail" counts;
+      red invalid-IFSC text counts; an incomplete typed value still showing in IFSC
+      without a valid-bank success state also counts. Do NOT require red text.
+
+  - label: Account No.
+    invalidValues:
+      - "12"
+      - "123"
+    # 只留一项合法账号，须与 confirmation 一致（两项合法值会留下不一致导致确认栏报错）
+    validValues:
+      - "987654321012"
+    skipInvalidBlurTest: false
+    locatePrompt: >
+      The "Account No." text input — the SECOND field on Bank information,
+      labeled Account No. (NOT IFSC code, NOT Account No. confirmation).
+      Tap only this field's value area.
+    validAssertPrompt: >
+      Look ONLY at the Account No. row, not Account No. confirmation below.
+      Account No. contains about 9-18 digits (e.g. 987654321012) and THIS row
+      does NOT show red "Please enter 9-18 digit account number".
+      Red text under Account No. confirmation must be ignored.
+
+  - label: Account No. confirmation
+    invalidValues:
+      - "9999999999"
+      - "12"
+    validValues:
+      - "987654321012"
+    skipInvalidBlurTest: false
+    locatePrompt: >
+      The "Account No. confirmation" text input — the THIRD field on Bank information
+      (NOT IFSC, NOT the Account No. field above it). Tap only this confirmation value area.
+    validAssertPrompt: >
+      Look ONLY at Account No. confirmation. It contains the same digits as Account No.
+      (987654321012) and THIS row does NOT show red "The account numbers entered twice
+      are inconsistent" or "Please enter 9-18 digit account number".
+
+checkboxes:
+  - label: I understand that if the provided information is incorrect
+    locatePrompt: >
+      The square checkbox at the bottom of Bank information next to the authorization
+      disclaimer (text like "I understand that if the provided information is incorrect"
+      or "amount will be credited to this account" or "account belongs solely to me").
+      Tap ONLY the empty square — not Next, not vConsole.
+
+flow:
+  - section: Page
+    type: verify
+    label: Bank information 页面
+    assertPrompt: >
+      The "Bank information" or "Bank Account" page title is visible with IFSC input field
+  - section: Bank Account
+    type: input
+    label: IFSC code
+  - section: Bank Account
+    type: input
+    label: Account No.
+  - section: Bank Account
+    type: input
+    label: Account No. confirmation
+  - section: Bank Account
+    type: checkbox
+    label: I understand that if the provided information is incorrect
+
+submit:
+  enabled: true
+  buttonPrompt: The "Next" button at the bottom of the Bank information page
+  stayOnPagePrompt: >
+    Is the "Bank information" / "Bank Account" form with IFSC still the primary editable screen?
+    Progress-bar labels alone do not count. Answer only true or false.
+  nextPageAssert: >
+    The Bank information form is no longer the primary editable screen —
+    the app has left this page (progress-bar labels do not count as still being here)

@@ -1,0 +1,163 @@
+# T59 My — PRD 十 / AC-12
+page:
+  id: aside-t59-my
+  title: My
+  isNative: true
+  skipNavigation: true
+  navigationPrompt: ""
+  blurTarget: My
+  aiContext: >
+    My: avatar, name, phone. Rows Personal Information, Google Account, SMS Permission,
+    Help & Support, Terms of Service, Privacy Policy, Permissions Declaration, Log Out.
+  bottomFields: []
+
+dropdowns: []
+inputs: []
+
+flow:
+  - section: My
+    type: verify
+    label: My 列表
+    retry: 1
+    assertPrompt: >
+      My page shows account header (avatar/name/phone) and rows among:
+      Personal Information, Google Account, SMS Permission, Help & Support,
+      Terms of Service, Privacy Policy, Permissions Declaration, and Log Out.
+
+  - section: My
+    type: verify
+    label: UI My PRD
+    assertPrompt: >
+      STRICT: grouped settings list on light #F7F7FA, white rows, chevrons,
+      Log Out visually distinct (not same as Terms). Brand purple accents #5B35D5 acceptable.
+      Fail if T42 red Delete Account-only profile.
+
+  - section: My
+    type: action
+    action: tap-text
+    label: Personal Information
+    optional: true
+    scrollBeforeTap: true
+    assertPrompt: Personal Information
+    locatePrompt: >
+      Settings row "Personal Information". Do NOT tap Log Out.
+
+  - section: My
+    type: verify
+    label: 个人信息含手机号
+    optional: true
+    assertPrompt: >
+      Personal Information (or account header) shows a +91 / Indian mobile number
+      consistent with the logged-in account. If the row did not open, the My header already
+      showing the phone is enough to pass.
+
+  - section: My
+    type: action
+    action: android-back
+    label: 返回 My
+    optional: true
+
+  - section: My
+    type: action
+    action: tap-text
+    label: Google Account
+    optional: true
+    scrollBeforeTap: true
+    assertPrompt: Google Account
+    locatePrompt: >
+      Settings row "Google Account". Do NOT tap Log Out.
+
+  - section: My
+    type: verify
+    label: Google 绑定状态
+    optional: true
+    assertPrompt: >
+      Google Account status is "Connected" or "Not Connected" (Connect Google if not connected).
+      If still on My without opening the row, a visible Connected/Not Connected label also passes.
+
+  - section: My
+    type: action
+    action: android-back
+    label: 返回 My（Google）
+    optional: true
+
+  - section: My
+    type: action
+    action: tap-text
+    label: SMS Permission
+    optional: true
+    scrollBeforeTap: true
+    assertPrompt: SMS Permission
+    locatePrompt: >
+      Settings row "SMS Permission". Do NOT tap Log Out.
+
+  - section: My
+    type: verify
+    label: 短信权限说明
+    optional: true
+    assertPrompt: >
+      SMS Permission explains status/purpose and does NOT claim the app auto-reads bank SMS
+      to create bills. Back to list is OK.
+
+  - section: My
+    type: action
+    action: android-back
+    label: 返回 My（SMS）
+    optional: true
+
+  - section: My
+    type: action
+    action: tap-text
+    label: Help & Support
+    scrollBeforeTap: true
+    assertPrompt: Help & Support
+    locatePrompt: >
+      Settings row "Help & Support". Do NOT tap Log Out.
+
+  - section: My
+    type: verify
+    label: Help 文案与邮箱
+    assertPrompt: >
+      Page title "Help & Support".
+      Copy includes "Need help managing your cards or bills? Contact our support team."
+      Support email "support@viramgamcardvista.com" is visible.
+
+  - section: My
+    type: action
+    action: android-back
+    label: 从 Help 返回
+    optional: true
+
+  - section: My
+    type: action
+    action: tap-text
+    label: Log Out
+    scrollBeforeTap: true
+    assertPrompt: Log Out
+    locatePrompt: >
+      The "Log Out" row at the bottom of My. Do NOT tap Terms of Service or Help & Support.
+
+  - section: Logout
+    type: verify
+    label: 退出确认弹窗
+    assertPrompt: >
+      Dialog title "Log out?" with buttons "Cancel" and "Log Out".
+
+  - section: Logout
+    type: action
+    action: tap-text
+    label: Cancel
+    scrollBeforeTap: false
+    noScrollRetry: true
+    assertPrompt: Cancel
+    locatePrompt: >
+      On the "Log out?" dialog, tap "Cancel". Do NOT tap Log Out.
+
+  - section: Logout
+    type: verify
+    label: Cancel 后仍在 My
+    assertPrompt: >
+      Still on My (Log Out row visible). Login Truecaller screen is NOT showing.
+
+submit:
+  enabled: false

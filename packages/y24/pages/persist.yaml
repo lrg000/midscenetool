@@ -1,0 +1,131 @@
+# Y24 — 持久化 + 删除普通相册（PRD 十九、TC-024、013、025）
+page:
+  id: aside-y24-persist
+  title: Persist Delete Album
+  isNative: true
+  skipNavigation: true
+  navigationPrompt: ""
+  blurTarget: the Albums title
+  aiContext: >
+    After force-stop relaunch, Holiday album and photos remain. Then Delete Album removes album only.
+  bottomFields: []
+
+dropdowns: []
+inputs: []
+
+flow:
+  - section: Persist
+    type: action
+    action: force-stop-app
+    label: TC-024 关闭 App
+    assertPrompt: com.glimmer.frameexitpic.app
+
+  - section: Persist
+    type: action
+    action: relaunch-app
+    label: TC-024 重开 App
+    assertPrompt: com.glimmer.frameexitpic.app
+
+  - section: Persist
+    type: action
+    action: wait-app-ready
+    label: TC-024 等待就绪
+    manualWaitSec: 15
+    assertPrompt: >
+      Glimmer Frame loaded to Photos or Albums after relaunch.
+
+  - section: Persist
+    type: action
+    action: tap-text
+    label: 进 Albums
+    assertPrompt: Albums
+    scrollBeforeTap: false
+    locatePrompt: >
+      Bottom "Albums" tab.
+
+  - section: Persist
+    type: verify
+    label: TC-024 相册仍在
+    retry: 2
+    assertPrompt: >
+      PRD TC-024: Albums still lists previously created "Holiday" (and photos association intact).
+
+  - section: Persist
+    type: action
+    action: tap-text
+    label: 打开 Holiday 核验图片
+    assertPrompt: Holiday
+    scrollBeforeTap: false
+    locatePrompt: >
+      Album "Holiday" card.
+
+  - section: Persist
+    type: verify
+    label: TC-024 相册内图片仍在
+    retry: 2
+    assertPrompt: >
+      PRD TC-024: Holiday album still shows previously added photo thumbnail(s).
+
+  # TC-013 / TC-025 Delete Album
+  - section: DeleteAlbum
+    type: action
+    action: tap-text
+    label: 打开 Holiday 菜单
+    assertPrompt: overflow
+    scrollBeforeTap: false
+    locatePrompt: >
+      Top-right "..." on Holiday album detail.
+
+  - section: DeleteAlbum
+    type: action
+    action: tap-text
+    label: Delete Album
+    assertPrompt: Delete Album
+    scrollBeforeTap: false
+    locatePrompt: >
+      "Delete Album" menu item.
+
+  - section: DeleteAlbum
+    type: action
+    action: tap-text
+    label: 确认 Delete Album
+    assertPrompt: Delete
+    scrollBeforeTap: false
+    optional: true
+    locatePrompt: >
+      Confirm Delete on album delete dialog (NOT Cancel).
+
+  - section: DeleteAlbum
+    type: action
+    action: wait-page
+    label: 删除后 Albums
+    manualWaitSec: 8
+    assertPrompt: >
+      Albums list without Holiday.
+
+  - section: DeleteAlbum
+    type: verify
+    label: TC-013/025 相册已删
+    retry: 2
+    assertPrompt: >
+      PRD TC-013 and TC-025: Holiday album removed from App Albums list.
+
+  - section: DeleteAlbum
+    type: action
+    action: tap-text
+    label: 回 Photos 核验图仍可在库
+    assertPrompt: Photos
+    scrollBeforeTap: false
+    locatePrompt: >
+      Bottom "Photos" tab.
+
+  - section: DeleteAlbum
+    type: verify
+    label: TC-013/025 图片未随相册误删
+    retry: 2
+    assertPrompt: >
+      PRD TC-013/025: Photos home still shows photo grid (album delete must not wipe library photos).
+      Soft-pass if Photos still has images; fail only if app wiped all photos solely due to Delete Album.
+
+submit:
+  enabled: false

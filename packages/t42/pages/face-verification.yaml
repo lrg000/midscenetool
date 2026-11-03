@@ -1,0 +1,65 @@
+# T42 — Face Verification（Figma 验证3/4：Take a picture → Verify Face）
+page:
+  id: aside-t42-face-verification
+  title: Face Verification
+  isNative: true
+  skipNavigation: true
+  navigationPrompt: ""
+  blurTarget: the "Face Verification" title
+  aiContext: >
+    T42 Face Verification (Figma). Title Face Verification, "Take a Selfie",
+    instruction about well-lit area. Button "Take a picture" then later "Verify Face".
+    Camera permission may appear. Manual selfie capture allowed.
+  bottomFields:
+    - Take a picture
+    - Verify Face
+
+dropdowns: []
+inputs: []
+
+flow:
+  - section: Face
+    type: verify
+    label: Face Verification 文案对齐 Figma
+    retry: 3
+    assertPrompt: >
+      Page title is "Face Verification". Heading "Take a Selfie" and instruction about
+      face clearly visible / well-lit / remove glasses or hats are visible.
+      A primary button "Take a picture" OR "Verify Face" is at the bottom.
+
+  - section: Face
+    type: action
+    action: tap-text
+    label: Take a picture
+    optional: true
+    assertPrompt: Take a picture
+    locatePrompt: >
+      The solid blue button "Take a picture" at the bottom of Face Verification
+      (not Verify Face yet if both not shown)
+
+  - section: Face
+    type: action
+    action: handle-permissions
+    label: 相机权限
+
+  - section: Face
+    type: action
+    action: kyc-manual-until
+    label: 等待自拍/人脸就绪
+    manualWaitSec: 120
+    assertPrompt: >
+      Face Verification shows a captured selfie preview and/or a blue "Verify Face" button
+      is visible and tappable (or verification already completed)
+
+  - section: Face
+    type: action
+    action: tap-text
+    label: Verify Face
+    optional: true
+    assertPrompt: Verify Face
+    locatePrompt: >
+      The solid blue "Verify Face" button at the bottom of Face Verification
+      (not Take a picture, not back)
+
+submit:
+  enabled: false

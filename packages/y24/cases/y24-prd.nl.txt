@@ -1,0 +1,94 @@
+# ============================================================
+# Y24 Glimmer Frame A 面 — 自然语言测试用例（云效 PRD 全量映射）
+# ============================================================
+#
+# 云效: Y24面包开发 | WIFO-1958 | workItemId: e03110351ae85d71af463beadd
+# URL: https://devops.aliyun.com/projex/project/f56f3edd04756632f67acd5450/req#openWorkitemIdentifier=e03110351ae85d71af463beadd
+# androidPackage: com.glimmer.frameexitpic.app（实机；PRD 原文曾断字 frameexi pic）
+# Figma（PRD UI 链接）: Y17.Clear-Frame / 2QE9b9dA…
+#
+# ============================================================
+
+## 包元信息
+
+| 字段 | 值 |
+|------|-----|
+| packageId | y24 |
+| appLabel | Glimmer Frame |
+| androidPackage | com.glimmer.frameexitpic.app |
+| 包类别 | 图片管理（PRD 产品文档；抬头「图片编辑」与正文「不包含图片编辑」冲突时以正文为准） |
+| 自动化 | npm run test:aside:y24 |
+| 云效状态 | 测试中 |
+
+## PRD 验收标准 → 自动化覆盖表
+
+| TC | PRD 要求 | 自动化 | 说明 |
+|----|----------|--------|------|
+| TC-001 | 首次打开进 Photos，无登录 | photos | |
+| TC-002 | 3 列 Grid 展示本地图 | photos | 有图时 |
+| TC-003 | 空态 No Photos / Add photos… | photos | 与 TC-002 二选一软验（设备常有图） |
+| TC-004 | + 选一张图加入首页 | photos | seed + pick-gallery-image |
+| TC-005 | 一次选多张 | photos | 再导入一张近似；系统多选视机型 |
+| TC-006 | 打开选择器后取消 | photos | android-back |
+| TC-007 | 点图进全屏查看 | viewer | |
+| TC-008 | ⋯ → Download → Photo saved. | viewer | |
+| TC-009 | ⋯ → Delete → Delete this photo? → Delete | viewer | 先 Cancel 再 Delete |
+| TC-010 | Albums + → Holiday → Create Album | albums | |
+| TC-011 | 空相册空状态 | albums | |
+| TC-012 | Add Photos 加入相册 | albums | |
+| TC-013 | Delete Album，不删系统图 | albums | |
+| TC-014 | Download All → Photos saved. | albums | |
+| TC-015 | Protect this album + 数字密码 + 锁标 | lock | |
+| TC-016 | 正确密码进入 | lock | 密码 1234 |
+| TC-017 | 错误密码 → Incorrect password. | lock | |
+| TC-018 | 加密相册 Delete Album | lock | |
+| TC-019 | 空名称 → Please enter album name. | albums | |
+| TC-020 | >30 字 → Maximum 30 characters. | albums | |
+| TC-021 | 非 4–6 位数字 → Password must be 4-6 digits. | lock | |
+| TC-022 | Save failed. | — | 需注入异常 |
+| TC-023 | Photo access is required. / Allow Access | — | 需拒权专项 |
+| TC-024 | 重启后相册/图仍在 | persist | |
+| TC-025 | 删相册后图仍保留（App/系统） | albums | 与 TC-013 同验 |
+| TC-026 | 卸载清 App 数据 | ac026-uninstall | 专项 |
+| TC-027~030 | UI/深色/操作 | photos+… | STRICT soft |
+
+## UI 规范（PRD 五~七）
+
+| 项 | PRD |
+|----|-----|
+| 风格 | Dark Gallery / Immersive；黑底；非黄便签卡 |
+| 背景 | #0B0B0D；次级 #18181B |
+| 主色紫 | #8B5CF6 |
+| 主/次文字 | #FFFFFF / #A1A1AA |
+| 删除 | #F43F5E |
+| Header | 56dp；标题 Photos/Albums 24sp |
+| Photos Grid | 3 列，方图，圆角 8dp |
+| 底栏 | Photos / Albums |
+| 空态 | No Photos / Add photos from your device. / Add Photos |
+| New Album | Album name≤30；Protect this album；Create Album |
+| 密码 | 4–6 位数字；Private Album / Enter password |
+
+## 测试流程摘要
+
+1. **photos**：就绪 → TC-001/UI → Grid/空态 → seed → TC-006 取消 → TC-004/005 导入  
+2. **viewer**：全屏 → Download → Delete（Cancel+Delete）  
+3. **albums**：校验空名/超长 → 建 Holiday → 空态 → Add Photos → Download All →（稍后删）  
+4. **lock**：加密相册 + 错密/对密 + 删加密相册  
+5. **persist**：force-stop 后数据仍在；再 Delete Album（TC-013/025）  
+6. **uninstall**：`Y24_APK_PATH` + `Y24_RUN_UNINSTALL=1`
+
+## PRD 明确不支持（不测）
+
+登录 / 云同步 / 图片编辑 / AI / 搜索 / 标签 / 分类 / 社交 / 备份 / 视频 / 多账号 / 改密 / 批量删相册
+
+## 实机差异
+
+- 包名以实机 `com.glimmer.frameexitpic.app` 为准  
+- 附件 `key_FwNW.jks` 仅签名用，**密码不写入 YAML**  
+- 抬头「图片编辑」与产品文档「不包含图片编辑」冲突 → **按产品文档**
+
+## 产物
+
+- packages/y24/pages/photos.yaml, viewer.yaml, albums.yaml, lock.yaml, persist.yaml, ac026-uninstall.yaml
+- packages/y24/fixtures/y24-test-photo.png
+- tests/aside/y24.test.ts, y24-uninstall.test.ts

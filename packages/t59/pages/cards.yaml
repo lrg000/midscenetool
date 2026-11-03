@@ -1,0 +1,209 @@
+# T59 Cards — PRD 六 / AC-06 / AC-10
+page:
+  id: aside-t59-cards
+  title: My Cards
+  isNative: true
+  skipNavigation: true
+  navigationPrompt: ""
+  blurTarget: My Cards
+  aiContext: >
+    Cards list titled My Cards with + Add Card. Form: Card Name, Last 4 Digits,
+    Credit Limit, Payment Due Date, Save Card. Toast Card added successfully.
+    Detail: Edit Card, Add Bill, View Activity, Delete Card.
+  bottomFields:
+    - Save Card
+
+dropdowns: []
+inputs:
+  - label: Card Name
+    validValue: Midscene HDFC Test
+    skipEmptyBlurTest: true
+    skipInvalidBlurTest: true
+    skipInputTests: true
+  - label: Last 4 Digits
+    validValue: "4242"
+    skipEmptyBlurTest: true
+    skipInvalidBlurTest: true
+    skipInputTests: true
+  - label: Credit Limit
+    validValue: "100000"
+    skipEmptyBlurTest: true
+    skipInvalidBlurTest: true
+    skipInputTests: true
+
+flow:
+  - section: Cards
+    type: verify
+    label: Cards 列表
+    retry: 1
+    assertPrompt: >
+      The Cards screen shows "My Cards" and an add control ("+" or "+ Add Card" or "Add Card").
+      Bottom tab Cards is selected. Not login.
+
+  - section: Cards
+    type: verify
+    label: UI Cards PRD
+    assertPrompt: >
+      STRICT: light #F7F7FA background, white card tiles, brand purple #5B35D5 on add/FAB or selected tab.
+      Fail if loan Get Cash Now home or RajWise.
+
+  - section: Add Card
+    type: action
+    action: tap-text
+    label: Add Card
+    scrollBeforeTap: true
+    assertPrompt: Add Card
+    locatePrompt: >
+      The add-card control: "+" in the top-right, or "+ Add Card", or "Add Card", or "Add Your First Card".
+      Do NOT tap a specific existing bank card row, Home, Activity, or My.
+
+  - section: Add Card
+    type: action
+    action: wait-page
+    label: 等待新增卡表单
+    manualWaitSec: 8
+    assertPrompt: >
+      Add-card form is visible with "Card Name" and "Save Card" (and Credit Limit / Last 4 Digits).
+
+  - section: Add Card
+    type: action
+    action: tap-text
+    label: 空表 Save Card
+    scrollBeforeTap: true
+    assertPrompt: Save Card
+    locatePrompt: >
+      The primary "Save Card" button on the add-card form, while required fields are still empty.
+      Do NOT tap back.
+
+  - section: Add Card
+    type: verify
+    label: 必填未填不可保存
+    assertPrompt: >
+      Still on the add-card form (Save Card visible). A field-level error is shown under a required field
+      (Card Name and/or Credit Limit), OR Save did nothing and no success toast "Card added successfully".
+      Did not return to the My Cards list as a successful save of an empty card.
+
+  - section: Add Card
+    type: action
+    action: fill-input
+    label: Card Name
+    inputFieldLabel: Card Name
+    inputValue: Midscene HDFC Test
+    autoDismissKeyboard: true
+
+  - section: Add Card
+    type: action
+    action: fill-input
+    label: Last 4 Digits
+    optional: true
+    inputFieldLabel: Last 4 Digits
+    inputValue: "4242"
+    autoDismissKeyboard: true
+
+  - section: Add Card
+    type: action
+    action: fill-input
+    label: Credit Limit
+    inputFieldLabel: Credit Limit
+    inputValue: "100000"
+    autoDismissKeyboard: true
+
+  - section: Add Card
+    type: action
+    action: tap-text
+    label: Payment Due Date
+    optional: true
+    scrollBeforeTap: true
+    assertPrompt: Payment Due Date
+    locatePrompt: >
+      The "Payment Due Date" field on the add-card form (day-of-month picker).
+      Do NOT tap Save Card yet.
+
+  - section: Add Card
+    type: action
+    action: tap-text
+    label: 选择到期日 18
+    optional: true
+    scrollBeforeTap: false
+    noScrollRetry: true
+    assertPrompt: "18"
+    locatePrompt: >
+      If a day picker is open, tap day 18. If a dialog has OK/Done, tap that after.
+      Do NOT tap Save Card yet. If no picker opened, skip.
+
+  - section: Add Card
+    type: action
+    action: tap-text
+    label: Save Card
+    scrollBeforeTap: true
+    assertPrompt: Save Card
+    locatePrompt: >
+      The primary "Save Card" button after Card Name and Credit Limit are filled.
+      Do NOT tap back or Delete.
+
+  - section: Add Card
+    type: verify
+    label: 保存成功
+    retry: 2
+    assertPrompt: >
+      A success toast "Card added successfully" may appear (can be gone).
+      My Cards list (or Home) now includes a card named "Midscene HDFC Test"
+      (or HDFC Credit Card if the app truncated). Credit Limit reflects the saved card.
+      Not still a blank add-card form with empty Card Name.
+
+  - section: Detail
+    type: action
+    action: tap-text
+    label: 打开测试卡详情
+    scrollBeforeTap: true
+    assertPrompt: Midscene HDFC Test
+    locatePrompt: >
+      The card row or tile titled "Midscene HDFC Test" on My Cards.
+      Do NOT tap Add Card or other bank cards if this test card is visible.
+
+  - section: Detail
+    type: verify
+    label: 卡详情字段
+    retry: 1
+    assertPrompt: >
+      Card detail shows Card Name "Midscene HDFC Test", Credit Limit, Outstanding Amount
+      or Available Credit, and Monthly Due Date or Payment Due Date.
+      Actions include Edit Card, Add Bill, and Delete Card (View Activity optional).
+
+  - section: Detail
+    type: action
+    action: tap-text
+    label: Edit Card
+    optional: true
+    scrollBeforeTap: true
+    assertPrompt: Edit Card
+    locatePrompt: >
+      The "Edit Card" control on card detail. Do NOT tap Delete Card or Add Bill.
+
+  - section: Detail
+    type: verify
+    label: 编辑页可改字段
+    optional: true
+    assertPrompt: >
+      If Edit Card opened: fields for name, last 4, limit, and due day are editable.
+      If still on detail without a separate edit page, pass.
+
+  - section: Detail
+    type: action
+    action: android-back
+    label: 从编辑返回详情
+    optional: true
+
+  - section: Detail
+    type: action
+    action: tap-text
+    label: 底栏 Activity
+    scrollBeforeTap: false
+    noScrollRetry: true
+    assertPrompt: Activity
+    locatePrompt: >
+      The bottom navigation tab labeled "Activity".
+      Do NOT tap Home, Cards, or My.
+
+submit:
+  enabled: false

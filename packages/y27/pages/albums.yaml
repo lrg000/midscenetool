@@ -1,0 +1,211 @@
+# Y27 — Albums 创建/加图/下载（PRD 十五~二十、二十四~二十五、33.5~33.6、33.8）
+page:
+  id: aside-y27-albums
+  title: Albums
+  isNative: true
+  skipNavigation: true
+  navigationPrompt: ""
+  blurTarget: the Albums or New Album title
+  aiContext: >
+    Top Photos|Albums switch. Album cards; + New Album sheet Album name / Cancel Create.
+    Detail: + Add Photos; ••• Rename/Lock/Download All/Delete Album.
+    Delete album: Photos inside will not be deleted.
+  bottomFields:
+    - Create
+
+dropdowns: []
+
+inputs:
+  - label: Album name
+    validValue: Travel
+    skipEmptyBlurTest: true
+    skipInvalidBlurTest: true
+    skipValidBlurTest: true
+    skipScrollBeforeInput: true
+    skipBlurAfterInput: true
+    autoDismissKeyboard: false
+    locatePrompt: >
+      Album name field in New Album bottom sheet.
+
+flow:
+  - section: Nav
+    type: action
+    action: tap-text
+    label: 顶栏 Albums
+    assertPrompt: Albums
+    scrollBeforeTap: false
+    locatePrompt: >
+      Top segment "Albums" (beside Photos). Do NOT tap bottom system nav.
+
+  - section: Nav
+    type: action
+    action: wait-page
+    label: 等待 Albums
+    manualWaitSec: 8
+    assertPrompt: >
+      Albums page with album cards and/or "+ New Album".
+
+  - section: Validate
+    type: action
+    action: tap-text
+    label: + New Album
+    assertPrompt: New Album
+    scrollBeforeTap: false
+    locatePrompt: >
+      "+ New Album" or header "+" to create album. Do NOT tap album covers.
+
+  - section: Validate
+    type: action
+    action: wait-page
+    label: 等待 New Album Sheet
+    manualWaitSec: 6
+    assertPrompt: >
+      New Album sheet with Album name field and Create / Cancel.
+
+  - section: Validate
+    type: action
+    action: dismiss-keyboard
+    label: 收键盘
+    optional: true
+
+  - section: Validate
+    type: action
+    action: tap-text
+    label: 空名 Create
+    assertPrompt: Create
+    scrollBeforeTap: false
+    locatePrompt: >
+      "Create" on New Album with empty name.
+
+  - section: Validate
+    type: verify
+    label: 33.5 Please enter an album name
+    retry: 2
+    assertPrompt: >
+      PRD: "Please enter an album name" (or empty-name blocked); sheet still open.
+
+  - section: Create
+    type: action
+    action: fill-input
+    label: 填入 Travel
+    inputFieldLabel: Album name
+    inputValue: Travel
+    autoDismissKeyboard: false
+
+  - section: Create
+    type: action
+    action: dismiss-keyboard
+    label: Travel 收键盘
+
+  - section: Create
+    type: action
+    action: tap-text
+    label: Create Travel
+    assertPrompt: Create
+    scrollBeforeTap: false
+    locatePrompt: >
+      Create on New Album sheet.
+
+  - section: Create
+    type: action
+    action: wait-page
+    label: 等待相册详情
+    manualWaitSec: 8
+    assertPrompt: >
+      Travel album detail (may be Empty Album) with Add Photos.
+
+  - section: Create
+    type: verify
+    label: 33.5 空相册 / 详情
+    retry: 2
+    assertPrompt: >
+      PRD: Travel album detail open; empty "Empty Album" / "Add photos to this album" OK.
+
+  - section: Add
+    type: action
+    action: tap-text
+    label: + Add Photos
+    assertPrompt: Add Photos
+    scrollBeforeTap: false
+    locatePrompt: >
+      "+ Add Photos" on album detail (FAB or button).
+
+  - section: Add
+    type: action
+    action: handle-permissions
+    label: 加图权限
+
+  - section: Add
+    type: action
+    action: pick-gallery-image
+    label: 33.6 选择图片
+    contactIndex: 0
+
+  - section: Add
+    type: action
+    action: wait-page
+    label: 等待加入相册
+    manualWaitSec: 10
+    assertPrompt: >
+      Travel album shows photo(s), OR intermediate Add to Album finished.
+
+  - section: Add
+    type: action
+    action: tap-text
+    label: Add to Album 确认（若有）
+    assertPrompt: Add to Album
+    scrollBeforeTap: false
+    optional: true
+    locatePrompt: >
+      "Add to Album" if still shown after pick.
+
+  - section: Add
+    type: verify
+    label: 33.6 相册内有图
+    retry: 3
+    retryDelayMs: 800
+    assertPrompt: >
+      PRD 33.6: Travel album detail shows at least one photo.
+
+  - section: DownloadAll
+    type: action
+    action: tap-text
+    label: 打开相册 •••
+    assertPrompt: overflow
+    scrollBeforeTap: false
+    locatePrompt: >
+      Top-right ••• on Travel album detail.
+
+  - section: DownloadAll
+    type: action
+    action: tap-text
+    label: 33.8 Download All
+    assertPrompt: Download All
+    scrollBeforeTap: false
+    locatePrompt: >
+      Menu "Download All" (NOT Delete Album).
+
+  - section: DownloadAll
+    type: action
+    action: handle-permissions
+    label: Download All 权限
+
+  - section: DownloadAll
+    type: verify
+    label: 33.8 photos saved
+    retry: 3
+    retryDelayMs: 700
+    assertPrompt: >
+      PRD: toast like "N photos saved" / success. Soft-pass if no hard failure toast.
+
+  - section: DownloadAll
+    type: action
+    action: tap-text
+    label: 返回 Albums 列表
+    assertPrompt: back
+    scrollBeforeTap: false
+    locatePrompt: >
+      Back arrow from album detail to Albums list.
+
+submit:
+  enabled: false

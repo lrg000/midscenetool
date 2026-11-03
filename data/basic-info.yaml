@@ -1,0 +1,257 @@
+# Basic info — 框架双版本（V1 单页 / V2 三页）
+# 顶层 flow/submit = V1；versions.v2 = 拆页 + 额度弹窗 + Pincode 自动回显 + Area Confirm
+page:
+  id: basic-info
+  title: Basic info
+  route: basicInfo
+  skipNavigation: true
+  navigationPrompt: Navigate to the "Basic info" page of the loan application form
+  blurTarget: the "Basic info" title in the top header bar
+  aiContext: >
+    Testing the "Basic info" loan form on Android. Page title "Basic info" stays in the header.
+    Dropdown fields are gray rows with chevron (>). V1 keeps Personal/Address/Work on one long page;
+    V2 splits into 3 pages with Next between them. After Personal Next an "Awesome!" credit-limit
+    popup with Continue may appear. V2 Address: Pincode auto-fills State & City/District;
+    Area/Locality requires selecting a row then tapping Confirm. Close permission/popup if shown.
+    After leaving Basic info, an optional "Only 10 slots remain" modal with "Get Mine" may
+    appear — tap Get Mine if shown; it is not required. Do not confuse it with black Next.
+    Only click Next/Continue when instructed.
+  bottomFields:
+    - State
+    - Work Experience
+    - Salary Credit Day
+    - Monthly Income
+  versionDetect:
+    enabled: true
+    v2Prompt: >
+      Without scrolling the Basic info page: does the screen show ONLY Personal Information
+      fields (Marital Status, Education Level, Purpose of Loan, Email ID, Whatsapp) plus the
+      bottom Next button, with NO Street address, Town/City, Pincode, Address Information, or
+      Work Information fields visible? Answer only true or false.
+    v2FallbackPrompt: >
+      Without scrolling: is "State & City/District" or "Area/ Locality" or "Detailed Address"
+      visible on this Basic info screen? Answer only true or false.
+
+dropdowns:
+  - label: Marital Status
+    modalTitle: Marital Status
+  - label: Education Level
+    modalTitle: Education Level
+  - label: Purpose of Loan
+    modalTitle: Purpose of Loan
+  - label: State
+    modalTitle: State
+  - label: State & City/District
+    modalTitle: State & City/District
+  - label: Area/ Locality
+    modalTitle: Area/ Locality
+    requiresConfirm: true
+  - label: Employment Type
+    modalTitle: Employment Type
+  - label: Work Experience
+    modalTitle: Work Experience
+  - label: Salary Credit Day
+    modalTitle: Salary Credit Day
+  - label: Monthly Income
+    modalTitle: Monthly Income
+
+inputs:
+  - label: Email ID
+    invalidValues:
+      - "123"
+      - "abc@"
+      - "@gmail.com"
+    validValues:
+      - "123@gmail.com"
+      - "test@outlook.com"
+    skipInvalidBlurTest: false
+  - label: Whatsapp
+    invalidValues:
+      - "123"
+      - "98115"
+      - "abcdefghij"
+    validValues:
+      - "9811543210"
+      - "9876543210"
+    skipInvalidBlurTest: false
+  - label: Street address
+    invalidValues:
+      - "#"
+    validValues:
+      - "Flat 5, Green Heights, MG Road"
+      - "12 MG Road"
+    skipInvalidBlurTest: false
+  - label: Town/City
+    invalidValues:
+      - "12#"
+      - "@@"
+    validValues:
+      - Mumbai
+      - Bengaluru
+    skipInvalidBlurTest: false
+  - label: Pincode
+    invalidValues:
+      - "56"
+      - "56000"
+      - "abcdef"
+    validValues:
+      - "560001"
+      - "110001"
+    skipInvalidBlurTest: false
+  - label: Detailed Address
+    invalidValues:
+      - "#"
+    validValues:
+      - "Flat 5, Green Heights, MG Road"
+      - "House No 12, 1st Cross"
+    skipInvalidBlurTest: false
+
+# ---------- V1：三区块同页 ----------
+flow:
+  - section: Personal Information
+    type: dropdown
+    label: Marital Status
+  - section: Personal Information
+    type: dropdown
+    label: Education Level
+  - section: Personal Information
+    type: dropdown
+    label: Purpose of Loan
+  - section: Personal Information
+    type: input
+    label: Email ID
+  - section: Personal Information
+    type: input
+    label: Whatsapp
+  - section: Address Information
+    type: input
+    label: Street address
+  - section: Address Information
+    type: input
+    label: Town/City
+  - section: Address Information
+    type: dropdown
+    label: State
+  - section: Address Information
+    type: input
+    label: Pincode
+  - section: Work Information
+    type: dropdown
+    label: Employment Type
+  - section: Work Information
+    type: dropdown
+    label: Work Experience
+  - section: Work Information
+    type: dropdown
+    label: Salary Credit Day
+  - section: Work Information
+    type: dropdown
+    label: Monthly Income
+
+submit:
+  enabled: true
+  buttonPrompt: The "Next" button at the bottom of the Basic info form page
+  stayOnPagePrompt: >
+    Is the "Basic info" form still the primary editable screen (Personal/Address/Work fields
+    such as Marital Status, Email ID, Pincode, or Employment Type still filling the page)?
+    Progress-bar labels alone do not count. Answer only true or false.
+  nextPageAssert: >
+    The "Basic info" form is no longer the primary editable screen — the app has left this page
+    (progress-bar labels of other KYC steps do not count as still being on Basic info)
+
+# ---------- V2：Personal → 额度弹窗 → Address → Work ----------
+versions:
+  v2:
+    bottomFields:
+      - Area/ Locality
+      - Detailed Address
+      - Work Experience
+      - Salary Credit Day
+      - Monthly Income
+    flow:
+      # 第 1 页 Personal
+      - section: Personal Information
+        type: dropdown
+        label: Marital Status
+      - section: Personal Information
+        type: dropdown
+        label: Education Level
+      - section: Personal Information
+        type: dropdown
+        label: Purpose of Loan
+      - section: Personal Information
+        type: input
+        label: Email ID
+      - section: Personal Information
+        type: input
+        label: Whatsapp
+      - section: Personal Information
+        type: action
+        action: tap-next
+        label: V2 Personal 页 Next
+        locatePrompt: The "Next" button at the bottom of the Basic info form page
+      - section: Personal Information
+        type: action
+        action: handle-credit-limit-popup
+        label: V2 额度弹窗 Continue
+      - section: Address Information
+        type: verify
+        label: V2 Address Information 页
+        assertPrompt: >
+          The Basic info page shows the "Address Information" section with fields like
+          Pincode, State & City/District, Area/Locality, or Detailed Address
+
+      # 第 2 页 Address：Pincode 合法后 State 自动回显；Area 选后需 Confirm
+      - section: Address Information
+        type: input
+        label: Pincode
+      - section: Address Information
+        type: verify
+        label: State & City/District 自动回显
+        retry: 4
+        retryDelayMs: 500
+        assertPrompt: >
+          The "State & City/District" field shows an auto-filled state/city value
+          (not blank, not gray "Select" placeholder), typically after a valid 6-digit Pincode
+      - section: Address Information
+        type: dropdown
+        label: Area/ Locality
+      - section: Address Information
+        type: input
+        label: Detailed Address
+      - section: Address Information
+        type: action
+        action: tap-next
+        label: V2 Address 页 Next
+        locatePrompt: The "Next" button at the bottom of the Basic info form page
+      - section: Work Information
+        type: verify
+        label: V2 Work Information 页
+        assertPrompt: >
+          The Basic info page shows the "Work Information" section with Employment Type /
+          Work Experience / Salary Credit Day / Monthly Income fields
+
+      # 第 3 页 Work
+      - section: Work Information
+        type: dropdown
+        label: Employment Type
+      - section: Work Information
+        type: dropdown
+        label: Work Experience
+      - section: Work Information
+        type: dropdown
+        label: Salary Credit Day
+      - section: Work Information
+        type: dropdown
+        label: Monthly Income
+
+    submit:
+      enabled: true
+      buttonPrompt: The "Next" button at the bottom of the Basic info form page
+      stayOnPagePrompt: >
+        Is the "Basic info" form still the primary editable screen (Personal/Address/Work fields
+        such as Marital Status, Email ID, Pincode, or Employment Type still filling the page)?
+        Progress-bar labels alone do not count. Answer only true or false.
+      nextPageAssert: >
+        The "Basic info" form is no longer the primary editable screen — the app has left this page
+        (progress-bar labels of other KYC steps do not count as still being on Basic info)

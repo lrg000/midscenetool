@@ -1,0 +1,55 @@
+# ============================================================
+# T53 Anantapur Chakra A 面 — 自然语言测试用例（云效 PRD 映射）
+# ============================================================
+#
+# 云效: T53AB面包开发 | WIFO-1993 | workItemId: d7ca23570f0f4e16da6a4366c1
+# URL: https://devops.aliyun.com/projex/project/f56f3edd04756632f67acd5450/req#openWorkitemIdentifier=d7ca23570f0f4e16da6a4366c1
+# androidPackage: com.anantapurchakra.flexicredit.app
+# 测试账号: 9110001501  OTP: 1234
+# 说明: PRD OTP 示意为 6 格；本脚本按指定测试凭证使用 1234。
+#
+# ============================================================
+
+## 包元信息
+
+| 字段 | 值 |
+|------|-----|
+| packageId | t53 |
+| kind | loan-shell |
+| appLabel | Anantapur Chakra |
+| 应用全称 | Anantapur Chakra-Flexi Credit |
+| androidPackage | com.anantapurchakra.flexicredit.app |
+| 自动化 | npm run test:aside:t53 |
+
+## 实机差异
+
+| 项 | PRD | 脚本 / 实机 |
+|----|-----|------|
+| OTP / 手机号 UI | PRD 示意页内 +91 | **实机**为居中 "Mobile Number" 弹窗，输入框 placeholder「Mobile Number」，**无 +91**；收键盘勿用 ESC（会关弹窗） |
+| OTP 位数 | 示意 6 格 | 测试凭证 OTP=1234 |
+| 协议勾选文案 | PRD 写 “I have read and agree…” | **实机**为 “I agree to the Terms of Service, Privacy Policy and Permissions Declaration.”（以截图为准） |
+| Truecaller / Google | 要求真实验证 | 只校验入口文案，不点（避免离开 OTP 主路径） |
+| 拒权 / Open Settings | Camera / Photos / SMS 拒绝 | 未自动化：会打断主路径 |
+| 稳定性压测 | 连续点击不崩溃、不重复单 | 未自动化：需故障注入 |
+
+## PRD 60.x → 自动化覆盖表
+
+| PRD | 要求 | 自动化 | 说明 |
+|-----|------|--------|------|
+| 60.1 | 首次协议弹窗、三协议可打开、未勾选不可继续、勾选进登录、登录页再次勾选 | bootstrap + login | 弹窗已同意过则 optional 跳过 |
+| 60.2 | Truecaller 按钮 / 来电验证 / 失败重试 | login 仅校验按钮 | **未自动化**真实验证与失败重试（需 Truecaller 来电） |
+| 60.3 | Google 登录与绑定 Not Now | login 校验按钮；account-connect 点 Not Now | **未自动化**真实 Google 登录 |
+| 60.4 | 手机号、发 OTP、输入、错误 OTP、Resend | login | Resend 若仍在倒计时则 optional |
+| 60.5 | KYC Step1–6、模拟成功、PAN/银行非真验 | kyc-* | Gender/DOB 枚举 PRD 未给出，脚本填姓名并选 Purpose=Personal |
+| 60.6 | 摄像头允许后自拍 | kyc-selfie | **未自动化**拒绝与 Open Settings |
+| 60.7 | Upload Document / 相册 | kyc-identity | **未自动化**拒绝分支 |
+| 60.8 | SMS 开关申请 | sms | **未自动化**拒绝、杀进程后状态同步 |
+| 60.9 | 默认额度 30000 / Used 0；借还后额度变化 | home + repay | 全额还款后回到 Used ₹0 / Available ₹30,000 |
+| 60.10 | 超额提示、Summary、KFS、确认、成功、首页同步 | borrow* | 超额文案 Amount exceeds your available credit. |
+| 60.11 | Outstanding、不超过欠款、模拟支付、额度恢复、Loan Details | loan-details + repay | 部分还款「如果支持」未单列 |
+| 60.12 | My / 资料 / SMS / Help / 邮箱 / Terms / Privacy / Logout | my* | |
+| 60.13 | 重启后状态仍在 | persist | **未自动化**连续狂点防重复单、拒权不死锁 |
+
+## UI STRICT（每页 verify）
+
+背景 #F4F3EF；主按钮 #1D4ED8、约 6dp 圆角（非胶囊）；标题/金额接近 #171717；次级字 #6B7280。Fail：黄色便签、复古日历、纯黑图库、奶油贴纸风。

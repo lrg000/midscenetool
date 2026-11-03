@@ -1,0 +1,198 @@
+# Y28 — My Stickers 查看/删除/持久化（PRD 二十~二十二、30.5、30.7）
+page:
+  id: aside-y28-my
+  title: My Stickers
+  isNative: true
+  skipNavigation: true
+  navigationPrompt: ""
+  blurTarget: the sticker preview image on detail (NOT back, NOT My tab)
+  aiContext: >
+    My Stickers 2-col wall; empty: Your sticker board is empty / Create Sticker.
+    Detail: Download Sticker + Delete (may be below fold or in overflow menu);
+    dialog Delete this sticker? Cancel (left) / Delete (right, red #C95C5C);
+    after confirm: back to My Stickers, that sticker gone.
+  bottomFields:
+    - Delete
+    - Download Sticker
+    - Download
+
+dropdowns: []
+inputs: []
+
+flow:
+  - section: Persist
+    type: action
+    action: force-stop-app
+    label: 30.7 关闭 App
+    assertPrompt: com.mastimagic.craftphoto.app
+
+  - section: Persist
+    type: action
+    action: relaunch-app
+    label: 30.7 重开
+    assertPrompt: com.mastimagic.craftphoto.app
+
+  - section: Persist
+    type: action
+    action: wait-app-ready
+    label: 30.7 就绪
+    manualWaitSec: 15
+    assertPrompt: >
+      App loaded after relaunch.
+
+  - section: Persist
+    type: action
+    action: tap-text
+    label: 底栏 My
+    assertPrompt: My
+    scrollBeforeTap: false
+    locatePrompt: >
+      Bottom tab "My" (right of Create).
+
+  - section: Persist
+    type: action
+    action: wait-page
+    label: 等待 My Stickers
+    manualWaitSec: 8
+    assertPrompt: >
+      My Stickers page with user stickers or empty state.
+
+  - section: Persist
+    type: verify
+    label: 30.7 自制贴纸仍在
+    retry: 2
+    assertPrompt: >
+      PRD 30.7: My Stickers still shows previously created sticker (e.g. My Cat).
+      Fail if empty-only after create in this run.
+
+  - section: Delete
+    type: action
+    action: tap-text
+    label: 打开自制贴纸
+    assertPrompt: My Cat
+    scrollBeforeTap: false
+    locatePrompt: >
+      My Stickers list card labeled "My Cat" (thumbnail + name). Do NOT tap Create / + Create / B.
+
+  - section: Delete
+    type: action
+    action: wait-page
+    label: 等待自制详情
+    manualWaitSec: 8
+    assertPrompt: >
+      User sticker detail for "My Cat", with Download Sticker and/or Delete.
+
+  - section: Delete
+    type: action
+    action: dismiss-keyboard
+    label: 详情页先收键盘
+
+  - section: Delete
+    type: action
+    action: tap-text
+    label: 尝试打开溢出菜单找 Delete
+    assertPrompt: overflow
+    scrollBeforeTap: false
+    optional: true
+    locatePrompt: >
+      Top-right overflow/ellipsis on user sticker detail IF visible.
+      Skip if Delete is already a bottom button.
+
+  - section: Delete
+    type: action
+    action: tap-text
+    label: Delete
+    assertPrompt: Delete
+    scrollBeforeTap: true
+    locatePrompt: >
+      On sticker DETAIL (not a dialog): destructive "Delete" below Download Sticker
+      OR overflow menu item "Delete". Do NOT tap Download / Download Sticker.
+
+  - section: Delete
+    type: verify
+    label: 30.5 删除确认框
+    retry: 2
+    assertPrompt: >
+      Dialog "Delete this sticker?" (may mention My Stickers) with Cancel and Delete.
+
+  - section: Delete
+    type: action
+    action: tap-text
+    label: 先 Cancel
+    assertPrompt: Cancel
+    scrollBeforeTap: false
+    noScrollRetry: true
+    locatePrompt: >
+      On the centered "Delete this sticker?" dialog only: the Cancel button
+      (usually left). Do NOT tap the red Delete button. Do NOT tap outside dialog.
+
+  - section: Delete
+    type: action
+    action: wait-page
+    label: Cancel 后仍在详情
+    manualWaitSec: 5
+    assertPrompt: >
+      Sticker detail still open; delete confirmation dialog is closed.
+      Download Sticker and/or Delete still visible.
+
+  - section: Delete
+    type: action
+    action: tap-text
+    label: 再开溢出菜单
+    assertPrompt: overflow
+    scrollBeforeTap: false
+    optional: true
+    locatePrompt: >
+      Top-right overflow again if Delete is inside menu.
+
+  - section: Delete
+    type: action
+    action: tap-text
+    label: 再点 Delete
+    assertPrompt: Delete
+    scrollBeforeTap: true
+    locatePrompt: >
+      On sticker DETAIL (not dialog): destructive "Delete" text/button below
+      Download Sticker, or overflow "Delete". Do NOT tap Download Sticker.
+
+  - section: Delete
+    type: action
+    action: wait-page
+    label: 等待再次出现删除确认框
+    manualWaitSec: 6
+    assertPrompt: >
+      Centered dialog "Delete this sticker?" with Cancel and Delete buttons.
+
+  - section: Delete
+    type: action
+    action: tap-text
+    label: 确认 Delete
+    assertPrompt: Delete
+    scrollBeforeTap: false
+    noScrollRetry: true
+    locatePrompt: >
+      On the centered "Delete this sticker?" dialog ONLY: the red/destructive
+      Delete confirm button (usually right of Cancel). Do NOT tap Cancel.
+      Do NOT tap Download. Do NOT tap any Delete behind the dimmed dialog.
+
+  - section: Delete
+    type: action
+    action: wait-page
+    label: 删除后回 My
+    manualWaitSec: 10
+    assertPrompt: >
+      My Stickers list page is showing (title "My Stickers" and bottom My tab).
+      Not on sticker detail and delete dialog is gone.
+      Empty board OR remaining other stickers both OK — do not require empty.
+
+  - section: Delete
+    type: verify
+    label: 30.5/30.7 贴纸已删除
+    retry: 3
+    assertPrompt: >
+      PRD 30.5/30.7: the user sticker named "My Cat" is NOT in the My Stickers list.
+      Empty board is OK. Other stickers (e.g. "B") may remain.
+      Fail only if a card labeled "My Cat" is still visible.
+
+submit:
+  enabled: false

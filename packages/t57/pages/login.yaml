@@ -1,0 +1,155 @@
+# T57 登录 — 录制实机 Welcome + Mobile Number + Enter OTP
+# 账号 9110001559 / OTP 1234。不走 Truecaller / Google。
+page:
+  id: aside-t57-login
+  title: Login
+  isNative: true
+  skipNavigation: true
+  navigationPrompt: ""
+  blurTarget: the title Welcome to Haveri VahanCredit
+  aiContext: >
+    Haveri VahanCredit Welcome: navy header "Welcome to Haveri VahanCredit",
+    "Choose how to continue", Continue with Truecaller, Continue with Google, Use Mobile Number.
+    Bottom checkbox: "I have read and agree to the Terms of Service, Privacy Policy and Permissions Declaration."
+    Mobile Number dialog then Enter OTP with One-time code and Verify & Login.
+    Not Anantapur Chakra, not RajWise.
+  bottomFields: []
+
+dropdowns: []
+inputs: []
+
+checkboxes:
+  - label: I have read and agree to the Terms of Service, Privacy Policy and Permissions Declaration.
+    locatePrompt: >
+      On the Haveri VahanCredit Welcome/login screen: the EMPTY square checkbox at the BOTTOM,
+      immediately LEFT of "I have read and agree to the Terms of Service, Privacy Policy and Permissions Declaration."
+      Tap the CENTER of that small empty square ONLY.
+      Do NOT tap blue underlined Terms of Service / Privacy Policy / Permissions Declaration.
+      Do NOT tap Continue with Truecaller, Continue with Google, or Use Mobile Number.
+    checkedPrompt: >
+      On the Haveri VahanCredit Welcome screen: is the square checkbox LEFT of
+      "I have read and agree to the Terms of Service, Privacy Policy and Permissions Declaration."
+      checked (tick inside the box)? Answer only true or false.
+
+flow:
+  - section: Login
+    type: action
+    action: wait-page
+    label: 等待 Welcome 登录
+    manualWaitSec: 12
+    assertPrompt: >
+      Is the Haveri VahanCredit Welcome/login screen visible with
+      "Welcome to Haveri VahanCredit" and "Use Mobile Number"?
+      (Before you continue modal should already be gone.)
+      Answer only true or false.
+
+  - section: Login
+    type: verify
+    label: 登录页主文案
+    retry: 1
+    assertPrompt: >
+      Login shows "Welcome to Haveri VahanCredit", "Choose how to continue",
+      "Continue with Truecaller", "Continue with Google", and "Use Mobile Number".
+      Fail if Anantapur Chakra, RajWise, or FlexiCredit branding.
+
+  - section: Login
+    type: checkbox
+    label: I have read and agree to the Terms of Service, Privacy Policy and Permissions Declaration.
+
+  - section: Login
+    type: action
+    action: tap-text
+    label: Use Mobile Number
+    scrollBeforeTap: false
+    noScrollRetry: true
+    assertPrompt: Use Mobile Number
+    locatePrompt: >
+      AFTER the bottom consent checkbox is checked: the "Use Mobile Number" button
+      (light blue / outlined, phone icon).
+      Do NOT tap Continue with Truecaller, Continue with Google, or the checkbox / blue legal links.
+
+  - section: OTP
+    type: action
+    action: wait-page
+    label: 等待手机号页
+    manualWaitSec: 12
+    assertPrompt: >
+      Mobile number entry is visible: title or heading "Mobile Number",
+      text about receiving a secure code, an input, and "Send OTP".
+      Fail only if still on full Welcome with Truecaller/Google and no phone input.
+
+  - section: OTP
+    type: native-input
+    label: 输入手机号
+    valueKey: mobile
+    autoDismissKeyboard: false
+    assertPrompt: >
+      Is the Mobile Number input and Send OTP button visible
+    locatePrompt: >
+      The mobile number text input on the Mobile Number screen/dialog
+      (placeholder "Mobile Number" or empty field under the subtitle).
+      Tap the input box center. Do NOT tap Send OTP, X close, or the dimmed area outside a dialog.
+
+  - section: OTP
+    type: action
+    action: dismiss-keyboard
+    label: 收起键盘（不关弹窗）
+    optional: true
+
+  - section: OTP
+    type: action
+    action: tap-text
+    label: Send OTP
+    scrollBeforeTap: false
+    noScrollRetry: true
+    assertPrompt: Send OTP
+    locatePrompt: >
+      The "Send OTP" button on the Mobile Number screen.
+      Do NOT tap the X close icon, the input, or the dimmed area outside a dialog.
+
+  - section: OTP
+    type: action
+    action: wait-page
+    label: 等待 Enter OTP
+    manualWaitSec: 15
+    assertPrompt: >
+      OTP entry is visible: "Enter OTP" and "One-time code" (or OTP boxes),
+      and "Verify & Login" or Resend. Fail if still only Mobile Number + Send OTP.
+
+  - section: OTP
+    type: verify
+    label: OTP 页文案
+    assertPrompt: >
+      Shows "Enter OTP", "One-time code" (or code boxes), and "Verify & Login".
+      May show "We sent a code to +91" with masked digits. Do not require Welcome header.
+
+  - section: OTP
+    type: native-input
+    label: 输入 OTP
+    valueKey: otp
+    autoDismissKeyboard: false
+    assertPrompt: >
+      Is the Enter OTP / One-time code UI visible
+    locatePrompt: >
+      The OTP / One-time code input field or digit boxes under "Enter OTP".
+      Tap the input/boxes center. Do NOT tap Resend OTP, Change Number, or Verify & Login yet.
+
+  - section: OTP
+    type: action
+    action: dismiss-keyboard
+    label: 收起键盘（OTP）
+    optional: true
+
+  - section: OTP
+    type: action
+    action: tap-text
+    label: Verify & Login
+    scrollBeforeTap: false
+    noScrollRetry: true
+    assertPrompt: Verify & Login
+    locatePrompt: >
+      The primary "Verify & Login" button on the Enter OTP screen.
+      Do NOT tap Resend OTP, Change Number, or back.
+
+submit:
+  enabled: false

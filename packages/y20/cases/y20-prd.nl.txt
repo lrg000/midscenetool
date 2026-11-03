@@ -1,0 +1,104 @@
+# ============================================================
+# Y20 Daily Grid A 面 — 自然语言测试用例（云效 PRD 全量映射）
+# ============================================================
+#
+# 云效: Y20面包开发 | workItemId: 0e040308d09761451e8d96019c
+# URL: https://devops.aliyun.com/projex/project/f56f3edd04756632f67acd5450/req#openWorkitemIdentifier=0e040308d09761451e8d96019c
+# androidPackage: com.dailygrid.lifecaptured.app
+#
+# ============================================================
+
+## 包元信息
+
+| 字段 | 值 |
+|------|-----|
+| packageId | y20 |
+| appLabel | Daily Grid |
+| androidPackage | com.dailygrid.lifecaptured.app |
+| 自动化 | npm run test:aside:y20 |
+
+## PRD 验收标准 → 自动化覆盖表
+
+| AC/TC | PRD 要求 | 自动化 | 说明 |
+|-------|----------|--------|------|
+| AC-001 / TC-001 | 冷启进月历、无登录/启动页 | home | 含无 Tab/底栏 |
+| AC-002 | 今日蓝圈 #3B82F6 | home | |
+| AC-003 / TC-002 | 左右切换月份 | home | **上一月 + 下一月** |
+| AC-004 / TC-003 | Today 回当前月并选中今天 | home | |
+| AC-005 / TC-010 | 有行程显示蓝点；无行程不显示 | day-schedule | 含负向校验 |
+| AC-006 / TC-004 | 任意日期进行程页 | home | **非今日 + 今日** |
+| AC-007 / TC-008 | 无记录空状态 No Schedule | day-schedule | 进入时 + 删后 |
+| AC-008 | 多条按创建时间升序 | day-schedule | **两条行程顺序** |
+| AC-009 | FAB 弹出 Bottom Sheet | day-schedule | STRICT UI |
+| AC-010 / TC-006 | 空 Save → Please enter schedule. | day-schedule | 硬断言 |
+| AC-011 / TC-005 | Save 后列表回显、关弹层 | day-schedule | |
+| AC-012 | ≤100 字 | day-schedule | 101 字：计数≤100 **或** `101/100`+`Maximum 100 characters.` |
+| AC-013 | 删除确认框；Cancel / Delete | day-schedule | **含 Cancel 取消** |
+| AC-014 / TC-007 | Delete 后立即消失 | day-schedule | 逐条删除 |
+| AC-015 | 删最后一条 → 空状态 + 首页蓝点消失 | day-schedule | |
+| AC-016 / TC-009 | 关闭/杀进程后 SQLite 仍在 | day-schedule | **force-stop-app + relaunch-app**（两轮：正常关闭 + 模拟崩溃） |
+| AC-017 | 卸载后数据清除 | ac017-uninstall | **专项** `Y20_RUN_UNINSTALL=1` + `Y20_APK_PATH` |
+| AC-018~019 | UI 配色/字号/dp/圆角 | home + day-schedule | UI … PRD 步骤 |
+| AC-020 | 深色模式 | — | 需切换系统主题 |
+
+## UI 规范（PRD 五~七）
+
+| 项 | PRD |
+|----|-----|
+| 背景 | #FFFFFF |
+| 品牌蓝 | #3B82F6 |
+| 已选日期 | #DBEAFE |
+| 标题/正文 | #111827 / #4B5563 / #9CA3AF |
+| 删除 | #EF4444 |
+| Header | 56dp；月 24sp；格 48dp/字 16sp |
+| 行程页标题 | 28sp |
+| 卡片/FAB | 56dp；圆角 16dp |
+| Save | 全宽 48dp #3B82F6 |
+| Sheet | ~45% 屏高 |
+| 输入 | 最多 100 字，NN/100 |
+| 异常文案 | Please enter schedule. / Maximum 100 characters. |
+
+## 测试流程摘要
+
+### 月历（home.yaml）
+1. AC-001/TC-001 无登录、无 Tab
+2. UI 首页 STRICT + AC-019
+3. AC-002 今日蓝圈
+4. **上一月 → 下一月**（AC-003/TC-002）
+5. Today（AC-004/TC-003）
+6. **点非今日日期 → 行程页 → 返回**（AC-006/TC-004）
+7. 点今日 → 进入 day-schedule
+
+### 行程 CRUD（day-schedule.yaml，三阶段防连锁失败）
+
+**Phase 1 — 核心路径（先跑）**  
+8. 清理残留 → AC-007 空状态  
+9. 保存 Y20Test Schedule → AC-011  
+10. 再增 Y20Test Schedule 2 → AC-008 升序  
+11. force-stop ×2 → AC-016 持久化  
+
+**Phase 2 — 删除 & 蓝点**  
+12. AC-005/TC-010 蓝点 → Delete/Cancel/Delete → AC-015  
+
+**Phase 3 — Sheet 边界（独立，失败不拖累上方）**  
+13. AC-009 → AC-010 空 Save → AC-012 101 字（`ensure-new-schedule-sheet` 恢复弹层）
+
+### AC-017 卸载清数据（破坏性专项）
+
+```powershell
+$env:Y20_APK_PATH = "F:\path\to\dailygrid.apk"
+$env:Y20_RUN_UNINSTALL = "1"
+npm run test:aside:y20:uninstall
+```
+
+## 暂不自动化
+
+- AC-020 深色模式
+- Save failed（DB 异常，需专项注入）
+- 性能 ≤500ms 等（需 profiling）
+
+## 产物
+
+- packages/y20/pages/home.yaml
+- packages/y20/pages/day-schedule.yaml
+- tests/aside/y20.test.ts

@@ -1,0 +1,134 @@
+# Y24 TC-026 卸载清数据（破坏性）
+# 需 Y24_APK_PATH + Y24_RUN_UNINSTALL=1
+page:
+  id: aside-y24-ac026
+  title: Uninstall Clear Data
+  isNative: true
+  skipNavigation: true
+  navigationPrompt: ""
+  blurTarget: the Photos title
+  aiContext: >
+    Create marker album, uninstall, reinstall, Albums empty of marker.
+  bottomFields: []
+
+dropdowns: []
+
+inputs:
+  - label: Album name
+    validValue: Y24UninstallMark
+    skipEmptyBlurTest: true
+    skipInvalidBlurTest: true
+    skipValidBlurTest: true
+    skipScrollBeforeInput: true
+    skipBlurAfterInput: true
+    autoDismissKeyboard: false
+    locatePrompt: >
+      Album name field in New Album sheet.
+
+flow:
+  - section: Marker
+    type: action
+    action: wait-app-ready
+    label: 等待就绪
+    manualWaitSec: 15
+    assertPrompt: >
+      Glimmer Frame Photos or Albums visible.
+
+  - section: Marker
+    type: action
+    action: tap-text
+    label: Albums
+    assertPrompt: Albums
+    scrollBeforeTap: false
+    locatePrompt: >
+      Bottom Albums tab.
+
+  - section: Marker
+    type: action
+    action: tap-text
+    label: +
+    assertPrompt: +
+    scrollBeforeTap: false
+    locatePrompt: >
+      Albums header +.
+
+  - section: Marker
+    type: action
+    action: fill-input
+    label: 标记相册名
+    inputFieldLabel: Album name
+    inputValue: Y24UninstallMark
+    autoDismissKeyboard: false
+
+  - section: Marker
+    type: action
+    action: dismiss-keyboard
+    label: 收键盘
+
+  - section: Marker
+    type: action
+    action: tap-text
+    label: Create Album
+    assertPrompt: Create Album
+    scrollBeforeTap: false
+    locatePrompt: >
+      Create Album button.
+
+  - section: Marker
+    type: verify
+    label: 标记相册存在
+    retry: 2
+    assertPrompt: >
+      Albums list shows Y24UninstallMark.
+
+  - section: Uninstall
+    type: action
+    action: uninstall-app
+    label: 卸载 App
+    assertPrompt: com.glimmer.frameexitpic.app
+
+  - section: Uninstall
+    type: action
+    action: install-apk
+    label: 重装 APK
+    assertPrompt: ""
+
+  - section: Uninstall
+    type: action
+    action: relaunch-app
+    label: 启动重装后 App
+    assertPrompt: com.glimmer.frameexitpic.app
+
+  - section: Uninstall
+    type: action
+    action: wait-app-ready
+    label: 重装后就绪
+    manualWaitSec: 20
+    assertPrompt: >
+      Glimmer Frame Photos/Albums after reinstall.
+
+  - section: Uninstall
+    type: action
+    action: handle-permissions
+    label: 重装权限
+
+  - section: Uninstall
+    type: action
+    action: tap-text
+    label: 进 Albums
+    assertPrompt: Albums
+    scrollBeforeTap: false
+    optional: true
+    locatePrompt: >
+      Bottom Albums tab.
+
+  - section: Uninstall
+    type: verify
+    label: TC-026 标记相册已清除
+    retry: 2
+    assertPrompt: >
+      PRD TC-026: Albums does NOT list Y24UninstallMark after uninstall/reinstall.
+      System gallery originals may still exist — that is OK.
+
+submit:
+  enabled: false

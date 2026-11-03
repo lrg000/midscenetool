@@ -1,0 +1,76 @@
+# T42 — Verification Completed（Figma 结果 / 1:525）
+# 必须校验 PROFILE SCORE 数值得分，再 Back to Home
+page:
+  id: aside-t42-verification-result
+  title: Verification Completed
+  isNative: true
+  skipNavigation: true
+  navigationPrompt: ""
+  blurTarget: the "Verification Completed" title
+  aiContext: >
+    T42 KYC result (Figma). Green check, "Verification Completed",
+    "Your profile has been successfully assessed.", PROFILE SCORE card
+    with numeric score like 87/100, "Excellent Eligibility",
+    "Recommended Loan Types", outlined "Back to Home". Must verify score obtained.
+  bottomFields:
+    - Back to Home
+
+dropdowns: []
+inputs: []
+
+flow:
+  - section: Result
+    type: action
+    action: kyc-manual-until
+    label: 等待 Verification Completed 与得分
+    manualWaitSec: 90
+    assertPrompt: >
+      Screen shows "Verification Completed" AND a profile score card with
+      label "PROFILE SCORE" or "Profile Score" AND a visible numeric score
+      in the form XX/100 (e.g. 87/100). Not still on Face Verification or loading spinner only.
+
+  - section: Result
+    type: verify
+    label: 校验得分与结果页文案（Figma）
+    retry: 4
+    retryDelayMs: 1500
+    assertPrompt: >
+      On Verification Completed screen, ALL must be visible:
+      (1) Title "Verification Completed"
+      (2) Subtitle "Your profile has been successfully assessed."
+      (3) Score card labeled "PROFILE SCORE" or "Profile Score" with a concrete
+          numeric score displayed as XX/100 (must not be empty, "--", or 0/100 only placeholder)
+      (4) Eligibility text such as "Excellent Eligibility" (or similar eligibility label)
+      (5) Section "Recommended Loan Types" with at least "Personal Loan" and/or "Home Loan"
+      (6) Button "Back to Home"
+      Fail if score is missing, not numeric, or any key label differs from Figma.
+
+  - section: Result
+    type: verify
+    label: 确认已获取有效得分（非空）
+    retry: 2
+    assertPrompt: >
+      The profile score shows a positive integer numerator before "/100"
+      (e.g. 87/100, score between 1 and 100). Fail if no score, blank score area,
+      or only the label without a number.
+
+  - section: Result
+    type: action
+    action: tap-text
+    label: Back to Home
+    assertPrompt: Back to Home
+    scrollBeforeTap: true
+    locatePrompt: >
+      The outlined button labeled exactly "Back to Home" at the bottom
+      (not a Recommended Loan Types tile, not Get Cash Now)
+
+  - section: Result
+    type: verify
+    label: 已回到 Home
+    retry: 3
+    assertPrompt: >
+      Native Home is visible with "AVAILABLE CREDIT LIMIT" and blue "Get Cash Now".
+      Bottom tab "Home" is selected. Fail if still on Verification Completed.
+
+submit:
+  enabled: false

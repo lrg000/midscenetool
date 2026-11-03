@@ -1,0 +1,67 @@
+agent:
+  replanningCycleLimit: 40
+  generateReport: true
+
+timing:
+  pageReady: 1500
+  afterDismiss: 250
+  afterScroll: 250
+  afterOpenDropdown: 500
+  afterModalSelect: 600
+  afterInput: 300
+  afterBlur: 350
+  afterSubmit: 1500
+  echoRetry: 500
+  # 同一输入框各子用例之间的冷却（减轻 ADB screencap 竞态）
+  betweenCases: 700
+  # wait-app-ready：冷启就绪轮询（次数 × 间隔；权限/协议/Welcome 均算就绪）
+  appReadyMaxAttempts: 20
+  appReadyPollMs: 1000
+
+scroll:
+  maxDown: 6
+  maxUp: 12
+  maxUpSequential: 3
+  settleMs: 200
+  sequentialDownFirst: true
+
+dropdown:
+  skipModalOpenAiCheck: true
+  maxSelectAttempts: 2
+  randomOptionCount: 3
+
+# 所有 enabled submit 页面的默认兜底（单页 YAML submit.* 可覆盖；设 retryTapIfStay: 0 关闭）
+submit:
+  retryTapIfStay: 2
+  retryDelayMs: 2000
+
+kyc:
+  photoManualWaitSec: 300
+  selfieCaptureWaitSec: 45
+  ocrManualWaitSec: 600
+
+# B 面全流程（business-*）连接设备后、bootstrap 前启动的 App
+# 换马甲包时改这里，或设环境变量 ANDROID_PACKAGE 覆盖
+app:
+  androidPackage: com.rajsmartguide.loanadvisor.app
+
+credentials:
+  mobile: "9110001690"
+  otp: "123456"
+
+# 所有运行产物统一在 midscene_run/（与 Midscene 默认目录一致）
+paths:
+  midsceneRun: midscene_run
+  screenshots: midscene_run/screenshots
+  cache: midscene_run/cache
+  tmp: midscene_run/tmp
+  midsceneOutput: midscene_run/output
+  midsceneReport: midscene_run/report
+
+# 产物保留（不触及业务 YAML）。也可手动: npm run clean:artifacts
+artifacts:
+  retainDays: 14
+  # true 时每次建 session 自动清理旧 report/screenshots/log/output/tmp
+  autoPruneOnStart: false
+  # 可选：每个目录额外只保留最新 N 个文件（与 retainDays 叠加）
+  # keepLatestReports: 30

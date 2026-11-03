@@ -1,0 +1,139 @@
+# Y26 TC-023 卸载清数据（破坏性）
+# 需 Y26_APK_PATH + Y26_RUN_UNINSTALL=1
+page:
+  id: aside-y26-ac023
+  title: Uninstall Clear Data
+  isNative: true
+  skipNavigation: true
+  navigationPrompt: ""
+  blurTarget: the day schedule page title
+  aiContext: >
+    Save marker → uninstall → reinstall → empty / marker gone.
+  bottomFields:
+    - Save Schedule
+
+dropdowns: []
+
+inputs:
+  - label: What are you planning?
+    validValue: Y26UninstallMark
+    skipEmptyBlurTest: true
+    skipInvalidBlurTest: true
+    skipValidBlurTest: true
+    skipScrollBeforeInput: true
+    skipBlurAfterInput: true
+    autoDismissKeyboard: false
+    locatePrompt: >
+      What are you planning? field in New Schedule sheet.
+
+flow:
+  - section: Marker
+    type: action
+    action: wait-app-ready
+    label: 等待就绪
+    manualWaitSec: 20
+    assertPrompt: >
+      Aarambh Calendar calendar or day schedule.
+
+  - section: Marker
+    type: action
+    action: ensure-calendar-home
+    label: 月历
+    assertPrompt: com.aarambhdailycalendar.app
+
+  - section: Marker
+    type: action
+    action: tap-text
+    label: 进今日
+    assertPrompt: Today
+    locatePrompt: >
+      Today's date cell (green outline). Do NOT tap Today text.
+
+  - section: Marker
+    type: action
+    action: ensure-y26-clean-state
+    label: 清理
+
+  - section: Marker
+    type: action
+    action: ensure-new-schedule-sheet
+    label: 打开 Sheet
+
+  - section: Marker
+    type: action
+    action: fill-input
+    label: 标记行程
+    inputFieldLabel: What are you planning?
+    inputValue: Y26UninstallMark
+    autoDismissKeyboard: false
+
+  - section: Marker
+    type: action
+    action: dismiss-keyboard
+    label: 收键盘
+
+  - section: Marker
+    type: action
+    action: tap-text
+    label: Save Schedule
+    assertPrompt: Save Schedule
+    scrollBeforeTap: false
+    locatePrompt: >
+      Save Schedule.
+
+  - section: Marker
+    type: verify
+    label: 标记已保存
+    retry: 2
+    assertPrompt: >
+      "Y26UninstallMark" visible on day list.
+
+  - section: Uninstall
+    type: action
+    action: uninstall-app
+    label: 卸载
+    assertPrompt: com.aarambhdailycalendar.app
+
+  - section: Uninstall
+    type: action
+    action: install-apk
+    label: 重装
+    assertPrompt: ""
+
+  - section: Uninstall
+    type: action
+    action: relaunch-app
+    label: 启动
+    assertPrompt: com.aarambhdailycalendar.app
+
+  - section: Uninstall
+    type: action
+    action: wait-app-ready
+    label: 重装后就绪
+    manualWaitSec: 20
+    assertPrompt: >
+      Aarambh Calendar after reinstall.
+
+  - section: Uninstall
+    type: action
+    action: ensure-calendar-home
+    label: 回月历
+    assertPrompt: com.aarambhdailycalendar.app
+
+  - section: Uninstall
+    type: action
+    action: tap-text
+    label: 进今日
+    assertPrompt: Today
+    locatePrompt: >
+      Today's date cell.
+
+  - section: Uninstall
+    type: verify
+    label: TC-023 标记已清除
+    retry: 2
+    assertPrompt: >
+      PRD TC-023: "Y26UninstallMark" NOT listed; empty Nothing planned OK.
+
+submit:
+  enabled: false

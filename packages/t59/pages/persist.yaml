@@ -1,0 +1,146 @@
+# T59 退出后再登录 — PRD 10.6 / AC-13
+page:
+  id: aside-t59-persist
+  title: Persist after logout
+  isNative: true
+  skipNavigation: true
+  navigationPrompt: ""
+  blurTarget: My
+  aiContext: >
+    Confirm Log Out, return to login, Phone OTP again, Home/Cards still show Midscene HDFC Test.
+  bottomFields: []
+
+dropdowns: []
+inputs: []
+
+flow:
+  - section: Logout
+    type: action
+    action: tap-text
+    label: Log Out
+    scrollBeforeTap: true
+    assertPrompt: Log Out
+    locatePrompt: >
+      The "Log Out" row on My. Do NOT tap Cancel leftover.
+
+  - section: Logout
+    type: action
+    action: tap-text
+    label: 确认 Log Out
+    scrollBeforeTap: false
+    noScrollRetry: true
+    assertPrompt: Log Out
+    locatePrompt: >
+      On dialog "Log out?", tap the confirm "Log Out" (not Cancel).
+
+  - section: Logout
+    type: verify
+    label: 回到登录页
+    retry: 2
+    assertPrompt: >
+      Login shows "Continue with Truecaller" and "Continue with Phone" (or Use Mobile Number).
+      Not My settings. Not Home Total Outstanding as the logged-in session.
+
+  - section: Relogin
+    type: action
+    action: tap-text
+    label: Continue with Phone
+    scrollBeforeTap: false
+    noScrollRetry: true
+    assertPrompt: Continue with Phone
+    locatePrompt: >
+      "Continue with Phone" or "Use Mobile Number". Do NOT tap Truecaller or Google.
+
+  - section: Relogin
+    type: native-input
+    label: 再输手机号
+    valueKey: mobile
+    autoDismissKeyboard: false
+    assertPrompt: >
+      Is the mobile number input visible
+    locatePrompt: >
+      Mobile number input. Do NOT tap Truecaller.
+
+  - section: Relogin
+    type: action
+    action: dismiss-keyboard
+    optional: true
+    label: 收起键盘
+
+  - section: Relogin
+    type: action
+    action: tap-text
+    label: 发送 OTP
+    scrollBeforeTap: false
+    noScrollRetry: true
+    assertPrompt: Continue
+    locatePrompt: >
+      Continue or Send OTP on the phone screen.
+
+  - section: Relogin
+    type: action
+    action: wait-page
+    label: 等待 OTP
+    manualWaitSec: 12
+    assertPrompt: >
+      OTP entry is visible (Verify Your Number or OTP boxes).
+
+  - section: Relogin
+    type: native-input
+    label: 再输 OTP
+    valueKey: otp
+    autoDismissKeyboard: false
+    assertPrompt: >
+      Is OTP UI visible
+    locatePrompt: >
+      OTP boxes or field. Do NOT tap Resend OTP.
+
+  - section: Relogin
+    type: action
+    action: tap-text
+    label: Verify & Continue
+    scrollBeforeTap: false
+    noScrollRetry: true
+    assertPrompt: Verify
+    locatePrompt: >
+      Verify & Continue or Verify & Login.
+
+  - section: Relogin
+    type: action
+    action: tap-text
+    label: Not Now
+    optional: true
+    scrollBeforeTap: false
+    noScrollRetry: true
+    assertPrompt: Not Now
+    locatePrompt: >
+      If Connect Your Google Account is visible, tap Not Now.
+
+  - section: Relogin
+    type: action
+    action: wait-page
+    label: 等待首页
+    manualWaitSec: 12
+    assertPrompt: >
+      Home or Cards shows logged-in CardVista (Total Outstanding or My Cards).
+
+  - section: Relogin
+    type: action
+    action: tap-text
+    label: 底栏 Cards
+    optional: true
+    scrollBeforeTap: false
+    noScrollRetry: true
+    assertPrompt: Cards
+    locatePrompt: >
+      Bottom tab Cards if not already on My Cards.
+
+  - section: Relogin
+    type: verify
+    label: 测试卡仍在
+    retry: 2
+    assertPrompt: >
+      "Midscene HDFC Test" is still listed. Logout did not wipe the card or its outstanding bill.
+
+submit:
+  enabled: false

@@ -1,0 +1,467 @@
+# Y26 — Day Schedule CRUD（PRD 十一~十八、TC-007~022、018）
+page:
+  id: aside-y26-day-schedule
+  title: Day Schedule
+  isNative: true
+  skipNavigation: true
+  navigationPrompt: ""
+  blurTarget: the day schedule page title showing month and day
+  aiContext: >
+    Day Schedule: empty "Nothing planned" / "Add a schedule for this day." / "+ Add Schedule";
+    New Schedule sheet: What are you planning? (100), Time/All Day, Save Schedule #245C4A 48dp;
+    timeline rows + trash; Delete this schedule?; paper bg #F7F3EA.
+  bottomFields:
+    - Save Schedule
+
+dropdowns: []
+
+inputs:
+  - label: What are you planning?
+    validValue: Team Meeting
+    skipEmptyBlurTest: true
+    skipInvalidBlurTest: true
+    skipValidBlurTest: true
+    skipScrollBeforeInput: true
+    skipBlurAfterInput: true
+    autoDismissKeyboard: false
+    locatePrompt: >
+      Text input in open "New Schedule" sheet (placeholder "What are you planning?").
+      Do NOT tap Save Schedule or outside sheet.
+
+flow:
+  - section: Day
+    type: verify
+    label: 已进入当天行程页
+    retry: 2
+    assertPrompt: >
+      Day schedule page: date header, back arrow, and empty state or list / Add Schedule.
+
+  - section: Day
+    type: action
+    action: ensure-y26-clean-state
+    label: 清理残留行程
+
+  - section: Day
+    type: verify
+    label: TC-008/空态 Nothing planned
+    retry: 2
+    assertPrompt: >
+      PRD empty: "Nothing planned" and "Add a schedule for this day." (and/or "+ Add Schedule").
+      No schedule rows. Fail if list still has cards.
+
+  - section: Day
+    type: verify
+    label: UI 行程页纸张风
+    assertPrompt: >
+      STRICT soft: paper bg ~#F7F3EA; forest green accents; NOT blue FAB tech calendar.
+
+  # ----- TC-013 空内容 -----
+  - section: Validate
+    type: action
+    action: ensure-new-schedule-sheet
+    label: TC-009 打开 New Schedule
+
+  - section: Validate
+    type: verify
+    label: TC-009 New Schedule Sheet
+    retry: 2
+    assertPrompt: >
+      PRD TC-009: "New Schedule" bottom sheet with "What are you planning?" and Save Schedule.
+
+  - section: Validate
+    type: action
+    action: dismiss-keyboard
+    label: 收键盘露出 Save
+    optional: true
+
+  - section: Validate
+    type: action
+    action: tap-text
+    label: TC-013 空内容 Save Schedule
+    assertPrompt: Save Schedule
+    scrollBeforeTap: false
+    locatePrompt: >
+      Forest-green "Save Schedule" on New Schedule sheet with empty content. Do NOT tap outside.
+
+  - section: Validate
+    type: verify
+    label: TC-013 Please enter schedule
+    retry: 2
+    assertPrompt: >
+      PRD TC-013: "Please enter schedule." visible; sheet still open; no new row saved.
+
+  # ----- TC-014 超限 -----
+  - section: Validate
+    type: action
+    action: fill-input
+    label: TC-014 输入 101 字符
+    inputFieldLabel: What are you planning?
+    inputValue: Y26AC014_XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
+    autoDismissKeyboard: false
+
+  - section: Validate
+    type: action
+    action: dismiss-keyboard
+    label: 超限后收键盘
+    optional: true
+
+  - section: Validate
+    type: verify
+    label: TC-014 Maximum 100 characters
+    retry: 2
+    assertPrompt: >
+      PRD TC-014: "Maximum 100 characters." OR field capped at ≤100 (counter NN/100 with NN≤100).
+
+  - section: Validate
+    type: action
+    action: android-back
+    label: 关闭超限 Sheet（若仍开）
+    optional: true
+
+  - section: Validate
+    type: action
+    action: tap-text
+    label: 若 Sheet 仍开点外侧或返回
+    assertPrompt: back
+    scrollBeforeTap: false
+    optional: true
+    locatePrompt: >
+      Close sheet without saving: tap Cancel if any, or dimmed area, or leave sheet; prefer staying on day page.
+
+  # ----- TC-010 Team Meeting（默认 All Day） -----
+  - section: Add
+    type: action
+    action: ensure-new-schedule-sheet
+    label: 打开 Sheet 保存 Team Meeting
+
+  - section: Add
+    type: action
+    action: fill-input
+    label: TC-010 填入 Team Meeting
+    inputFieldLabel: What are you planning?
+    inputValue: Team Meeting
+    autoDismissKeyboard: false
+
+  - section: Add
+    type: action
+    action: dismiss-keyboard
+    label: Team Meeting 收键盘
+
+  - section: Add
+    type: action
+    action: tap-text
+    label: TC-012 确保 All Day（若可见）
+    assertPrompt: All Day
+    scrollBeforeTap: false
+    optional: true
+    locatePrompt: >
+      "All Day" option/toggle on New Schedule — leave ON/default if already selected.
+
+  - section: Add
+    type: action
+    action: tap-text
+    label: TC-010 Save Schedule
+    assertPrompt: Save Schedule
+    scrollBeforeTap: false
+    locatePrompt: >
+      "Save Schedule" on New Schedule sheet. Do NOT tap Cancel.
+
+  - section: Add
+    type: verify
+    label: TC-010/012 列表显示 Team Meeting
+    retry: 3
+    retryDelayMs: 800
+    assertPrompt: >
+      PRD TC-010/012: sheet closed; "Team Meeting" on day list, preferably marked All Day / top.
+
+  # ----- TC-019 时间序：再加 Lunch / Dinner（尽量带时间；无时间选择器则用文案区分） -----
+  - section: Sort
+    type: action
+    action: ensure-new-schedule-sheet
+    label: 打开 Sheet 添加 Meeting 09 风格
+
+  - section: Sort
+    type: action
+    action: fill-input
+    label: 填入 Meeting
+    inputFieldLabel: What are you planning?
+    inputValue: Meeting
+    autoDismissKeyboard: false
+
+  - section: Sort
+    type: action
+    action: dismiss-keyboard
+    label: Meeting 收键盘
+
+  - section: Sort
+    type: action
+    action: tap-text
+    label: 尝试关 All Day 选时间（若有）
+    assertPrompt: Time
+    scrollBeforeTap: false
+    optional: true
+    locatePrompt: >
+      Time row/picker on New Schedule if present; set morning time ~09:00 when possible. Skip if only All Day.
+
+  - section: Sort
+    type: action
+    action: tap-text
+    label: Save Meeting
+    assertPrompt: Save Schedule
+    scrollBeforeTap: false
+    locatePrompt: >
+      Save Schedule button.
+
+  - section: Sort
+    type: action
+    action: ensure-new-schedule-sheet
+    label: 打开 Sheet 添加 Lunch
+
+  - section: Sort
+    type: action
+    action: fill-input
+    label: 填入 Lunch
+    inputFieldLabel: What are you planning?
+    inputValue: Lunch
+    autoDismissKeyboard: false
+
+  - section: Sort
+    type: action
+    action: dismiss-keyboard
+    label: Lunch 收键盘
+
+  - section: Sort
+    type: action
+    action: tap-text
+    label: Save Lunch
+    assertPrompt: Save Schedule
+    scrollBeforeTap: false
+    locatePrompt: >
+      Save Schedule.
+
+  - section: Sort
+    type: action
+    action: ensure-new-schedule-sheet
+    label: 打开 Sheet 添加 Dinner
+
+  - section: Sort
+    type: action
+    action: fill-input
+    label: 填入 Dinner
+    inputFieldLabel: What are you planning?
+    inputValue: Dinner
+    autoDismissKeyboard: false
+
+  - section: Sort
+    type: action
+    action: dismiss-keyboard
+    label: Dinner 收键盘
+
+  - section: Sort
+    type: action
+    action: tap-text
+    label: Save Dinner
+    assertPrompt: Save Schedule
+    scrollBeforeTap: false
+    locatePrompt: >
+      Save Schedule.
+
+  - section: Sort
+    type: verify
+    label: TC-019/020 列表含多条行程
+    retry: 2
+    assertPrompt: >
+      PRD TC-019 soft: day list shows Team Meeting / Meeting / Lunch / Dinner (or subset just saved).
+      If times visible, earlier times above later; All Day items at top. Fail if list empty.
+
+  # ----- TC-021 持久化 -----
+  - section: Persist
+    type: action
+    action: force-stop-app
+    label: TC-021 关闭 App
+    assertPrompt: com.aarambhdailycalendar.app
+
+  - section: Persist
+    type: action
+    action: relaunch-app
+    label: TC-021 重开 App
+    assertPrompt: com.aarambhdailycalendar.app
+
+  - section: Persist
+    type: action
+    action: wait-app-ready
+    label: TC-021 等待就绪
+    manualWaitSec: 15
+    assertPrompt: >
+      Aarambh Calendar calendar or day schedule after relaunch.
+
+  - section: Persist
+    type: action
+    action: ensure-calendar-home
+    label: 回月历
+    assertPrompt: com.aarambhdailycalendar.app
+
+  - section: Persist
+    type: verify
+    label: TC-007 有行程圆点
+    retry: 2
+    assertPrompt: >
+      PRD TC-007: today's cell shows a small forest-green schedule dot under the numeral.
+
+  - section: Persist
+    type: action
+    action: tap-text
+    label: 再进今日行程
+    assertPrompt: Today
+    locatePrompt: >
+      Tap today's green-outline date cell. Do NOT tap Today text.
+
+  - section: Persist
+    type: verify
+    label: TC-021 行程仍在
+    retry: 2
+    assertPrompt: >
+      PRD TC-021: previously saved schedules (e.g. Team Meeting) still listed after force-stop.
+
+  # ----- TC-015~018 删除 -----
+  - section: Delete
+    type: action
+    action: tap-text
+    label: 第一条垃圾桶
+    assertPrompt: trash
+    locatePrompt: >
+      Trash/delete icon on the first/top schedule row.
+
+  - section: Delete
+    type: verify
+    label: TC-015 删除确认框
+    retry: 2
+    assertPrompt: >
+      PRD TC-015: "Delete this schedule?" with Cancel and Delete (#B94A48 destructive).
+
+  - section: Delete
+    type: action
+    action: tap-text
+    label: TC-016 Cancel
+    assertPrompt: Cancel
+    locatePrompt: >
+      Dialog "Cancel" (NOT Delete).
+
+  - section: Delete
+    type: verify
+    label: TC-016 Cancel 后仍保留
+    retry: 2
+    assertPrompt: >
+      Dialog closed; schedules still listed (including the one we tried to delete).
+
+  - section: Delete
+    type: action
+    action: ensure-y26-clean-state
+    label: TC-017/018 删除全部至空态
+
+  - section: Delete
+    type: verify
+    label: TC-018 空状态恢复
+    retry: 2
+    assertPrompt: >
+      PRD TC-018: "Nothing planned" / "Add a schedule for this day." with no schedule rows.
+
+  - section: Delete
+    type: action
+    action: tap-text
+    label: 返回月历验圆点
+    assertPrompt: Back
+    locatePrompt: >
+      Back arrow to calendar home.
+
+  - section: Delete
+    type: verify
+    label: TC-008/018 圆点消失
+    retry: 2
+    assertPrompt: >
+      PRD TC-008/018: today's cell has NO green schedule dot after deleting last schedule.
+
+  # ----- TC-022：再建一条再删再重启 -----
+  - section: TC-022
+    type: action
+    action: tap-text
+    label: 进今日
+    assertPrompt: Today
+    locatePrompt: >
+      Today's date cell.
+
+  - section: TC-022
+    type: action
+    action: ensure-new-schedule-sheet
+    label: 添加 TC-022 标记
+
+  - section: TC-022
+    type: action
+    action: fill-input
+    label: 填入 Y26DeleteMark
+    inputFieldLabel: What are you planning?
+    inputValue: Y26DeleteMark
+    autoDismissKeyboard: false
+
+  - section: TC-022
+    type: action
+    action: dismiss-keyboard
+    label: 收键盘
+
+  - section: TC-022
+    type: action
+    action: tap-text
+    label: Save 标记
+    assertPrompt: Save Schedule
+    scrollBeforeTap: false
+    locatePrompt: >
+      Save Schedule.
+
+  - section: TC-022
+    type: action
+    action: ensure-y26-clean-state
+    label: 删除标记行程
+
+  - section: TC-022
+    type: action
+    action: force-stop-app
+    label: TC-022 关闭
+    assertPrompt: com.aarambhdailycalendar.app
+
+  - section: TC-022
+    type: action
+    action: relaunch-app
+    label: TC-022 重开
+    assertPrompt: com.aarambhdailycalendar.app
+
+  - section: TC-022
+    type: action
+    action: wait-app-ready
+    label: TC-022 就绪
+    manualWaitSec: 12
+    assertPrompt: >
+      App loaded.
+
+  - section: TC-022
+    type: action
+    action: ensure-calendar-home
+    label: TC-022 回月历
+    assertPrompt: com.aarambhdailycalendar.app
+
+  - section: TC-022
+    type: action
+    action: tap-text
+    label: TC-022 进今日
+    assertPrompt: Today
+    locatePrompt: >
+      Today's date cell.
+
+  - section: TC-022
+    type: verify
+    label: TC-022 已删行程不再出现
+    retry: 2
+    assertPrompt: >
+      PRD TC-022: "Y26DeleteMark" is NOT listed; empty Nothing planned is OK.
+
+submit:
+  enabled: false

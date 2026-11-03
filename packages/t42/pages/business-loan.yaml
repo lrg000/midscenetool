@@ -1,0 +1,68 @@
+# T42 A 面 — Business Loan 详情（对齐 Figma「Business Loan」3:2020）
+page:
+  id: aside-t42-business-loan
+  title: Business Loan
+  isNative: true
+  skipNavigation: true
+  navigationPrompt: ""
+  blurTarget: the "Business Loan" title
+  aiContext: >
+    T42 A-side Business Loan detail (Figma). Distinct from Personal Loan:
+    Overview about MSMEs, Loan Amount ₹1 Lakh - ₹50 Lakhs, Interest 15% - 24% p.a.,
+    Suitable For MSMEs/Retailers/Manufacturers, documents Udhyam / GST / Bank Statement.
+  bottomFields:
+    - Required Documents
+
+dropdowns: []
+inputs: []
+
+flow:
+  - section: Home
+    type: action
+    action: tap-text
+    label: Business Loan 磁贴
+    assertPrompt: Business Loan
+    locatePrompt: >
+      The "Business Loan" service tile under "Our Services" on Home
+      (building icon). Do NOT tap Personal Loan, Get Cash Now, or Profile.
+
+  - section: Business Loan
+    type: verify
+    label: Business Loan 标题与 Overview
+    retry: 2
+    assertPrompt: >
+      Page title is exactly "Business Loan". "Overview" text mentions business/MSME/
+      working capital (must NOT be the Personal Loan overview). Fail if title wrong.
+
+  - section: Business Loan
+    type: verify
+    label: Typical Features 数值对齐 Figma
+    assertPrompt: >
+      "Typical Features" shows:
+      "Loan Amount" → "₹1 Lakh - ₹50 Lakhs" (or identical),
+      "Repayment Period" → "12 - 60 Months",
+      "Interest Rate" → "15% - 24% p.a.".
+      Fail if Personal Loan amounts (₹50k - ₹20 Lakhs / 10.5%) appear instead.
+
+  - section: Business Loan
+    type: verify
+    label: Suitable For / Required Documents
+    scrollDownBefore: 2
+    retry: 3
+    locatePrompt: The "Required Documents" or "Suitable For" section on Business Loan page
+    assertPrompt: >
+      "Suitable For" shows "MSMEs", "Retailers", and "Manufacturers".
+      "Required Documents" includes "Business Registration (Udhyam)",
+      "GST Returns / ITR", and "Bank Statement (12M)". Fail if any missing.
+
+  - section: Business Loan
+    type: action
+    action: tap-text
+    label: 返回 Home
+    assertPrompt: Back
+    locatePrompt: >
+      The circular back arrow at the top-left of the Business Loan page
+      (not Android system Back)
+
+submit:
+  enabled: false

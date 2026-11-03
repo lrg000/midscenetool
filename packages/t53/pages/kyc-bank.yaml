@@ -1,0 +1,87 @@
+# T53 KYC Step 5 — PRD 二十二（模拟验卡，非真实银行）
+page:
+  id: aside-t53-kyc-bank
+  title: Bank Account
+  isNative: true
+  skipNavigation: true
+  navigationPrompt: ""
+  blurTarget: the title Bank Account
+  aiContext: >
+    Bank Account. Add the account where you want to receive your loan.
+    Account Holder Name, Account Number, Confirm Account Number, IFSC. Verify Account. Then "Bank account verified".
+  bottomFields: []
+dropdowns: []
+inputs:
+  - label: Account Holder Name
+    validValue: Ravi Kumar
+    skipEmptyBlurTest: true
+    skipInvalidBlurTest: true
+    skipInputTests: true
+  - label: Account Number
+    validValue: "123456789012"
+    skipEmptyBlurTest: true
+    skipInvalidBlurTest: true
+    skipInputTests: true
+  - label: Confirm Account Number
+    validValue: "123456789012"
+    skipEmptyBlurTest: true
+    skipInvalidBlurTest: true
+    skipInputTests: true
+  - label: IFSC
+    validValue: SBIN0001234
+    skipEmptyBlurTest: true
+    skipInvalidBlurTest: true
+    skipInputTests: true
+flow:
+  - section: Bank
+    type: action
+    action: wait-page
+    label: 等待 Bank Account
+    manualWaitSec: 8
+    assertPrompt: >
+      "Bank Account" and "Add the account where you want to receive your loan." are visible.
+  - section: Bank
+    type: verify
+    label: UI Bank PRD
+    assertPrompt: >
+      STRICT: warm off-white background #F4F3EF, primary blue #1D4ED8 buttons with about 6dp corners (not pills), title/amount near #171717, secondary #6B7280. Fail if yellow notes, retro paper, black gallery, or cream sticker theme.
+  - section: Bank
+    type: action
+    action: fill-input
+    label: Account Holder Name
+    inputFieldLabel: Account Holder Name
+    inputValue: Ravi Kumar
+    autoDismissKeyboard: true
+  - section: Bank
+    type: action
+    action: fill-input
+    label: Account Number
+    inputFieldLabel: Account Number
+    inputValue: "123456789012"
+    autoDismissKeyboard: true
+  - section: Bank
+    type: action
+    action: fill-input
+    label: Confirm Account Number
+    inputFieldLabel: Confirm Account Number
+    inputValue: "123456789012"
+    autoDismissKeyboard: true
+  - section: Bank
+    type: action
+    action: fill-input
+    label: IFSC
+    inputFieldLabel: IFSC
+    inputValue: SBIN0001234
+    autoDismissKeyboard: true
+  - section: Bank
+    type: action
+    action: tap-text
+    label: Verify Account
+    scrollBeforeTap: true
+    assertPrompt: Verify Account
+    locatePrompt: The "Verify Account" button. Do NOT tap back.
+  - section: Bank
+    type: verify
+    label: Bank account verified
+    retry: 2
+    assertPrompt: '"Bank account verified" is shown (simulated, not a live bank API error).'

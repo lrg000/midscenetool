@@ -1,0 +1,198 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="color-scheme" content="dark">
+  <meta name="description" content="Midscene AI 视觉自动化测试框架 — 项目展示">
+  <title>MidsceneTool · 项目展示</title>
+  <link rel="stylesheet" href="./styles/theme.css">
+  <link rel="stylesheet" href="./styles/page.css">
+  <link rel="stylesheet" href="./styles/motion.css">
+</head>
+<body>
+  <div class="deck-progress" data-deck-progress role="progressbar" aria-label="演示进度"></div>
+  <main class="page" id="main" data-deck data-deck-mode="scroll">
+
+    <section class="section section-narrow is-active" data-section data-slide id="slide-01" aria-current="page">
+      <p class="prompt cursor">midscenetool / project showcase</p>
+      <h1 class="hero-title reveal-item">用 AI 视觉 + YAML 配置，驱动 Android 借贷 App 自动化测试。</h1>
+      <p class="lede reveal-item">页面配置驱动 · AI Agent 执行 · 状态机编排。无需维护 XPath / UiAutomator，用自然语言描述 UI，由 Midscene 完成点击、输入与断言。</p>
+      <p class="note reveal-item">scroll 模式 · terminal-mint 主题 · 来源：用户操作手册、config/、package.json</p>
+      <div class="stat-row reveal-item" style="margin-top: var(--space-4);">
+        <div class="stat"><strong>11</strong><span>B 面注册页面</span></div>
+        <div class="stat"><strong>4</strong><span>A 面马甲包配置</span></div>
+        <div class="stat"><strong>18+</strong><span>npm 测试入口</span></div>
+        <div class="stat"><strong>3</strong><span>运行模式</span></div>
+      </div>
+    </section>
+
+    <section class="section" data-section data-slide id="slide-02">
+      <div class="stack">
+        <p class="eyebrow">01 / Problem</p>
+        <h2 class="heading reveal-item">移动端 H5 + 原生壳混合，传统定位器维护成本过高。</h2>
+        <div class="grid-3 reveal-item">
+          <article class="card">
+            <h3>定位器脆弱</h3>
+            <p>UI 微调即导致 XPath / resource-id 失效，回归成本高。</p>
+          </article>
+          <article class="card">
+            <h3>混合栈复杂</h3>
+            <p>冷启动、权限、原生登录、WebView H5、KYC 原生页交替出现。</p>
+          </article>
+          <article class="card">
+            <h3>业务流多变</h3>
+            <p>首页分流 Next / Apply / Repay，账号与包配置影响路径。</p>
+          </article>
+        </div>
+        <p class="takeaway reveal-item">框架选择用<strong>自然语言 + 视觉理解</strong>描述元素，把「怎么点」交给 AI，把「测什么」留在 YAML。</p>
+      </div>
+    </section>
+
+    <section class="section" data-section data-slide id="slide-03">
+      <div class="stack">
+        <p class="eyebrow">02 / Mechanism</p>
+        <h2 class="heading reveal-item">YAML 配置进入状态机，AI Agent 在设备上执行并回写报告。</h2>
+        <div class="concept-wrap reveal-item" data-concept-stage>
+          <span class="concept-packet" aria-hidden="true"></span>
+          <div class="concept-stage">
+            <span class="concept-node">data/*.yaml<br>flows.yaml</span>
+            <span class="concept-node">state-machine<br>page-executor</span>
+            <span class="concept-node">Midscene<br>AI Agent</span>
+            <span class="concept-node">断言 + HTML<br>JSON 报告</span>
+          </div>
+        </div>
+        <button class="term-nav" type="button" data-replay>重播数据流</button>
+        <ul class="list-clean reveal-item">
+          <li><strong>config/pages.yaml</strong> — 页面注册与 data 文件映射</li>
+          <li><strong>core/state-machine.ts</strong> — 单页入口 <code>runPageTest</code></li>
+          <li><strong>core/business-runner.ts</strong> — 多页业务流 <code>runBusinessFlow</code></li>
+          <li><strong>core/aside-runner.ts</strong> — A 面按包 <code>runAsidePackage</code></li>
+        </ul>
+      </div>
+    </section>
+
+    <section class="section" data-section data-slide id="slide-04">
+      <div class="stack">
+        <p class="eyebrow">03 / Modes</p>
+        <h2 class="heading reveal-item">按稳定性选择运行模式 — 日常推荐单页。</h2>
+        <div class="grid-3 reveal-item">
+          <article class="card mode-card recommended">
+            <h3>single-page <span class="stars">★★★</span></h3>
+            <p>设备已在目标页，<code>skipNavigation=true</code>。例：<code>npm run test:basic-info</code></p>
+          </article>
+          <article class="card mode-card">
+            <h3>segment <span class="stars">★★</span></h3>
+            <p>分段串联，如 bootstrap + 登录，或 KYC 五步 <code>kyc-full</code>。</p>
+          </article>
+          <article class="card mode-card">
+            <h3>full-flow <span class="stars">★</span></h3>
+            <p>bootstrap → 登录 → 分流 → 多页；依赖账号、环境与人工步骤。</p>
+          </article>
+        </div>
+        <p class="note reveal-item">环境变量：<code>ACCOUNT_PROFILE</code> · <code>SKIP_BOOTSTRAP=1</code> · <code>SKIP_LOGIN=1</code></p>
+      </div>
+    </section>
+
+    <section class="section" data-section data-slide id="slide-05">
+      <div class="stack">
+        <p class="eyebrow">04 / Capabilities</p>
+        <h2 class="heading reveal-item">已落地的自动化能力模块。</h2>
+        <div class="grid-3 reveal-item">
+          <article class="card"><h3>下拉框</h3><p>随机选项 + 关弹窗后回显一致性</p></article>
+          <article class="card"><h3>输入框</h3><p>空值 / 非法值 / 合法值失焦校验</p></article>
+          <article class="card"><h3>通讯录</h3><p>原生联系人选择 + 回填校验</p></article>
+          <article class="card"><h3>原生登录</h3><p>手机号 + OTP 验证码流程</p></article>
+          <article class="card"><h3>业务分流</h3><p>Next / Apply / Go to repay 识别</p></article>
+          <article class="card"><h3>KYC 链路</h3><p>Aadhaar OCR · 活体 · Bank info</p></article>
+          <article class="card"><h3>申请 / 还款</h3><p>Apply entry · Success · Repay 页面</p></article>
+          <article class="card"><h3>AI 指标</h3><p>Token 统计、步骤缓存、可视化报告</p></article>
+        </div>
+      </div>
+    </section>
+
+    <section class="section" data-section data-slide id="slide-06">
+      <div class="grid-2">
+        <div class="stack reveal-item">
+          <span class="split-label">B 面 · H5 WebView</span>
+          <h2 class="heading">flows + data</h2>
+          <p class="lede">登录后 H5 页面：Basic info、Reference Contacts、KYC、Bank、Apply、Repay 等，由 <code>config/flows.yaml</code> 编排。</p>
+          <ul class="list-clean">
+            <li>11 页注册于 <code>config/pages.yaml</code></li>
+            <li>字段与 flow 定义在 <code>data/*.yaml</code></li>
+            <li>测试入口 <code>tests/*.test.ts</code></li>
+          </ul>
+        </div>
+        <div class="stack reveal-item">
+          <span class="split-label">A 面 · 原生马甲包</span>
+          <h2 class="heading">packages + aside</h2>
+          <p class="lede">各 Android 壳包独立 YAML：<strong>T42 RajWise</strong>、<strong>Y20 Daily Grid</strong> 等，由 <code>config/packages.yaml</code> 注册。</p>
+          <ul class="list-clean">
+            <li>一包一目录 <code>packages/&lt;slug&gt;/pages/</code></li>
+            <li>入口 <code>tests/aside/*.test.ts</code></li>
+            <li>可对齐 Figma / 云效 PRD 验收</li>
+          </ul>
+        </div>
+      </div>
+    </section>
+
+    <section class="section" data-section data-slide id="slide-07">
+      <div class="stack">
+        <p class="eyebrow">05 / Evidence</p>
+        <h2 class="heading reveal-item">每次运行产出可核对、可分享的报告与产物。</h2>
+        <div class="grid-2 reveal-item">
+          <div class="stack">
+            <article class="card">
+              <h3>reports/report-generator.ts</h3>
+              <p>汇总用例结果，生成 HTML 可视化报告（通过率、分组、AI Token 等）。</p>
+            </article>
+            <article class="card">
+              <h3>midscene_run/</h3>
+              <p>报告、截图、日志、缓存、Midscene 步骤报告统一落盘。</p>
+            </article>
+          </div>
+          <pre class="code-block reveal-item">midscene_run/
+├── report/          # HTML 步骤报告
+├── output/          # 汇总报告
+├── screenshots/     # 失败/关键步骤截图
+├── log/             # 运行日志
+└── cache/           # AI 缓存</pre>
+        </div>
+        <p class="takeaway reveal-item">可与数据库 MCP 联用：跑完用例后核对业务表落库（customer、borrow_apply 等）。</p>
+      </div>
+    </section>
+
+    <section class="section section-narrow" data-section data-slide id="slide-08">
+      <div class="stack">
+        <p class="eyebrow">06 / Quick Start</p>
+        <h2 class="heading reveal-item">从单页字段测试开始 — 最稳定的路径。</h2>
+        <ol class="list-clean reveal-item">
+          <li><code>cd F:\tools\midscenetool && npm install</code></li>
+          <li>配置 <code>.env</code>（Midscene 模型 API + 可选测试账号）</li>
+          <li>USB 连接 Android 设备，<code>adb devices</code> 确认在线</li>
+          <li>手动导航 App 到 <strong>Basic info</strong> 页</li>
+          <li><code>npm run test:basic-info</code></li>
+        </ol>
+        <pre class="code-block reveal-item"># 其他常用入口
+npm run test:kyc-full
+npm run test:business-auto
+npm run test:business-apply
+npm run test:aside:t42
+npm run test:aside:y20</pre>
+        <p class="takeaway reveal-item">核心结论：<strong>YAML 描述测什么，AI 负责怎么点，报告证明测过了。</strong></p>
+        <p class="note reveal-item">项目路径 F:\tools\midscenetool · 技术栈 Midscene.js 1.10 + TypeScript</p>
+      </div>
+    </section>
+
+  </main>
+
+  <aside class="deck-overlay" data-deck-help hidden aria-hidden="true">
+    下一节：→／↓／PageDown／Space　上一节：←／↑／PageUp／Shift+Space　首尾：Home／End　全屏：F　帮助：?
+  </aside>
+  <output class="deck-overlay" data-key-debug hidden aria-hidden="true"></output>
+
+  <script src="./scripts/concept-animation.js"></script>
+  <script src="./scripts/deck-runtime.js"></script>
+  <script src="./scripts/main.js"></script>
+</body>
+</html>

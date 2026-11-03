@@ -1,0 +1,112 @@
+flows:
+  # ═══════════════════════════════════════════════════════════
+  # 运行模式说明（重要）
+  # ─ single-page  单页：设备已在目标页，skipNavigation=true（最稳定，推荐日常）
+  # ─ segment      分段：少量页面串联（如 kyc-full）
+  # ─ full-flow    全流程：launch 指定包 → bootstrap→login→分流→多页
+  #
+  # 环境变量：
+  #   ACCOUNT_PROFILE=new-user|apply-user|repay-user  见 config/accounts.yaml
+#   ANDROID_PACKAGE=com.xxx  覆盖 environment.yaml app.androidPackage
+#   SKIP_LAUNCH=1      不自动打开 App（同时跳过清数据）
+#   SKIP_CLEAR_DATA=1  全流程仍启动，但不 pm clear（保留登录态）
+#   SKIP_BOOTSTRAP=1   跳过登录前操作
+#   SKIP_LOGIN=1       跳过登录（已在 H5）
+  # ═══════════════════════════════════════════════════════════
+
+  basic-info:
+    description: "【单页】Basic info 字段测试（需已在 Basic info 页）"
+    bootstrap: null
+    pages:
+      - basic-info
+
+  reference-contacts:
+    description: "【单页】Reference Contacts"
+    bootstrap: null
+    pages:
+      - reference-contacts
+
+  bank-info:
+    description: "【单页】Bank information"
+    bootstrap: null
+    pages:
+      - bank-info
+
+  kyc-aadhaar:
+    description: "【单页】KYC Aadhaar OCR"
+    bootstrap: null
+    pages:
+      - kyc-aadhaar
+
+  kyc-liveness:
+    description: "【单页】KYC 静默活体"
+    bootstrap: null
+    pages:
+      - kyc-liveness
+
+  kyc-full:
+    description: "【分段】仅 KYC 五步（不含登录；设备需已在五页任一；串联时按当前屏识别，不依赖产品顺序）"
+    bootstrap: null
+    skipLogin: true
+    pages:
+      - basic-info
+      - reference-contacts
+      - kyc-aadhaar
+      - kyc-liveness
+      - bank-info
+
+  apply-entry:
+    description: "【单页】Begin Verification 或 Get Started 入口（需已点 Next）"
+    bootstrap: null
+    pages:
+      - apply-entry
+
+  apply-success:
+    description: "【单页】首页若仍有 Apply 则先点再等 Success Confirm（KYC 后回到额度卡）"
+    bootstrap: null
+    pages:
+      - apply-success
+
+  repay:
+    description: "【单页】还款详情（需已在 Repay Loan 列表页）"
+    bootstrap: null
+    pages:
+      - repay
+
+  # pages 仅 login 占位；登录后由 AI 识别 Next/Apply/Go to repay，
+  # 再映射到 business-new-user / business-apply-only / business-repay 的完整 pages
+  business-auto:
+    description: "【全流程】bootstrap→login→AI识别分流→子流程"
+    bootstrap: app-bootstrap
+    pages:
+      - login
+
+  business-new-user:
+    description: "【全流程】新用户 Next → KYC → Apply Success"
+    bootstrap: app-bootstrap
+    postLoginTap: Next
+    pages:
+      - login
+      - apply-entry
+      - basic-info
+      - reference-contacts
+      - kyc-aadhaar
+      - kyc-liveness
+      - bank-info
+      - apply-success
+
+  business-apply-only:
+    description: "【全流程】老用户 Apply → Success"
+    bootstrap: app-bootstrap
+    postLoginTap: Apply
+    pages:
+      - login
+      - apply-success
+
+  business-repay:
+    description: "【全流程】在贷用户 Go to repay → Repay"
+    bootstrap: app-bootstrap
+    postLoginTap: "Go to repay"
+    pages:
+      - login
+      - repay

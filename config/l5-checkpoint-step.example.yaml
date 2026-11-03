@@ -1,0 +1,24 @@
+# H5 localStorage：登录后识别 Next/Apply/Go to repay 即抽取（business-runner syncH5SessionVars）。
+# 申请前额度：点 Apply 之前核对。
+# 1) 首页分流 detectHomeState === Apply 时，business-runner 点击前自动跑 beforeApply（JS 已抽过则跳过）
+# 2) 新用户 KYC 结束后回到额度卡：apply-success 的 tap-apply-if-visible 会再核对再点
+# 不要在已经点过 Apply、进入权限/Success 之后再配 checkpoint。
+
+# 其它页若仍要手动挂 checkpoint：
+- section: L4
+  type: checkpoint
+  label: 申请前额度三端一致
+  observe:
+    optional: true
+    waitForApply: false
+    jsExtract: true
+    uiExtract:
+      creditLimit: >
+        On the H5 loan home card BEFORE tapping Apply: the currently displayed
+        default maximum Amount as digits only.
+    apis:
+      - product-list-merge
+    sqls:
+      - credit-by-mobile-market
+    rules:
+      - credit-match

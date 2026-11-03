@@ -1,0 +1,41 @@
+# T53 Help & Support — PRD 四十六
+page:
+  id: aside-t53-help
+  title: Help & Support
+  isNative: true
+  skipNavigation: true
+  navigationPrompt: ""
+  blurTarget: Help & Support
+  aiContext: >
+    Help & Support. Need help? Email support@flexicredit.com.
+    Our support team will get back to you as soon as possible.
+    No FAQ, chat, or tickets.
+  bottomFields: []
+dropdowns: []
+inputs: []
+flow:
+  - section: Help
+    type: action
+    action: tap-text
+    label: Help & Support
+    scrollBeforeTap: false
+    assertPrompt: Help & Support
+    locatePrompt: The "Help & Support" row on My Account. Do NOT tap Logout.
+  - section: Help
+    type: verify
+    label: Help 文案与邮箱
+    assertPrompt: >
+      Title "Help & Support". Body includes "Need help?" and
+      "If you have any questions about FlexiCredit, please contact our support team."
+      Email is exactly "support@flexicredit.com".
+      Footer includes "Our support team will get back to you as soon as possible."
+      No FAQ list, live chat, or phone support.
+  - section: Help
+    type: verify
+    label: UI Help PRD
+    assertPrompt: >
+      STRICT: warm off-white background #F4F3EF, primary blue #1D4ED8 buttons with about 6dp corners (not pills), title/amount near #171717, secondary #6B7280. Fail if yellow notes, retro paper, black gallery, or cream sticker theme.
+  - section: Help
+    type: action
+    action: android-back
+    label: 返回 My

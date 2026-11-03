@@ -1,0 +1,261 @@
+# Y24 — 加密相册（PRD 十四~十五、TC-015~018、021）
+page:
+  id: aside-y24-lock
+  title: Locked Album
+  isNative: true
+  skipNavigation: true
+  navigationPrompt: ""
+  blurTarget: the New Album or Private Album title
+  aiContext: >
+    New Album with Protect this album + Set Password (4-6 digits). Locked album shows lock icon.
+    Unlock: Private Album / Enter password. Errors: Incorrect password. / Password must be 4-6 digits.
+  bottomFields:
+    - Create Album
+
+dropdowns: []
+
+inputs:
+  - label: Album name
+    validValue: Private
+    skipEmptyBlurTest: true
+    skipInvalidBlurTest: true
+    skipValidBlurTest: true
+    skipScrollBeforeInput: true
+    skipBlurAfterInput: true
+    autoDismissKeyboard: false
+    locatePrompt: >
+      "Album name" field in New Album sheet.
+
+flow:
+  - section: Nav
+    type: action
+    action: tap-text
+    label: 确保在 Albums
+    assertPrompt: Albums
+    scrollBeforeTap: false
+    optional: true
+    locatePrompt: >
+      Bottom "Albums" tab or Albums header if already there.
+
+  - section: Create
+    type: action
+    action: tap-text
+    label: 打开 New Album（加密）
+    assertPrompt: +
+    scrollBeforeTap: false
+    locatePrompt: >
+      Albums header "+" to create album.
+
+  - section: Create
+    type: action
+    action: wait-page
+    label: 等待 New Album
+    manualWaitSec: 6
+    assertPrompt: >
+      New Album sheet with Protect this album option.
+
+  - section: Create
+    type: action
+    action: fill-input
+    label: 名称 Private
+    inputFieldLabel: Album name
+    inputValue: Private
+    autoDismissKeyboard: false
+
+  - section: Create
+    type: action
+    action: dismiss-keyboard
+    label: 收键盘
+    optional: true
+
+  - section: Create
+    type: action
+    action: tap-text
+    label: 打开 Protect this album
+    assertPrompt: Protect this album
+    scrollBeforeTap: false
+    locatePrompt: >
+      Toggle/switch or row "Protect this album" on New Album sheet. Turn it ON.
+
+  - section: Create
+    type: action
+    action: wait-page
+    label: 等待 Set Password
+    manualWaitSec: 5
+    assertPrompt: >
+      Password / Set Password UI visible for 4-6 digit PIN (after Protect enabled).
+
+  # TC-021 非法密码
+  - section: TC-021
+    type: action
+    action: tap-text
+    label: TC-021 输入过短密码 12
+    assertPrompt: password
+    scrollBeforeTap: false
+    locatePrompt: >
+      Password digit field or first PIN boxes; enter only two digits if possible by tapping keys "1" then "2".
+      If PIN pad: tap 1 then 2 only.
+
+  - section: TC-021
+    type: action
+    action: tap-text
+    label: TC-021 尝试 Create/Save
+    assertPrompt: Create Album
+    scrollBeforeTap: false
+    optional: true
+    locatePrompt: >
+      "Create Album" or confirm password save while password invalid (2 digits).
+
+  - section: TC-021
+    type: verify
+    label: TC-021 Password must be 4-6 digits
+    retry: 2
+    assertPrompt: >
+      PRD TC-021: message "Password must be 4-6 digits." OR create blocked because PIN incomplete (<4 digits).
+      Fail only if a protected album is clearly created with invalid short password.
+
+  # 设合法密码 1234 并创建
+  - section: TC-015
+    type: action
+    action: tap-text
+    label: 输入密码 1234
+    assertPrompt: pin
+    scrollBeforeTap: false
+    locatePrompt: >
+      PIN/password entry: enter digits 1,2,3,4 (tap number keys or fill PIN boxes). Clear prior short PIN first if needed.
+
+  - section: TC-015
+    type: action
+    action: dismiss-keyboard
+    label: PIN 后收键盘
+    optional: true
+
+  - section: TC-015
+    type: action
+    action: tap-text
+    label: TC-015 Create Album
+    assertPrompt: Create Album
+    scrollBeforeTap: false
+    locatePrompt: >
+      "Create Album" with Protect on and valid 4-digit password set.
+
+  - section: TC-015
+    type: action
+    action: wait-page
+    label: 等待列表含锁定相册
+    manualWaitSec: 8
+    assertPrompt: >
+      Albums list showing locked album "Private" (or similar) with lock icon.
+
+  - section: TC-015
+    type: verify
+    label: TC-015 加密相册已创建
+    retry: 2
+    assertPrompt: >
+      PRD TC-015: album list shows protected album with lock icon (🔒) and name like Private.
+
+  # TC-017 错误密码
+  - section: Unlock
+    type: action
+    action: tap-text
+    label: 点击加密相册
+    assertPrompt: Private
+    scrollBeforeTap: false
+    locatePrompt: >
+      Locked album card "Private" (with lock). Do NOT tap Holiday.
+
+  - section: Unlock
+    type: action
+    action: wait-page
+    label: 等待密码页
+    manualWaitSec: 8
+    assertPrompt: >
+      Private Album / Enter password unlock screen (not album photo grid yet).
+
+  - section: Unlock
+    type: action
+    action: tap-text
+    label: TC-017 输入错误密码 0000
+    assertPrompt: pin
+    scrollBeforeTap: false
+    locatePrompt: >
+      Enter wrong PIN 0,0,0,0 on Private Album password screen.
+
+  - section: Unlock
+    type: verify
+    label: TC-017 Incorrect password
+    retry: 2
+    assertPrompt: >
+      PRD TC-017: "Incorrect password." shown; still on unlock screen, not album grid.
+
+  # TC-016 正确密码
+  - section: Unlock
+    type: action
+    action: tap-text
+    label: TC-016 输入正确密码 1234
+    assertPrompt: pin
+    scrollBeforeTap: false
+    locatePrompt: >
+      Enter correct PIN 1,2,3,4 on Private Album password screen (clear wrong PIN first if needed).
+
+  - section: Unlock
+    type: action
+    action: wait-page
+    label: 等待进入加密相册
+    manualWaitSec: 8
+    assertPrompt: >
+      Inside Private album detail (photos grid or empty album), past password gate.
+
+  - section: Unlock
+    type: verify
+    label: TC-016 正确密码进入
+    retry: 2
+    assertPrompt: >
+      PRD TC-016: unlocked into protected album detail successfully.
+
+  # TC-018 删除加密相册
+  - section: Delete
+    type: action
+    action: tap-text
+    label: 打开加密相册菜单
+    assertPrompt: overflow
+    scrollBeforeTap: false
+    locatePrompt: >
+      Top-right "..." on Private album detail. Do NOT tap Add Photos.
+
+  - section: Delete
+    type: action
+    action: tap-text
+    label: Delete Album
+    assertPrompt: Delete Album
+    scrollBeforeTap: false
+    locatePrompt: >
+      Menu item "Delete Album".
+
+  - section: Delete
+    type: action
+    action: tap-text
+    label: 确认删除加密相册
+    assertPrompt: Delete
+    scrollBeforeTap: false
+    optional: true
+    locatePrompt: >
+      Confirm Delete on delete-album dialog if shown (NOT Cancel).
+
+  - section: Delete
+    type: action
+    action: wait-page
+    label: 删除后回 Albums
+    manualWaitSec: 8
+    assertPrompt: >
+      Albums list without the Private locked album (Holiday may remain).
+
+  - section: Delete
+    type: verify
+    label: TC-018 加密相册已删
+    retry: 2
+    assertPrompt: >
+      PRD TC-018: Private/locked album gone from Albums list; app did not require deleting system photos.
+
+submit:
+  enabled: false

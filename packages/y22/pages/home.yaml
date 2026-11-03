@@ -1,0 +1,65 @@
+# Y22 Daily Scribble Pad — Notes 首页（PRD 八~九、TC-001、TC-018~019）
+# 云效: 9da8087be8f5e358d958a82bb1 | com.dailyscribble.writepad.app
+page:
+  id: aside-y22-home
+  title: Notes Home
+  isNative: true
+  skipNavigation: true
+  navigationPrompt: ""
+  blurTarget: the Notes page title in the header
+  aiContext: >
+    Daily Scribble Pad: 2 pages only, no login/Tabs/bottom nav (PRD 四).
+    Home header "Notes" 28sp; yellow brand #FACC15; bg #FFFBF2; cards #FEF3C7 ~16dp radius.
+    Empty: "No Notes Yet" / Tap "+" to create your first note. Ignore vConsole.
+  bottomFields: []
+
+dropdowns: []
+inputs: []
+
+flow:
+  - section: Home
+    type: action
+    action: wait-app-ready
+    label: 等待 App 就绪
+    manualWaitSec: 20
+    assertPrompt: >
+      Daily Scribble Pad finished loading: Notes list home OR note detail OR New Note sheet.
+      No endless splash. Answer true if any main screen shown.
+
+  - section: Home
+    type: action
+    action: relaunch-if-not
+    label: 不在 App 内则重开
+    assertPrompt: >
+      Is Notes list / note detail / New Note sheet visible (Daily Scribble Pad in-app UI),
+      not Android launcher and not solid black
+    locatePrompt: com.dailyscribble.writepad.app
+
+  - section: Home
+    type: verify
+    label: TC-001 默认进入 Notes 无登录
+    retry: 2
+    assertPrompt: >
+      PRD TC-001: opened directly to Notes home (title "Notes") or empty state.
+      No login, registration, splash, or onboarding.
+      FAIL for login screens, TabLayout, or 3+ icon bottom navigation bar.
+
+  - section: Home
+    type: verify
+    label: UI 首页 PRD 配色与 Header
+    assertPrompt: >
+      STRICT PRD UI (五~八, TC-018) on Notes home:
+      - Background near #FFFBF2 (warm off-white / cream), NOT pure dark
+      - Brand yellow ~#FACC15 on + button and/or note accents
+      - Header title "Notes" large (~28sp) near #18181B; header ~56dp
+      Fail only if chrome clearly wrong (login UI, blue loan branding, heavy dark theme without yellow).
+
+  - section: Home
+    type: verify
+    label: TC-019 圆角卡片极简风格
+    assertPrompt: >
+      STRICT TC-019: modern minimal sticky-note look; rounded cards (~16dp);
+      light shadow only; generous whitespace. Fail if heavy shadows or cluttered chrome.
+
+submit:
+  enabled: false

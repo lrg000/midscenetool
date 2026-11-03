@@ -1,0 +1,37 @@
+# T46 A 面 — Statistics（无独立 PNG；精简 retry）
+page:
+  id: aside-t46-statistics
+  title: Statistics
+  isNative: true
+  skipNavigation: true
+  navigationPrompt: ""
+  blurTarget: the Statistics page title
+  aiContext: >
+    Statistics tab via bottom middle pie-chart icon. Expect chart / spent summary /
+    category breakdown. Soft asserts — no local Figma PNG. Ignore vConsole.
+  bottomFields: []
+
+dropdowns: []
+inputs: []
+
+flow:
+  - section: Navigation
+    type: action
+    action: tap-text
+    label: 底部 Statistics Tab
+    assertPrompt: Statistics
+    scrollBeforeTap: false
+    locatePrompt: >
+      Middle bottom-nav pie chart / statistics icon.
+      Do NOT tap left Home grid or right Profile person icon.
+
+  - section: Statistics
+    type: verify
+    label: Statistics 页可见
+    retry: 1
+    assertPrompt: >
+      Statistics-like screen is visible (title Statistics/STATISTICS and/or a chart/donut
+      and/or Total Spent). Fail if still clearly on Home journal or Profile User menu.
+
+submit:
+  enabled: false

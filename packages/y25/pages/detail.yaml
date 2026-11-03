@@ -1,0 +1,107 @@
+# Y25 — 贴纸详情 + 下载（PRD 十一~十二、TC-005~007）
+page:
+  id: aside-y25-detail
+  title: Sticker Detail
+  isNative: true
+  skipNavigation: true
+  navigationPrompt: ""
+  blurTarget: the Sticker detail header title
+  aiContext: >
+    Sticker detail: back arrow, large sticker preview, name + category, bottom
+    "Download Sticker" (coral) or "Downloaded" after save. Toast "Sticker saved!".
+  bottomFields:
+    - Download Sticker
+
+dropdowns: []
+inputs: []
+
+flow:
+  - section: Open
+    type: action
+    action: wait-page
+    label: 确认仍在 Explore
+    manualWaitSec: 6
+    assertPrompt: >
+      Explore / Sticker Box with sticker grid visible (or already on sticker detail).
+
+  - section: Open
+    type: action
+    action: tap-text
+    label: 点击任一贴纸
+    assertPrompt: sticker
+    scrollBeforeTap: false
+    locatePrompt: >
+      The first/top-left sticker thumbnail in the Explore 3-column grid.
+      Do NOT tap category chips, +, or bottom My tab.
+
+  - section: Detail
+    type: action
+    action: wait-page
+    label: 等待贴纸详情
+    manualWaitSec: 8
+    assertPrompt: >
+      Sticker detail page: large sticker preview and bottom button "Download Sticker"
+      or "Downloaded". Header may show "Sticker". Not Explore grid-only.
+
+  - section: Detail
+    type: verify
+    label: TC-005 详情预览
+    retry: 2
+    assertPrompt: >
+      PRD TC-005: full sticker preview visible with back control and Download Sticker / Downloaded button.
+      Fail if still only Explore grid.
+
+  - section: Detail
+    type: action
+    action: handle-permissions
+    label: 下载前系统权限
+
+  - section: Detail
+    type: action
+    action: tap-text
+    label: TC-006 Download Sticker
+    assertPrompt: Download Sticker
+    scrollBeforeTap: true
+    locatePrompt: >
+      The coral/orange primary button labeled "Download Sticker" at the bottom of sticker detail.
+      Do NOT tap back or overflow menu. If already "Downloaded", skip is OK via optional retry path —
+      still tap only if Download Sticker is visible.
+
+  - section: Detail
+    type: verify
+    label: TC-006 下载成功
+    retry: 3
+    retryDelayMs: 800
+    assertPrompt: >
+      PRD TC-006: PASS if ANY of:
+      (A) Toast/banner "Sticker saved!" visible, OR
+      (B) Bottom button now reads "Downloaded" (download succeeded).
+      FAIL if still only "Download Sticker" with no success feedback.
+
+  - section: Detail
+    type: verify
+    label: TC-007 重复下载态
+    retry: 2
+    assertPrompt: >
+      PRD TC-007: bottom primary control shows "Downloaded" (not inviting another identical download).
+      Fail if still unlabeled or only Download Sticker with no state change after download.
+
+  - section: Detail
+    type: action
+    action: tap-text
+    label: 返回 Explore
+    assertPrompt: back
+    scrollBeforeTap: false
+    locatePrompt: >
+      Top-left back arrow on sticker detail header. Do NOT tap Download/Downloaded.
+
+  - section: Detail
+    type: action
+    action: wait-page
+    label: 回到 Explore
+    manualWaitSec: 6
+    assertPrompt: >
+      Explore / Sticker Box with sticker grid visible again.
+
+submit:
+  enabled: false

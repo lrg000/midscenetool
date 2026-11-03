@@ -1,0 +1,76 @@
+# Y28 — 贴纸详情下载（PRD 十二~十四、30.2~30.3）
+page:
+  id: aside-y28-detail
+  title: Sticker Detail
+  isNative: true
+  skipNavigation: true
+  navigationPrompt: ""
+  blurTarget: the sticker detail header
+  aiContext: >
+    Sticker detail: large preview, name + collection, Download Sticker (mint).
+    States: Saving... / Saved / Downloaded. Toast Sticker saved!
+  bottomFields:
+    - Download Sticker
+
+dropdowns: []
+inputs: []
+
+flow:
+  - section: Detail
+    type: action
+    action: wait-page
+    label: 等待贴纸详情
+    manualWaitSec: 8
+    assertPrompt: >
+      Sticker detail with large sticker preview and Download Sticker / Saved / Downloaded.
+      Not Home board-only.
+
+  - section: Detail
+    type: verify
+    label: 30.2 详情预览
+    retry: 2
+    assertPrompt: >
+      PRD 30.2: large sticker image, sticker name text, back control, Download Sticker (or Saved/Downloaded).
+
+  - section: Detail
+    type: action
+    action: handle-permissions
+    label: 下载前权限
+
+  - section: Detail
+    type: action
+    action: tap-text
+    label: 30.3 Download Sticker
+    assertPrompt: Download Sticker
+    scrollBeforeTap: true
+    locatePrompt: >
+      Primary button "Download Sticker" at bottom. If already Saved/Downloaded, tap only if Download Sticker visible.
+
+  - section: Detail
+    type: verify
+    label: 30.3 下载成功
+    retry: 3
+    retryDelayMs: 800
+    assertPrompt: >
+      PRD 30.3: PASS if toast "Sticker saved!" OR button shows Saved / Downloaded / Saving completed.
+      FAIL if still only Download Sticker with no feedback.
+
+  - section: Detail
+    type: action
+    action: tap-text
+    label: 返回 Home
+    assertPrompt: back
+    scrollBeforeTap: false
+    locatePrompt: >
+      Top-left back arrow on sticker detail.
+
+  - section: Detail
+    type: action
+    action: wait-page
+    label: 回到 Home
+    manualWaitSec: 6
+    assertPrompt: >
+      Home Sticker Board visible again.
+
+submit:
+  enabled: false

@@ -1,0 +1,45 @@
+# T53 Terms 与 Privacy — PRD 四十七、四十八
+page:
+  id: aside-t53-legal
+  title: Terms and Privacy
+  isNative: true
+  skipNavigation: true
+  navigationPrompt: ""
+  blurTarget: the document title
+  aiContext: My Account rows Terms of Service and Privacy Policy open plain text pages.
+  bottomFields: []
+dropdowns: []
+inputs: []
+flow:
+  - section: Legal
+    type: action
+    action: tap-text
+    label: Terms of Service
+    scrollBeforeTap: false
+    assertPrompt: Terms of Service
+    locatePrompt: >
+      The "Terms of Service" row on My Account. Do NOT tap Privacy Policy or Logout.
+  - section: Legal
+    type: verify
+    label: Terms 阅读页
+    assertPrompt: A document page titled "Terms of Service" is open.
+  - section: Legal
+    type: action
+    action: android-back
+    label: 从 Terms 返回
+  - section: Legal
+    type: action
+    action: tap-text
+    label: Privacy Policy
+    scrollBeforeTap: false
+    assertPrompt: Privacy Policy
+    locatePrompt: >
+      The "Privacy Policy" row on My Account. Do NOT tap Terms of Service or Logout.
+  - section: Legal
+    type: verify
+    label: Privacy 阅读页
+    assertPrompt: A document page titled "Privacy Policy" is open.
+  - section: Legal
+    type: action
+    action: android-back
+    label: 从 Privacy 返回

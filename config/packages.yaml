@@ -1,0 +1,403 @@
+# A 面包注册表：一个 Android 包 = 一套 YAML + 一个 tests/aside/*.test.ts
+# kind 约定：T* → loan-shell / loan-postlogin；Y* → standalone
+# kind: standalone | loan-shell | loan-postlogin
+# actionDomains: common / loan / calendar / notes / gallery / stickers（见 core/actions/domains.ts）
+# B 面（登录后 H5 模版）仍用 config/flows.yaml + data/*.yaml；仅贷款壳可配置 handoffFlow。
+packages:
+  t42:
+    name: T42.RajWise
+    description: |
+      冷启/协议 → Welcome OTP 登录 → Get Cash Now 主流程 → 贷款详情/Profile/Account Details（对齐 Figma）。
+    kind: loan-shell
+    actionDomains:
+      - common
+      - loan
+    appLabel: RajWise
+    androidPackage: com.rajwiseguide.loanadvisor.app
+    pages:
+      - id: aside-t42-bootstrap
+        dataFile: pages/bootstrap.yaml
+      - id: aside-t42-login
+        dataFile: pages/login.yaml
+      - id: aside-t42-home
+        dataFile: pages/home.yaml
+      - id: aside-t42-personal-information
+        dataFile: pages/personal-information.yaml
+      - id: aside-t42-document-upload
+        dataFile: pages/document-upload.yaml
+      - id: aside-t42-face-verification
+        dataFile: pages/face-verification.yaml
+      - id: aside-t42-verification-result
+        dataFile: pages/verification-result.yaml
+      - id: aside-t42-personal-loan
+        dataFile: pages/personal-loan.yaml
+      - id: aside-t42-business-loan
+        dataFile: pages/business-loan.yaml
+      - id: aside-t42-profile
+        dataFile: pages/profile.yaml
+      - id: aside-t42-help-support
+        dataFile: pages/help-support.yaml
+      - id: aside-t42-account-details
+        dataFile: pages/account-details.yaml
+  t42-postlogin:
+    name: T42.RajWise 登录后
+    description: |
+      已登录：Get Cash Now 主流程 + 贷款详情/Profile/Help/Account Details（换头像+填写+Save）对齐 Figma。
+    kind: loan-postlogin
+    actionDomains:
+      - common
+      - loan
+    appLabel: RajWise
+    androidPackage: com.rajwiseguide.loanadvisor.app
+    sourcePackage: t42
+    pages:
+      - id: aside-t42-home
+        dataFile: pages/home.yaml
+      - id: aside-t42-personal-information
+        dataFile: pages/personal-information.yaml
+      - id: aside-t42-document-upload
+        dataFile: pages/document-upload.yaml
+      - id: aside-t42-face-verification
+        dataFile: pages/face-verification.yaml
+      - id: aside-t42-verification-result
+        dataFile: pages/verification-result.yaml
+      - id: aside-t42-personal-loan
+        dataFile: pages/personal-loan.yaml
+      - id: aside-t42-business-loan
+        dataFile: pages/business-loan.yaml
+      - id: aside-t42-profile
+        dataFile: pages/profile.yaml
+      - id: aside-t42-help-support
+        dataFile: pages/help-support.yaml
+      - id: aside-t42-account-details
+        dataFile: pages/account-details.yaml
+  y20-uninstall:
+    name: Y20 AC-017 卸载清数据
+    description: |
+      保存标记 → uninstall → reinstall → 断言空状态。需 Y20_APK_PATH + Y20_RUN_UNINSTALL=1。
+    kind: standalone
+    actionDomains:
+      - common
+      - calendar
+    appLabel: Daily Grid
+    androidPackage: com.dailygrid.lifecaptured.app
+    sourcePackage: y20
+    pages:
+      - id: aside-y20-ac017
+        dataFile: pages/ac017-uninstall.yaml
+  y20:
+    name: Y20 Daily Grid
+    description: >
+      严格对齐云效 PRD AC-001~AC-019、TC-001~TC-010：UI STRICT、双月切换、任意日期、 空/超限 Save、100 字、双行程升序、Cancel
+      删除、force-stop 持久化/崩溃恢复。
+    kind: standalone
+    actionDomains:
+      - common
+      - calendar
+    appLabel: Daily Grid
+    androidPackage: com.dailygrid.lifecaptured.app
+    pages:
+      - id: aside-y20-home
+        dataFile: pages/home.yaml
+      - id: aside-y20-day-schedule
+        dataFile: pages/day-schedule.yaml
+  y26:
+    name: Y26 Aarambh Calendar
+    description: >
+      对齐云效 Y26 PRD：Retro Paper 月历、Day Schedule、New Schedule（What are you planning? / Save
+      Schedule）、时间序/All Day、删除确认、force-stop 持久化。墨绿 #245C4A。
+    kind: standalone
+    actionDomains:
+      - common
+      - calendar
+    appLabel: Aarambh Calendar
+    androidPackage: com.aarambhdailycalendar.app
+    pages:
+      - id: aside-y26-home
+        dataFile: pages/home.yaml
+      - id: aside-y26-day-schedule
+        dataFile: pages/day-schedule.yaml
+  y26-uninstall:
+    name: Y26 TC-023 卸载清数据
+    description: |
+      建标记行程 → uninstall → reinstall → 标记消失。需 Y26_APK_PATH + Y26_RUN_UNINSTALL=1。
+    kind: standalone
+    actionDomains:
+      - common
+      - calendar
+    appLabel: Aarambh Calendar
+    androidPackage: com.aarambhdailycalendar.app
+    sourcePackage: y26
+    pages:
+      - id: aside-y26-ac023
+        dataFile: pages/ac023-uninstall.yaml
+  y27:
+    name: Y27 Sakhi Rangoli
+    description: >
+      对齐云效 Y27 PRD：My Photos 瀑布流上传/预览下载删除 → 顶栏 Albums CRUD/ Download All → 4 位加密 → force-stop
+      持久化。Editorial #FF6B4A。
+    kind: standalone
+    actionDomains:
+      - common
+      - gallery
+    appLabel: Sakhi Rangoli
+    androidPackage: com.sakhiphoto.rangoli.app
+    pages:
+      - id: aside-y27-photos
+        dataFile: pages/photos.yaml
+      - id: aside-y27-viewer
+        dataFile: pages/viewer.yaml
+      - id: aside-y27-albums
+        dataFile: pages/albums.yaml
+      - id: aside-y27-lock
+        dataFile: pages/lock.yaml
+      - id: aside-y27-persist
+        dataFile: pages/persist.yaml
+  y28:
+    name: Y28 MastiMagic Craft
+    description: >
+      对齐云效 Y28 PRD：Home 分类/贴纸板 → 详情 Download Sticker → Create 自制命名保存 → My Stickers 删除与 force-stop
+      持久化。薄荷绿 #73B9A4。
+    kind: standalone
+    actionDomains:
+      - common
+      - stickers
+    appLabel: MastiMagic Craft
+    androidPackage: com.mastimagic.craftphoto.app
+    pages:
+      - id: aside-y28-home
+        dataFile: pages/home.yaml
+      - id: aside-y28-detail
+        dataFile: pages/detail.yaml
+      - id: aside-y28-create
+        dataFile: pages/create.yaml
+      - id: aside-y28-my
+        dataFile: pages/my.yaml
+  y22:
+    name: Y22 Daily Scribble Pad
+    description: >
+      对齐云效 Y22 PRD TC-001~TC-014、TC-018~019：Notes 列表、New Note Sheet、 空/超限
+      Save、倒序置顶、详情、Cancel/Delete、force-stop 持久化。
+    kind: standalone
+    actionDomains:
+      - common
+      - notes
+    appLabel: Daily Scribble Pad
+    androidPackage: com.dailyscribble.writepad.app
+    pages:
+      - id: aside-y22-home
+        dataFile: pages/home.yaml
+      - id: aside-y22-notes
+        dataFile: pages/notes.yaml
+  y22-uninstall:
+    name: Y22 TC-015 卸载清数据
+    description: |
+      保存标记 → uninstall → reinstall → 断言空状态。需 Y22_APK_PATH + Y22_RUN_UNINSTALL=1。
+    kind: standalone
+    actionDomains:
+      - common
+      - notes
+    appLabel: Daily Scribble Pad
+    androidPackage: com.dailyscribble.writepad.app
+    sourcePackage: y22
+    pages:
+      - id: aside-y22-ac015
+        dataFile: pages/ac015-uninstall.yaml
+  y24:
+    name: Y24 Glimmer Frame
+    description: >
+      对齐云效 Y24 PRD：Photos 导入/查看/下载/删除 → Albums CRUD/Download All → 加密相册密码 → 重启持久化 → Delete
+      Album。深色沉浸图库。
+    kind: standalone
+    actionDomains:
+      - common
+      - gallery
+    appLabel: Glimmer Frame
+    androidPackage: com.glimmer.frameexitpic.app
+    pages:
+      - id: aside-y24-photos
+        dataFile: pages/photos.yaml
+      - id: aside-y24-viewer
+        dataFile: pages/viewer.yaml
+      - id: aside-y24-albums
+        dataFile: pages/albums.yaml
+      - id: aside-y24-lock
+        dataFile: pages/lock.yaml
+      - id: aside-y24-persist
+        dataFile: pages/persist.yaml
+  y24-uninstall:
+    name: Y24 TC-026 卸载清数据
+    description: |
+      建标记相册 → uninstall → reinstall → 标记消失。需 Y24_APK_PATH + Y24_RUN_UNINSTALL=1。
+    kind: standalone
+    actionDomains:
+      - common
+      - gallery
+    appLabel: Glimmer Frame
+    androidPackage: com.glimmer.frameexitpic.app
+    sourcePackage: y24
+    pages:
+      - id: aside-y24-ac026
+        dataFile: pages/ac026-uninstall.yaml
+  y25:
+    name: Y25 Chitra Stickers
+    description: >
+      对齐云效 Y25 PRD TC-001~007、TC-015、TC-019：Explore 分类/Grid → 详情下载 → My Stickers Downloaded
+      持久化。彩色活泼贴纸壳。
+    kind: standalone
+    actionDomains:
+      - common
+      - stickers
+    appLabel: Chitra Stickers
+    androidPackage: com.chitrachitra.stickers.app
+    pages:
+      - id: aside-y25-explore
+        dataFile: pages/explore.yaml
+      - id: aside-y25-detail
+        dataFile: pages/detail.yaml
+      - id: aside-y25-my
+        dataFile: pages/my.yaml
+  y25-uninstall:
+    name: Y25 TC-021 卸载清数据
+    description: |
+      下载标记 → uninstall → reinstall → Downloaded 为空。需 Y25_APK_PATH + Y25_RUN_UNINSTALL=1。
+    kind: standalone
+    actionDomains:
+      - common
+      - stickers
+    appLabel: Chitra Stickers
+    androidPackage: com.chitrachitra.stickers.app
+    sourcePackage: y25
+    pages:
+      - id: aside-y25-ac021
+        dataFile: pages/ac021-uninstall.yaml
+  t46:
+    name: T46.Sree Dhan Lekha
+    description: >
+      冷启/协议 → Phone Code 登录 → Home(+记一笔校验) → Statistics → Profile(+账户配置)。 对齐 Figma
+      T46.Sree-Dhan-Lekha；登录 9110001244 / OTP 123456。
+    kind: loan-shell
+    actionDomains:
+      - common
+      - loan
+    appLabel: Sree Dhan Lekha
+    androidPackage: com.sreedhan.lekhabook.app
+    pages:
+      - id: aside-t46-bootstrap
+        dataFile: pages/bootstrap.yaml
+      - id: aside-t46-login
+        dataFile: pages/login.yaml
+      - id: aside-t46-home
+        dataFile: pages/home.yaml
+      - id: aside-t46-statistics
+        dataFile: pages/statistics.yaml
+      - id: aside-t46-profile
+        dataFile: pages/profile.yaml
+
+  t53:
+    name: T53.Anantapur Chakra
+    description: |
+      云效 WIFO-1993：协议 → Mobile OTP → KYC 六步 → 固定额度 ₹30,000 → 借款/还款 → 我的。
+      账号 9110001501 / OTP 1234。
+    kind: loan-shell
+    actionDomains:
+      - common
+      - loan
+    appLabel: Anantapur Chakra
+    androidPackage: com.anantapurchakra.flexicredit.app
+    pages:
+      - id: aside-t53-bootstrap
+        dataFile: pages/bootstrap.yaml
+      - id: aside-t53-login
+        dataFile: pages/login.yaml
+      - id: aside-t53-account-connect
+        dataFile: pages/account-connect.yaml
+      - id: aside-t53-kyc-personal
+        dataFile: pages/kyc-personal.yaml
+      - id: aside-t53-kyc-pan
+        dataFile: pages/kyc-pan.yaml
+      - id: aside-t53-kyc-identity
+        dataFile: pages/kyc-identity.yaml
+      - id: aside-t53-kyc-employment
+        dataFile: pages/kyc-employment.yaml
+      - id: aside-t53-kyc-bank
+        dataFile: pages/kyc-bank.yaml
+      - id: aside-t53-kyc-selfie
+        dataFile: pages/kyc-selfie.yaml
+      - id: aside-t53-kyc-done
+        dataFile: pages/kyc-done.yaml
+      - id: aside-t53-home
+        dataFile: pages/home.yaml
+      - id: aside-t53-borrow
+        dataFile: pages/borrow.yaml
+      - id: aside-t53-loan-summary
+        dataFile: pages/loan-summary.yaml
+      - id: aside-t53-kfs
+        dataFile: pages/kfs.yaml
+      - id: aside-t53-borrow-confirm
+        dataFile: pages/borrow-confirm.yaml
+      - id: aside-t53-loan-details
+        dataFile: pages/loan-details.yaml
+      - id: aside-t53-repay
+        dataFile: pages/repay.yaml
+      - id: aside-t53-persist
+        dataFile: pages/persist.yaml
+      - id: aside-t53-my
+        dataFile: pages/my.yaml
+      - id: aside-t53-personal
+        dataFile: pages/personal.yaml
+      - id: aside-t53-sms
+        dataFile: pages/sms.yaml
+      - id: aside-t53-help
+        dataFile: pages/help.yaml
+      - id: aside-t53-legal
+        dataFile: pages/legal.yaml
+      - id: aside-t53-logout
+        dataFile: pages/logout.yaml
+
+  t57:
+    name: t57.Haveri VahanCredit
+    description: |
+      录制精修：协议 → Welcome OTP（9110001559/1234）→ KYC Step 1 Personal Information。
+      非云效 PRD 全量。
+    kind: loan-shell
+    actionDomains:
+      - common
+      - loan
+    appLabel: Haveri VahanCredit
+    androidPackage: com.haveridriveloan.vahancredit.app
+    pages:
+      - id: aside-t57-bootstrap
+        dataFile: pages/bootstrap.yaml
+      - id: aside-t57-login
+        dataFile: pages/login.yaml
+      - id: aside-t57-kyc-personal
+        dataFile: pages/kyc-personal.yaml
+
+  t59:
+    name: t59.Viramgam CardVista
+    description: |
+      云效 WIFO-2110：协议 → Phone OTP → Home/Cards/Activity/My 信用卡管理。
+      不走 B 面 H5；Truecaller/Google 真登录见 NL 未自动化。
+    kind: loan-shell
+    actionDomains:
+      - common
+      - loan
+    appLabel: Viramgam CardVista
+    androidPackage: com.viramgamcard.cardvista.app
+    pages:
+      - id: aside-t59-bootstrap
+        dataFile: pages/bootstrap.yaml
+      - id: aside-t59-login
+        dataFile: pages/login.yaml
+      - id: aside-t59-home
+        dataFile: pages/home.yaml
+      - id: aside-t59-cards
+        dataFile: pages/cards.yaml
+      - id: aside-t59-activity
+        dataFile: pages/activity.yaml
+      - id: aside-t59-my
+        dataFile: pages/my.yaml
+      - id: aside-t59-persist
+        dataFile: pages/persist.yaml
+

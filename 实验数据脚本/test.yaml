@@ -1,0 +1,13 @@
+web:
+  url: https://www.baidu.com
+
+tasks:
+  - name: 搜索小红书
+    flow:
+      - ai: 在搜索框输入 小红书
+      - ai: 点击 百度一下
+      - sleep: 3000
+
+  - name: 检查结果
+    flow:
+      - aiAssert: 页面中存在“小红书”相关搜索结果

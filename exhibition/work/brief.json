@@ -1,0 +1,19 @@
+{
+  "schema_version": "1.0",
+  "topic": "Midscene AI 视觉自动化测试框架",
+  "audience": "测试工程师、移动端 QA、关注 AI 自动化的研发同学",
+  "occasion": "self_read",
+  "core_takeaway": "用 YAML 配置 + AI 视觉理解，替代传统 XPath/UiAutomator，稳定驱动 Android 借贷 App 的 B 面 H5 与 A 面原生壳测试。",
+  "verified_facts": [
+    {"id": "fact-01", "claim": "技术栈为 Midscene.js + @midscene/android + TypeScript + YAML 配置驱动", "source": "用户操作手册.md §1"},
+    {"id": "fact-02", "claim": "架构为「页面配置驱动 + AI Agent 执行 + 状态机编排」", "source": "用户操作手册.md §1.1"},
+    {"id": "fact-03", "claim": "三种运行模式：single-page（最稳定）、segment、full-flow", "source": "config/flows.yaml 头部注释 + 用户操作手册 §1.2"},
+    {"id": "fact-04", "claim": "B 面注册 11 个页面（bootstrap 至 bank-info）", "source": "config/pages.yaml"},
+    {"id": "fact-05", "claim": "A 面包含 t42、y20 等马甲包原生壳测试", "source": "config/packages.yaml"},
+    {"id": "fact-06", "claim": "输出 JSON + HTML 可视化报告与 Midscene 步骤报告", "source": "用户操作手册 §1.1 + reports/"},
+    {"id": "fact-07", "claim": "package.json 提供 18+ npm test 脚本入口", "source": "package.json"}
+  ],
+  "unknowns": [],
+  "privacy_boundaries": ["不包含 .env API Key", "不包含测试账号明文"],
+  "route": {"view": "scroll", "structure": "modular"}
+}

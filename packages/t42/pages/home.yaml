@@ -1,0 +1,84 @@
+# T42 A 面 — 登录后首页文案/结构（对齐 Figma「首页」1:183）
+# 校验完后点 Get Cash Now 进入主业务（个人信息→证件→人脸→结果）
+page:
+  id: aside-t42-home
+  title: Home
+  isNative: true
+  skipNavigation: true
+  navigationPrompt: ""
+  blurTarget: the Home header or AVAILABLE CREDIT LIMIT card
+  aiContext: >
+    T42.RajWise native A-side Home (Figma 首页). Exact copy must match design:
+    "AVAILABLE CREDIT LIMIT", Interest Rate "10.49% p.a.", Tenure "Up to 60 M",
+    Processing "Zero Fee", button "Get Cash Now", section "Our Services" with
+    Personal/Business/Education/Gold/Home/Vehicle Loan tiles,
+    "Trusted by 10M+ Indians", trust labels "100% Secure", "Instant Disbursal",
+    "Minimal Paperwork". Bottom tabs Home (active) and Profile.
+    After copy checks, tap Get Cash Now to start the main cash/apply flow.
+    Ignore vConsole.
+  bottomFields:
+    - Trusted by 10M+ Indians
+
+dropdowns: []
+inputs: []
+
+flow:
+  - section: Home
+    type: action
+    action: dismiss-home-popup
+    label: 关闭可选营销弹窗
+
+  - section: Home
+    type: verify
+    label: 额度卡文案对齐 Figma
+    retry: 3
+    retryDelayMs: 1000
+    assertPrompt: >
+      On the native Home screen, the credit card shows ALL of these exact labels/values
+      (or visually identical): title "AVAILABLE CREDIT LIMIT", an amount with ₹ currency,
+      label "Interest Rate" with value "10.49% p.a.", label "Tenure" with value "Up to 60 M",
+      label "Processing" with value "Zero Fee" (green), and a blue primary button
+      "Get Cash Now". Bottom tab "Home" is selected (blue). Fail if any of these strings
+      are missing, misspelled, or replaced by different copy.
+
+  - section: Home
+    type: verify
+    label: Our Services 上排文案
+    assertPrompt: >
+      Section title is exactly "Our Services". At least the top-row tiles
+      "Personal Loan", "Business Loan", and "Education Loan" are visible with exact labels.
+      Fail if title or these tile names differ from Figma.
+
+  - section: Home
+    type: verify
+    label: Our Services 下排文案
+    scrollDownBefore: 1
+    retry: 2
+    locatePrompt: The "Vehicle Loan" or "Home Loan" or "Gold Loan" service tile under Our Services
+    assertPrompt: >
+      Under "Our Services", the remaining tiles are visible with exact labels
+      "Gold Loan", "Home Loan", and "Vehicle Loan". Fail if any name differs from Figma.
+
+  - section: Home
+    type: verify
+    label: Trusted 信任区文案
+    scrollDownBefore: 1
+    retry: 3
+    locatePrompt: The text "Trusted by 10M+ Indians" on the Home screen
+    assertPrompt: >
+      The trust band shows exact text "Trusted by 10M+ Indians" and the three trust labels
+      "100% Secure", "Instant Disbursal", and "Minimal Paperwork" (word wrapping OK).
+      Fail if wording or numbers differ from Figma.
+
+  - section: Home
+    type: action
+    action: tap-text
+    label: Get Cash Now
+    assertPrompt: Get Cash Now
+    scrollBeforeTap: true
+    locatePrompt: >
+      The solid blue primary button labeled exactly "Get Cash Now" on the
+      AVAILABLE CREDIT LIMIT card (not Our Services tiles, not Profile tab)
+
+submit:
+  enabled: false

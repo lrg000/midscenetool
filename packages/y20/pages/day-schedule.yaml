@@ -1,0 +1,454 @@
+# Y20 Daily Grid — 当天行程（PRD 九~十二、AC-006~AC-015、AC-018~AC-019、TC-005~TC-009）
+page:
+  id: aside-y20-day-schedule
+  title: Day Schedule
+  isNative: true
+  skipNavigation: true
+  navigationPrompt: ""
+  blurTarget: the day schedule page title showing month and day (e.g. July 15)
+  aiContext: >
+    PRD: page title 28sp; weekday 16sp; card 56dp/16dp radius/16dp margin/12dp gap/16sp content;
+    empty "No Schedule" + Tap "+" to add today's plan; FAB 56dp #3B82F6;
+    sheet ~45% / Save 48dp full #3B82F6; delete #EF4444; max 100 chars NN/100.
+  bottomFields:
+    - Save
+
+dropdowns: []
+
+inputs:
+  - label: Enter your schedule...
+    validValue: Y20Test Schedule
+    skipEmptyBlurTest: true
+    skipInvalidBlurTest: true
+    skipValidBlurTest: true
+    skipScrollBeforeInput: true
+    skipBlurAfterInput: true
+    locatePrompt: >
+      The text input inside open "New Schedule" bottom sheet (placeholder "Enter your schedule...").
+      Tap input center only. Do NOT tap outside sheet, Save, or sheet handle.
+
+flow:
+  # ========== Phase 0：进入 & 清理残留（避免上次失败遗留数据） ==========
+  - section: Day
+    type: verify
+    label: AC-006 进入当天行程页
+    retry: 2
+    assertPrompt: >
+      Day schedule page for today: back arrow, date header, FAB "+" bottom-right.
+      Fail if calendar grid only.
+
+  - section: Day
+    type: action
+    action: ensure-y20-clean-state
+    label: 清理残留测试行程
+
+  - section: Day
+    type: verify
+    label: AC-007/TC-008 无记录空状态
+    retry: 2
+    assertPrompt: >
+      PRD AC-007 / TC-008: Empty state "No Schedule" and Tap "+" guidance visible.
+      No schedule cards listed. White #FFFFFF background.
+
+  - section: Day
+    type: verify
+    label: UI 行程页 PRD 标题字号与 FAB
+    assertPrompt: >
+      STRICT PRD (九~十, AC-018): bg #FFFFFF; date title ~28sp #111827; weekday ~16sp #4B5563;
+      FAB circular ~56dp #3B82F6 white "+" bottom-right. Fail on clear size/color deviation.
+
+  # ========== Phase 1：核心保存 & 持久化（先于 Sheet 边界用例，防连锁失败） ==========
+  - section: Day
+    type: action
+    action: ensure-new-schedule-sheet
+    label: 打开 New Schedule（第一条）
+
+  - section: Day
+    type: action
+    action: tap-text
+    label: 新增 FAB
+    optional: true
+    assertPrompt: +
+    locatePrompt: >
+      Blue circular FAB "+" (~56dp #3B82F6) bottom-right. Skip if sheet already open.
+
+  - section: Day
+    type: action
+    action: fill-input
+    label: 填入第一条行程
+    inputFieldLabel: Enter your schedule...
+    inputValue: Y20Test Schedule
+
+  - section: Day
+    type: action
+    action: tap-text
+    label: Save 保存行程
+    assertPrompt: Save
+    scrollBeforeTap: false
+    locatePrompt: >
+      Solid blue full-width "Save" (~48dp #3B82F6) on open bottom sheet.
+
+  - section: Day
+    type: verify
+    label: AC-011/TC-005 保存后列表回显
+    retry: 3
+    retryDelayMs: 800
+    assertPrompt: >
+      PRD AC-011 / TC-005: bottom sheet CLOSED; card "Y20Test Schedule" visible on day page.
+      Still on day schedule (not calendar). Fail if sheet open or list empty.
+
+  - section: Day
+    type: verify
+    label: UI 行程卡片 PRD 尺寸与圆角
+    assertPrompt: >
+      Card "Y20Test Schedule" visible with PRD section 九 + AC-019 styling:
+      background MUST be white #FFFFFF (white is CORRECT per PRD — do NOT fail for white bg);
+      ~56dp height, ~16dp corner radius, side margins, ~16sp #111827 text, trash icon on right.
+      FAIL only if card missing or clearly wrong non-white background.
+
+  - section: Day
+    type: action
+    action: ensure-new-schedule-sheet
+    label: 打开 New Schedule（第二条）
+
+  - section: Day
+    type: action
+    action: tap-text
+    label: AC-008 第二条 FAB
+    optional: true
+    assertPrompt: +
+    locatePrompt: >
+      FAB "+" bottom-right. Skip if New Schedule sheet already open.
+
+  - section: Day
+    type: action
+    action: fill-input
+    label: AC-008 填入第二条行程
+    inputFieldLabel: Enter your schedule...
+    inputValue: Y20Test Schedule 2
+
+  - section: Day
+    type: action
+    action: tap-text
+    label: Save 第二条行程
+    assertPrompt: Save
+    scrollBeforeTap: false
+    locatePrompt: >
+      Full-width blue "Save" on New Schedule bottom sheet.
+
+  - section: Day
+    type: verify
+    label: AC-008 按创建时间升序
+    retry: 2
+    assertPrompt: >
+      PRD AC-008: "Y20Test Schedule" ABOVE "Y20Test Schedule 2"; each has trash icon.
+      Fail if order reversed or either missing.
+
+  - section: Day
+    type: action
+    action: force-stop-app
+    label: AC-016 关闭 App（force-stop）
+    assertPrompt: com.dailygrid.lifecaptured.app
+
+  - section: Day
+    type: action
+    action: relaunch-app
+    label: TC-009/AC-016 重新打开 App
+    assertPrompt: com.dailygrid.lifecaptured.app
+
+  - section: Calendar
+    type: action
+    action: wait-app-ready
+    label: 关闭后重开等待月历
+    manualWaitSec: 20
+    assertPrompt: >
+      After relaunch, Daily Grid calendar home visible (month grid, no login splash).
+
+  - section: Calendar
+    type: action
+    action: tap-text
+    label: 重开后进入当天行程
+    assertPrompt: Today
+    locatePrompt: >
+      Tap today's blue-circle date cell. Do NOT tap Today text.
+
+  - section: Day
+    type: verify
+    label: TC-009/AC-016 关闭重开后数据仍在
+    retry: 3
+    retryDelayMs: 800
+    assertPrompt: >
+      PRD AC-016: both "Y20Test Schedule" and "Y20Test Schedule 2" still visible in order.
+      Fail if either missing.
+
+  - section: Day
+    type: action
+    action: force-stop-app
+    label: AC-016 异常退出/杀进程
+    assertPrompt: com.dailygrid.lifecaptured.app
+
+  - section: Day
+    type: action
+    action: relaunch-app
+    label: AC-016 杀进程后重新打开
+    assertPrompt: com.dailygrid.lifecaptured.app
+
+  - section: Calendar
+    type: action
+    action: wait-app-ready
+    label: 杀进程后等待月历恢复
+    manualWaitSec: 20
+    assertPrompt: >
+      Calendar home visible without crash loop. Month grid shown.
+
+  - section: Calendar
+    type: action
+    action: tap-text
+    label: 杀进程重启后进入当天行程
+    assertPrompt: Today
+    locatePrompt: >
+      Tap today's blue-circle date cell. Do NOT tap Today text.
+
+  - section: Day
+    type: verify
+    label: AC-016 杀进程重启后数据仍在
+    retry: 3
+    retryDelayMs: 800
+    assertPrompt: >
+      Both cards still visible after force-stop; app on day schedule list, not crash screen.
+
+  # ========== Phase 2：删除 & 月历蓝点 ==========
+  - section: Day
+    type: action
+    action: tap-text
+    label: 返回月历
+    assertPrompt: Back
+    locatePrompt: >
+      Back arrow top-left of day schedule header.
+
+  - section: Calendar
+    type: verify
+    label: AC-005/TC-010 有行程日期显示蓝点
+    retry: 3
+    retryDelayMs: 600
+    assertPrompt: >
+      Today has schedules saved in this test run — show schedule indicator on today:
+      ~4dp dot #3B82F6 on today's grid cell OR on today's row in split bottom preview.
+      An ordinary date WITHOUT schedule (pick a mid-month date like "10" or "15") must NOT show dot.
+      PASS if today shows any schedule marker; FAIL only if today clearly has no marker while schedules exist.
+
+  - section: Calendar
+    type: action
+    action: tap-text
+    label: 再次进入当天行程
+    assertPrompt: Today
+    locatePrompt: >
+      Tap today's blue-circle cell. Do NOT tap Today text or arrows.
+
+  - section: Day
+    type: verify
+    label: 两条行程仍存在
+    assertPrompt: >
+      Both "Y20Test Schedule" and "Y20Test Schedule 2" visible before delete tests.
+
+  - section: Day
+    type: action
+    action: tap-text
+    label: 删除第一条垃圾桶
+    assertPrompt: Delete
+    locatePrompt: >
+      Trash icon on "Y20Test Schedule" card (first/top card).
+
+  - section: Day
+    type: verify
+    label: AC-013 删除确认弹窗
+    assertPrompt: >
+      Dialog "Delete this schedule?" with "Cancel" and "Delete" (#EF4444 destructive).
+
+  - section: Day
+    type: action
+    action: tap-text
+    label: AC-013 Cancel 取消删除
+    assertPrompt: Cancel
+    locatePrompt: >
+      "Cancel" on delete dialog (NOT "Delete").
+
+  - section: Day
+    type: verify
+    label: AC-013 Cancel 后行程仍在
+    retry: 3
+    retryDelayMs: 600
+    assertPrompt: >
+      Delete dialog must be CLOSED. BOTH cards "Y20Test Schedule" and "Y20Test Schedule 2" still listed.
+      Fail if dialog still open, either card missing, or list empty.
+
+  - section: Day
+    type: action
+    action: tap-text
+    label: 删除第一条垃圾桶
+    assertPrompt: Delete
+    locatePrompt: >
+      Trash icon on "Y20Test Schedule" card row again.
+
+  - section: Day
+    type: action
+    action: tap-text
+    label: Delete 确认删除第一条
+    assertPrompt: Delete
+    locatePrompt: >
+      "Delete" on confirmation dialog (NOT "Cancel").
+
+  - section: Day
+    type: verify
+    label: AC-014/TC-007 第一条立即消失
+    retry: 2
+    assertPrompt: >
+      "Y20Test Schedule" gone; "Y20Test Schedule 2" still visible.
+
+  - section: Day
+    type: action
+    action: tap-text
+    label: 删除第二条垃圾桶
+    assertPrompt: Delete
+    locatePrompt: >
+      Trash icon on "Y20Test Schedule 2" card row.
+
+  - section: Day
+    type: action
+    action: tap-text
+    label: Delete 确认删除第二条
+    assertPrompt: Delete
+    locatePrompt: >
+      "Delete" on confirmation dialog (NOT "Cancel").
+
+  - section: Day
+    type: verify
+    label: AC-007/AC-014/AC-015/TC-008 删除后空状态
+    retry: 3
+    retryDelayMs: 1000
+    assertPrompt: >
+      Both cards gone; "No Schedule" empty state with Tap "+" guidance.
+
+  - section: Day
+    type: action
+    action: tap-text
+    label: 返回月历校验蓝点消失
+    assertPrompt: Back
+    locatePrompt: >
+      Back arrow top-left of day schedule header.
+
+  - section: Calendar
+    type: verify
+    label: AC-015 首页蓝点同步消失
+    retry: 2
+    assertPrompt: >
+      Today's cell no longer shows schedule dot after all schedules deleted.
+
+  - section: Calendar
+    type: action
+    action: tap-text
+    label: 进入行程页做 Sheet 校验
+    assertPrompt: Today
+    locatePrompt: >
+      Tap today's blue-circle cell to open day schedule for Phase 3 sheet tests.
+
+  # ========== Phase 3：Sheet 边界用例（独立，失败不拖累 CRUD/持久化） ==========
+  - section: Day
+    type: action
+    action: ensure-new-schedule-sheet
+    label: 打开 New Schedule（Sheet 校验）
+
+  - section: Day
+    type: action
+    action: tap-text
+    label: Sheet 校验 FAB
+    optional: true
+    assertPrompt: +
+    locatePrompt: >
+      FAB "+" bottom-right. Skip if sheet already open.
+
+  - section: Day
+    type: verify
+    label: AC-009 新增 Bottom Sheet UI
+    assertPrompt: >
+      STRICT PRD section 十一 + AC-009: Sheet ~45% height; "New Schedule"; placeholder;
+      counter "0/100"; Save full-width ~48dp #3B82F6.
+
+  - section: Day
+    type: action
+    action: tap-text
+    label: AC-010/TC-006 空内容点击 Save
+    assertPrompt: Save
+    scrollBeforeTap: false
+    locatePrompt: >
+      Full-width "Save" on open bottom sheet; input empty.
+
+  - section: Day
+    type: verify
+    label: AC-010/TC-006 空内容禁止保存并提示
+    retry: 3
+    retryDelayMs: 400
+    assertPrompt: >
+      PRD AC-010: (1) Sheet remains open (2) error exactly "Please enter schedule."
+      If app blocks Save without toast but sheet stays open, still FAIL on missing error text.
+
+  - section: Day
+    type: action
+    action: ensure-new-schedule-sheet
+    label: AC-012 前确保弹层打开
+
+  - section: Day
+    type: action
+    action: fill-input
+    label: AC-012 输入101字符超限
+    inputFieldLabel: Enter your schedule...
+    inputValue: >-
+      Y20AC012OverLimitTest_XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
+
+  - section: Day
+    type: verify
+    label: AC-012 超限输入反馈（计数或提示）
+    retry: 3
+    retryDelayMs: 400
+    assertPrompt: >
+      PRD AC-012 after 101-char input attempt — PASS if ANY enforcement visible:
+      (A) Hard cap: counter "NN/100" with NN<=100, field shows <=100 chars, OR
+      (B) Over-limit hint: counter may show "101/100" (or NN>100) AND red error text
+          exactly "Maximum 100 characters." under the input field (as in PRD section 十七).
+      FAIL only if 101+ chars entered with NO counter AND NO over-limit error hint.
+
+  - section: Day
+    type: action
+    action: tap-text
+    label: AC-012 超限内容点击 Save
+    assertPrompt: Save
+    scrollBeforeTap: false
+    locatePrompt: >
+      Full-width "Save" on bottom sheet after over-limit input.
+
+  - section: Day
+    type: verify
+    label: AC-012 100字上限（Save 后不得超限保存）
+    retry: 3
+    retryDelayMs: 400
+    assertPrompt: >
+      PRD AC-012 after over-limit Save — PASS if ANY:
+      (A) Sheet still open with "Maximum 100 characters." (save blocked), OR
+      (B) Input was hard-capped at <=100 chars before save (silent cap), OR
+      (C) Save closed sheet but saved text is <=100 chars only (truncated OK).
+      FAIL ONLY if schedule list card shows clearly more than 100 characters.
+      Counter "101/100" + error hint BEFORE save is valid — do not fail for that here.
+
+  - section: Day
+    type: action
+    action: close-new-schedule-sheet
+    label: AC-012 后关闭 Sheet
+    optional: true
+
+  - section: Day
+    type: action
+    action: ensure-y20-clean-state
+    label: 清理 AC-012 测试残留
+
+submit:
+  enabled: false

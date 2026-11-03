@@ -1,0 +1,106 @@
+# Y22 — TC-015 卸载后本地便签清除（破坏性专项，需 Y22_APK_PATH）
+page:
+  id: aside-y22-ac015
+  title: TC-015 Uninstall
+  isNative: true
+  skipNavigation: true
+  navigationPrompt: ""
+  blurTarget: the Notes page title in the header
+  aiContext: >
+    TC-015: save marker note → uninstall → reinstall from Y22_APK_PATH → verify empty.
+  bottomFields:
+    - Save
+
+dropdowns: []
+
+inputs:
+  - label: Write something...
+    validValue: Y22 TC015 Marker
+    skipEmptyBlurTest: true
+    skipInvalidBlurTest: true
+    skipValidBlurTest: true
+    skipScrollBeforeInput: true
+    skipBlurAfterInput: true
+    autoDismissKeyboard: false
+    locatePrompt: >
+      Text input inside open "New Note" bottom sheet (placeholder "Write something...").
+      Tap input center only. Do NOT tap Save or outside sheet.
+
+flow:
+  - section: Home
+    type: action
+    action: wait-app-ready
+    label: 等待 App 就绪（卸载前）
+    manualWaitSec: 20
+    assertPrompt: >
+      Daily Scribble Pad loaded: Notes home or detail visible. No endless splash.
+
+  - section: Home
+    type: action
+    action: ensure-y22-clean-state
+    label: 清理残留
+
+  - section: Home
+    type: action
+    action: ensure-new-note-sheet
+    label: 打开 New Note
+
+  - section: Home
+    type: action
+    action: fill-input
+    label: 写入卸载标记便签
+    inputFieldLabel: Write something...
+    inputValue: Y22 TC015 Marker
+    autoDismissKeyboard: false
+
+  - section: Home
+    type: action
+    action: tap-text
+    label: Save 标记
+    assertPrompt: Save
+    scrollBeforeTap: false
+    locatePrompt: >
+      Yellow full-width "Save" on New Note sheet.
+
+  - section: Home
+    type: verify
+    label: 卸载前标记可见
+    retry: 2
+    assertPrompt: >
+      Notes list shows card containing "Y22 TC015 Marker".
+
+  - section: Uninstall
+    type: action
+    action: uninstall-app
+    label: 卸载 App
+    assertPrompt: com.dailyscribble.writepad.app
+
+  - section: Uninstall
+    type: action
+    action: install-apk
+    label: 重装 APK
+
+  - section: Uninstall
+    type: action
+    action: relaunch-app
+    label: 重开 App
+    assertPrompt: com.dailyscribble.writepad.app
+
+  - section: Uninstall
+    type: action
+    action: wait-app-ready
+    label: 等待重装后就绪
+    manualWaitSec: 20
+    assertPrompt: >
+      Notes home visible after reinstall.
+
+  - section: Uninstall
+    type: verify
+    label: TC-015 数据已清除
+    retry: 2
+    assertPrompt: >
+      PRD TC-015: "Y22 TC015 Marker" NOT present; empty state "No Notes Yet" preferred.
+      Fail if marker note still listed.
+
+submit:
+  enabled: false

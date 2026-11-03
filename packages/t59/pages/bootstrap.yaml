@@ -1,0 +1,210 @@
+# T59 冷启协议 — PRD 4.1 / AC-01
+page:
+  id: aside-t59-bootstrap
+  title: Manage Your Cards, Simply
+  isNative: true
+  skipNavigation: true
+  navigationPrompt: ""
+  blurTarget: the agreement title
+  aiContext: >
+    Viramgam CardVista first launch agreement sheet.
+    App name Viramgam CardVista. Title "Manage Your Cards, Simply".
+    Body "Keep your cards, bills and repayments organised in one place."
+    Checkboxes: "I agree to the Terms of Service", "I have read the Privacy Policy",
+    "I acknowledge the Permissions Declaration". Primary Continue.
+    Not RajWise, not Anantapur Chakra, not Haveri VahanCredit.
+  bottomFields: []
+
+dropdowns: []
+inputs: []
+
+checkboxes:
+  - label: I agree to the Terms of Service
+    locatePrompt: >
+      On the Viramgam CardVista first-launch agreement: the EMPTY square checkbox
+      immediately LEFT of "I agree to the Terms of Service".
+      Tap the CENTER of that small empty square ONLY.
+      Do NOT tap the blue "Terms of Service" link words, Continue, or other checkboxes.
+    checkedPrompt: >
+      Is the square checkbox LEFT of "I agree to the Terms of Service" checked?
+      Answer only true or false.
+  - label: I have read the Privacy Policy
+    locatePrompt: >
+      On the agreement sheet: the EMPTY square checkbox immediately LEFT of
+      "I have read the Privacy Policy". Tap the square center ONLY.
+      Do NOT tap the Privacy Policy link, Continue, or other checkboxes.
+    checkedPrompt: >
+      Is the square checkbox LEFT of "I have read the Privacy Policy" checked?
+      Answer only true or false.
+  - label: I acknowledge the Permissions Declaration
+    locatePrompt: >
+      On the agreement sheet: the EMPTY square checkbox immediately LEFT of
+      "I acknowledge the Permissions Declaration". Tap the square center ONLY.
+      Do NOT tap the Permissions Declaration link, Continue, or other checkboxes.
+    checkedPrompt: >
+      Is the square checkbox LEFT of "I acknowledge the Permissions Declaration" checked?
+      Answer only true or false.
+
+flow:
+  - section: Cold Start
+    type: action
+    action: wait-app-ready
+    label: 等待 T59 冷启就绪
+    manualWaitSec: 15
+    assertPrompt: >
+      Has Viramgam CardVista finished splash and is NOW showing ANY of:
+      (1) agreement with "Manage Your Cards, Simply",
+      (2) login with "Continue with Truecaller" or "Continue with Phone",
+      (3) Home with "Your Cards" / "Total Outstanding",
+      (4) a system permission Allow dialog?
+      Answer false only for pure splash, launcher, or endless spinner. Answer only true or false.
+
+  - section: Permissions
+    type: action
+    action: handle-permissions
+    label: 系统权限（若有）
+    optional: true
+
+  - section: Agreement
+    type: verify
+    label: 首次协议弹层文案
+    optional: true
+    retry: 1
+    assertPrompt: >
+      If the first-launch agreement is visible, it shows "Viramgam CardVista",
+      title "Manage Your Cards, Simply",
+      "Keep your cards, bills and repayments organised in one place.",
+      "I agree to the Terms of Service", "I have read the Privacy Policy",
+      "I acknowledge the Permissions Declaration", and a "Continue" button.
+      If the agreement is already gone and login or Home is showing, pass.
+      Fail if this is RajWise, FlexiCredit, or Haveri VahanCredit.
+
+  - section: Agreement
+    type: verify
+    label: UI Agreement PRD
+    optional: true
+    assertPrompt: >
+      STRICT if the agreement is on screen: light background near #F7F7FA or white sheet;
+      brand purple accents near #5B35D5 on Continue once enabled; title near #191922.
+      Fail if navy RajWise, notes-yellow, retro paper, or black gallery theme.
+      If agreement already dismissed, pass.
+
+  - section: Agreement
+    type: action
+    action: tap-text
+    label: 打开 Terms of Service
+    optional: true
+    scrollBeforeTap: false
+    noScrollRetry: true
+    assertPrompt: Terms of Service
+    locatePrompt: >
+      Only if the agreement sheet is visible: the tappable "Terms of Service" link or row
+      (NOT the checkbox square). Do NOT tap Continue, Privacy Policy, or Permissions Declaration.
+
+  - section: Agreement
+    type: verify
+    label: Terms of Service 阅读页
+    optional: true
+    assertPrompt: >
+      A Terms of Service page or WebView is open, or still on the agreement after a failed open (optional).
+      Not the login Truecaller buttons.
+
+  - section: Agreement
+    type: action
+    action: android-back
+    label: 从 Terms 返回
+    optional: true
+
+  - section: Agreement
+    type: action
+    action: tap-text
+    label: 打开 Privacy Policy
+    optional: true
+    scrollBeforeTap: false
+    noScrollRetry: true
+    assertPrompt: Privacy Policy
+    locatePrompt: >
+      Only if the agreement sheet is visible: the tappable "Privacy Policy" link or row.
+      Do NOT tap Continue or the checkbox squares.
+
+  - section: Agreement
+    type: action
+    action: android-back
+    label: 从 Privacy 返回
+    optional: true
+
+  - section: Agreement
+    type: action
+    action: tap-text
+    label: 打开 Permissions Declaration
+    optional: true
+    scrollBeforeTap: false
+    noScrollRetry: true
+    assertPrompt: Permissions Declaration
+    locatePrompt: >
+      Only if the agreement sheet is visible: the tappable "Permissions Declaration" link or row.
+      Do NOT tap Continue or the checkbox squares.
+
+  - section: Agreement
+    type: action
+    action: android-back
+    label: 从 Permissions Declaration 返回
+    optional: true
+
+  - section: Agreement
+    type: verify
+    label: 未勾选 Continue 不可用
+    optional: true
+    assertPrompt: >
+      If the agreement is visible and consent boxes are unchecked,
+      the "Continue" button is disabled or pale (not solid brand purple #5B35D5).
+      If agreement is already gone, pass.
+
+  - section: Agreement
+    type: checkbox
+    label: I agree to the Terms of Service
+    optional: true
+
+  - section: Agreement
+    type: checkbox
+    label: I have read the Privacy Policy
+    optional: true
+
+  - section: Agreement
+    type: checkbox
+    label: I acknowledge the Permissions Declaration
+    optional: true
+
+  - section: Agreement
+    type: verify
+    label: 勾选后 Continue 可点
+    optional: true
+    assertPrompt: >
+      If the agreement is still visible, the three consent checkboxes are checked
+      and Continue looks enabled (solid brand purple, not pale).
+      If the sheet is already gone, pass.
+
+  - section: Agreement
+    type: action
+    action: tap-text
+    label: Continue
+    optional: true
+    scrollBeforeTap: false
+    noScrollRetry: true
+    assertPrompt: Continue
+    locatePrompt: >
+      Only if the agreement sheet is visible: the primary "Continue" button AFTER consents are checked.
+      Do NOT tap protocol links or checkbox squares.
+
+  - section: Login
+    type: action
+    action: wait-page
+    label: 进入登录或首页
+    manualWaitSec: 10
+    assertPrompt: >
+      Login shows "Continue with Truecaller" and "Continue with Phone" (or "Continue with Google"),
+      OR Home shows "Total Outstanding" / "Your Cards".
+      Not the first-launch agreement title "Manage Your Cards, Simply" as the only screen.
+
+submit:
+  enabled: false

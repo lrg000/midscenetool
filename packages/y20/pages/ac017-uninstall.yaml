@@ -1,0 +1,158 @@
+# Y20 Daily Grid — AC-017 卸载后 SQLite 数据清除（破坏性专项，需 Y20_APK_PATH）
+page:
+  id: aside-y20-ac017
+  title: AC-017 Uninstall
+  isNative: true
+  skipNavigation: true
+  navigationPrompt: ""
+  blurTarget: the day schedule page title showing month and day
+  aiContext: >
+    AC-017: save marker → uninstall → reinstall from Y20_APK_PATH → verify SQLite empty.
+  bottomFields:
+    - Save
+
+dropdowns: []
+
+inputs:
+  - label: Enter your schedule...
+    validValue: Y20 AC017 Marker
+    skipEmptyBlurTest: true
+    skipInvalidBlurTest: true
+    skipValidBlurTest: true
+    skipScrollBeforeInput: true
+    skipBlurAfterInput: true
+    locatePrompt: >
+      Text input inside open "New Schedule" bottom sheet (placeholder "Enter your schedule...").
+      Tap input center only. Do NOT tap Save or outside sheet.
+
+flow:
+  - section: Calendar
+    type: action
+    action: wait-app-ready
+    label: 等待 App 就绪（卸载前）
+    manualWaitSec: 25
+    assertPrompt: >
+      Daily Grid app loaded: calendar OR day schedule visible. No endless splash.
+
+  - section: Calendar
+    type: action
+    action: ensure-calendar-home
+    label: 确保在月历首页
+    assertPrompt: com.dailygrid.lifecaptured.app
+
+  - section: Calendar
+    type: action
+    action: tap-text
+    label: 进入当天行程
+    assertPrompt: Today
+    locatePrompt: >
+      Tap today's blue-circle date cell in calendar grid. Do NOT tap Today text or arrows.
+
+  - section: Day
+    type: action
+    action: ensure-y20-clean-state
+    label: 清理残留行程
+
+  - section: Day
+    type: verify
+    label: 卸载前应为空状态
+    retry: 2
+    assertPrompt: >
+      Day schedule empty state "No Schedule" before adding AC-017 marker.
+      Fail if any schedule cards already listed.
+
+  - section: Day
+    type: action
+    action: ensure-new-schedule-sheet
+    label: 打开 New Schedule
+
+  - section: Day
+    type: action
+    action: tap-text
+    label: 打开 FAB（若 Sheet 未开）
+    optional: true
+    assertPrompt: +
+    scrollBeforeTap: false
+    locatePrompt: >
+      Blue FAB "+" bottom-right. Skip if New Schedule sheet already open.
+
+  - section: Day
+    type: action
+    action: fill-input
+    label: 写入 AC-017 标记行程
+    inputFieldLabel: Enter your schedule...
+    inputValue: Y20 AC017 Marker
+
+  - section: Day
+    type: action
+    action: tap-text
+    label: Save 标记行程
+    assertPrompt: Save
+    scrollBeforeTap: false
+    locatePrompt: >
+      Solid blue full-width "Save" (~48dp #3B82F6) on open New Schedule bottom sheet.
+
+  - section: Day
+    type: verify
+    label: 卸载前标记已保存
+    retry: 3
+    retryDelayMs: 800
+    assertPrompt: >
+      PRD AC-017 setup: bottom sheet CLOSED; card "Y20 AC017 Marker" visible on day list.
+      Fail if sheet still open or marker missing.
+
+  - section: Day
+    type: action
+    action: force-stop-app
+    label: 卸载前关闭 App
+    assertPrompt: com.dailygrid.lifecaptured.app
+
+  - section: System
+    type: action
+    action: uninstall-app
+    label: AC-017 卸载 App
+    assertPrompt: com.dailygrid.lifecaptured.app
+
+  - section: System
+    type: action
+    action: install-apk
+    label: AC-017 重新安装 App
+
+  - section: Calendar
+    type: action
+    action: relaunch-app
+    label: AC-017 重装后冷启
+    assertPrompt: com.dailygrid.lifecaptured.app
+
+  - section: Calendar
+    type: action
+    action: wait-app-ready
+    label: 重装后等待 App
+    manualWaitSec: 25
+    assertPrompt: >
+      Fresh install: calendar or day schedule visible after reinstall.
+
+  - section: Calendar
+    type: action
+    action: ensure-calendar-home
+    label: 重装后确保月历
+    assertPrompt: com.dailygrid.lifecaptured.app
+
+  - section: Calendar
+    type: action
+    action: tap-text
+    label: 重装后进入当天行程
+    assertPrompt: Today
+    locatePrompt: >
+      Tap today's blue-circle date cell. Do NOT tap Today text.
+
+  - section: Day
+    type: verify
+    label: AC-017 卸载后数据已清除
+    retry: 3
+    retryDelayMs: 800
+    assertPrompt: >
+      PRD AC-017: after uninstall+reinstall, SQLite cleared.
+      Empty "No Schedule" with Tap "+" guidance.
+      Must NOT show "Y20 AC017 Marker", "Y20Test Schedule", or "Y20Test Schedule 2".
+      Fail if any prior schedule remains.

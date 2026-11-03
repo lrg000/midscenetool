@@ -1,0 +1,82 @@
+# T53 KYC Step 6 — PRD 二十三 / 60.6 允许摄像头路径。拒绝分支未自动化。
+page:
+  id: aside-t53-kyc-selfie
+  title: Identity Check
+  isNative: true
+  skipNavigation: true
+  navigationPrompt: ""
+  blurTarget: the title Identity Check
+  aiContext: >
+    Identity Check. Take a quick selfie to complete verification. Start Verification.
+    Camera Access dialog then system permission. Center your face. Photo captured. Identity check completed.
+  bottomFields: []
+dropdowns: []
+inputs: []
+flow:
+  - section: Selfie
+    type: action
+    action: wait-page
+    label: 等待 Identity Check
+    manualWaitSec: 8
+    assertPrompt: >
+      "Identity Check" and "Take a quick selfie to complete verification." are visible.
+  - section: Selfie
+    type: verify
+    label: UI Identity Check PRD
+    assertPrompt: >
+      STRICT: warm off-white background #F4F3EF, primary blue #1D4ED8 buttons with about 6dp corners (not pills), title/amount near #171717, secondary #6B7280. Fail if yellow notes, retro paper, black gallery, or cream sticker theme.
+  - section: Selfie
+    type: action
+    action: tap-text
+    label: Start Verification
+    scrollBeforeTap: false
+    assertPrompt: Start Verification
+    locatePrompt: The "Start Verification" button. Do NOT tap back.
+  - section: Selfie
+    type: verify
+    label: Camera Access 说明
+    optional: true
+    assertPrompt: >
+      If a pre-permission sheet is showing, it says "Camera Access" and
+      "We need camera access to complete your identity check." with Continue.
+      If the system camera permission or the selfie frame is already up, pass.
+  - section: Selfie
+    type: action
+    action: tap-text
+    label: Camera Access Continue
+    optional: true
+    scrollBeforeTap: false
+    noScrollRetry: true
+    assertPrompt: Continue
+    locatePrompt: >
+      On the "Camera Access" sheet, tap "Continue". Do NOT tap a deny/cancel control.
+  - section: Selfie
+    type: action
+    action: handle-permissions
+    label: 系统摄像头权限
+    optional: true
+  - section: Selfie
+    type: verify
+    label: Center your face
+    optional: true
+    assertPrompt: >
+      Selfie UI shows "Center your face" and "Keep your face inside the frame."
+      If "Photo captured" or "Identity check completed" is already shown, pass.
+  - section: Selfie
+    type: action
+    action: tap-text
+    label: 拍照
+    optional: true
+    scrollBeforeTap: false
+    noScrollRetry: true
+    assertPrompt: Center your face
+    locatePrompt: >
+      The shutter / capture control on the selfie screen.
+      Do NOT tap back or a retake that leaves the flow.
+  - section: Selfie
+    type: verify
+    label: Identity check completed
+    retry: 3
+    retryDelayMs: 1500
+    assertPrompt: >
+      "Photo captured" and/or "Identity check completed" is visible.

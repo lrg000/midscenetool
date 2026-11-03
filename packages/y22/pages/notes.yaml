@@ -1,0 +1,350 @@
+# Y22 Daily Scribble Pad — 便签 CRUD（PRD 十~十四、TC-002~TC-014、TC-006/007）
+page:
+  id: aside-y22-notes
+  title: Notes CRUD
+  isNative: true
+  skipNavigation: true
+  navigationPrompt: ""
+  blurTarget: the New Note sheet title text (or Notes header title if sheet closed)
+  aiContext: >
+    Notes list + New Note sheet (~50% height) + note detail.
+    Flow: open + → type note → ADB dismiss keyboard → tap Save (never tap scrim / never swipe to find Save).
+    Placeholder Write something...; Save yellow full-width 48dp; max 500 chars.
+  bottomFields: []
+
+dropdowns: []
+
+inputs:
+  - label: Write something...
+    validValue: Y22Test Note A
+    skipEmptyBlurTest: true
+    skipInvalidBlurTest: true
+    skipValidBlurTest: true
+    skipScrollBeforeInput: true
+    skipBlurAfterInput: true
+    autoDismissKeyboard: false
+    locatePrompt: >
+      The multiline text input inside open "New Note" bottom sheet
+      (placeholder "Write something..."). Tap input center only. Do NOT tap Save or outside sheet.
+
+flow:
+  - section: Notes
+    type: action
+    action: ensure-y22-clean-state
+    label: 清理残留便签
+
+  - section: Notes
+    type: verify
+    label: TC-003 空状态
+    retry: 2
+    assertPrompt: >
+      PRD TC-003: empty state "No Notes Yet" and guidance containing Tap "+" / create your first note.
+      No note cards listed.
+
+  # ========== 主路径：打开 → 输入 → 收键盘 → Save（绝不关 App / 不点遮罩） ==========
+  - section: Notes
+    type: action
+    action: ensure-new-note-sheet
+    label: 打开 New Note（第一条）
+
+  - section: Notes
+    type: verify
+    label: TC-004 New Note Sheet
+    retry: 2
+    assertPrompt: >
+      "New Note" bottom sheet is open with placeholder or input "Write something...".
+      Keyboard may cover Save — that is OK. Fail only if still on empty Notes list with no sheet.
+
+  - section: Notes
+    type: action
+    action: fill-input
+    label: 填入第一条便签
+    inputFieldLabel: Write something...
+    inputValue: Y22Test Note A
+    autoDismissKeyboard: false
+
+  - section: Notes
+    type: action
+    action: dismiss-keyboard
+    label: 填完后收键盘（露出 Save）
+
+  - section: Notes
+    type: action
+    action: tap-text
+    label: Save 第一条
+    assertPrompt: Save
+    scrollBeforeTap: false
+    noScrollRetry: true
+    locatePrompt: >
+      The yellow full-width "Save" button at the bottom of the open "New Note" sheet.
+      Do NOT tap the text input, sheet handle, dimmed area outside, or system back.
+      Do NOT swipe. Sheet must stay open until Save is tapped.
+
+  - section: Notes
+    type: verify
+    label: TC-005 保存后列表置顶
+    retry: 3
+    retryDelayMs: 800
+    assertPrompt: >
+      PRD TC-005: New Note sheet CLOSED; card showing "Y22Test Note A" (or first line) on Notes list.
+      Fail if sheet still open or note missing.
+
+  - section: Notes
+    type: action
+    action: ensure-new-note-sheet
+    label: 打开 New Note（第二条）
+
+  - section: Notes
+    type: action
+    action: fill-input
+    label: 填入第二条便签
+    inputFieldLabel: Write something...
+    inputValue: Y22Test Note B
+    autoDismissKeyboard: false
+
+  - section: Notes
+    type: action
+    action: dismiss-keyboard
+    label: 第二条填完收键盘
+
+  - section: Notes
+    type: action
+    action: tap-text
+    label: Save 第二条
+    assertPrompt: Save
+    scrollBeforeTap: false
+    noScrollRetry: true
+    locatePrompt: >
+      Yellow full-width "Save" at bottom of open New Note sheet.
+      Do NOT tap input, outside sheet, or swipe.
+
+  - section: Notes
+    type: verify
+    label: TC-002 最新在顶部倒序
+    retry: 2
+    assertPrompt: >
+      PRD TC-002: "Y22Test Note B" appears ABOVE "Y22Test Note A" on Notes list (newest first).
+      Fail if order reversed or either missing.
+
+  # ========== 空 Save（Sheet 已关时先重开；只 ADB 收键盘再点 Save） ==========
+  - section: EmptySave
+    type: action
+    action: ensure-new-note-sheet
+    label: 打开 New Note（空 Save）
+
+  - section: EmptySave
+    type: action
+    action: dismiss-keyboard
+    label: 空 Save 前收键盘
+
+  - section: EmptySave
+    type: action
+    action: tap-text
+    label: TC-006 空内容 Save
+    assertPrompt: Save
+    scrollBeforeTap: false
+    noScrollRetry: true
+    locatePrompt: >
+      Yellow full-width "Save" at bottom of open New Note sheet (keyboard dismissed).
+      Do NOT tap outside sheet or swipe.
+
+  - section: EmptySave
+    type: verify
+    label: TC-006 空内容提示
+    retry: 2
+    assertPrompt: >
+      After empty Save: PASS if ANY of:
+      (A) Hint "Please enter your note." and sheet still open, OR
+      (B) Sheet still open with empty input and no new blank card, OR
+      (C) Notes list with no NEW empty card (prior Y22Test notes may remain).
+      FAIL only if a brand-new blank/empty note card was added.
+
+  - section: EmptySave
+    type: action
+    action: close-new-note-sheet
+    label: 关闭空 Save 残留 Sheet
+
+  - section: Notes
+    type: action
+    action: force-stop-app
+    label: TC-013 关闭 App
+    assertPrompt: com.dailyscribble.writepad.app
+
+  - section: Notes
+    type: action
+    action: relaunch-app
+    label: TC-013 重开 App
+    assertPrompt: com.dailyscribble.writepad.app
+
+  - section: Notes
+    type: action
+    action: wait-page
+    label: TC-013 等待 Notes 恢复
+    manualWaitSec: 10
+    assertPrompt: >
+      Notes home visible again with note cards (or empty state if wipe — then fail persistence).
+
+  - section: Notes
+    type: verify
+    label: TC-013 本地持久化
+    retry: 2
+    assertPrompt: >
+      PRD TC-013: after relaunch, "Y22Test Note B" and "Y22Test Note A" still on Notes list
+      (B above A preferred). Fail if both missing.
+
+  - section: Detail
+    type: action
+    action: tap-text
+    label: 打开便签详情
+    assertPrompt: Y22Test Note B
+    scrollBeforeTap: false
+    locatePrompt: >
+      The top note card whose title/preview contains "Y22Test Note B". Do NOT tap trash or +.
+
+  - section: Detail
+    type: verify
+    label: TC-008 详情全文
+    retry: 2
+    assertPrompt: >
+      PRD TC-008: note detail with header "Note" (back), full content containing "Y22Test Note B",
+      and delete icon top-right. Fail if still on list only.
+
+  - section: Detail
+    type: action
+    action: tap-text
+    label: 返回列表
+    assertPrompt: back
+    scrollBeforeTap: false
+    locatePrompt: >
+      Back arrow top-left of note detail (‹ Note). Do NOT tap delete.
+
+  - section: Detail
+    type: action
+    action: wait-page
+    label: 回到 Notes 列表
+    manualWaitSec: 6
+    assertPrompt: >
+      Notes list home with "Notes" header and note cards visible again.
+
+  - section: Delete
+    type: action
+    action: tap-text
+    label: TC-009 点删除
+    assertPrompt: delete
+    scrollBeforeTap: false
+    locatePrompt: >
+      Trash/delete icon on the top note card (Y22Test Note B) on Notes list,
+      OR open that card and tap header delete — prefer list trash if present.
+      Do NOT tap +.
+
+  - section: Delete
+    type: verify
+    label: TC-009 删除确认框
+    retry: 2
+    assertPrompt: >
+      PRD TC-009: dialog "Delete this note?" with Cancel and Delete buttons visible.
+
+  - section: Delete
+    type: action
+    action: tap-text
+    label: TC-010 Cancel
+    assertPrompt: Cancel
+    scrollBeforeTap: false
+    locatePrompt: >
+      "Cancel" on Delete this note? dialog. Do NOT tap Delete.
+
+  - section: Delete
+    type: verify
+    label: TC-010 取消后仍在
+    retry: 2
+    assertPrompt: >
+      Dialog closed; "Y22Test Note B" still on Notes list.
+
+  - section: Delete
+    type: action
+    action: tap-text
+    label: 再次点删除
+    assertPrompt: delete
+    scrollBeforeTap: false
+    locatePrompt: >
+      Trash/delete on top note card "Y22Test Note B" (or detail delete). Do NOT tap +.
+
+  - section: Delete
+    type: action
+    action: tap-text
+    label: TC-011 确认 Delete
+    assertPrompt: Delete
+    scrollBeforeTap: false
+    locatePrompt: >
+      Red "Delete" on "Delete this note?" dialog (NOT Cancel).
+
+  - section: Delete
+    type: verify
+    label: TC-011 已删除
+    retry: 2
+    assertPrompt: >
+      "Y22Test Note B" gone from list; "Y22Test Note A" may remain.
+
+  - section: Delete
+    type: action
+    action: ensure-y22-clean-state
+    label: 删除剩余便签至空
+
+  - section: Delete
+    type: verify
+    label: TC-012 删尽空状态
+    retry: 2
+    assertPrompt: >
+      PRD TC-012: "No Notes Yet" empty state visible after last note deleted.
+
+  - section: Limit
+    type: action
+    action: ensure-new-note-sheet
+    label: 打开 New Note（超限）
+
+  - section: Limit
+    type: action
+    action: fill-input
+    label: TC-007 输入501字符
+    inputFieldLabel: Write something...
+    autoDismissKeyboard: false
+    inputValue: Y22AC012_XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
+
+  - section: Limit
+    type: action
+    action: dismiss-keyboard
+    label: 超限填完收键盘
+
+  - section: Limit
+    type: verify
+    label: TC-007 超限提示或硬截断
+    retry: 2
+    assertPrompt: >
+      PRD TC-007 after 501-char attempt — PASS if ANY:
+      (A) Hard cap field shows <=500 chars, OR
+      (B) Error text "Maximum 500 characters." visible (counter may show NN/500).
+      FAIL only if >500 chars accepted with no cap and no error.
+
+  - section: Limit
+    type: action
+    action: tap-text
+    label: TC-007 超限点 Save
+    assertPrompt: Save
+    scrollBeforeTap: false
+    noScrollRetry: true
+    optional: true
+    locatePrompt: >
+      Yellow full-width "Save" at bottom of New Note sheet if still open (keyboard dismissed).
+
+  - section: Limit
+    type: action
+    action: close-new-note-sheet
+    label: 关闭超限 Sheet
+
+  - section: Limit
+    type: action
+    action: ensure-y22-clean-state
+    label: 清理超限残留
+
+submit:
+  enabled: false

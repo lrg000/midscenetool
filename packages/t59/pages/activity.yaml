@@ -1,0 +1,267 @@
+# T59 Activity — PRD 七~九 / AC-07 / AC-08 / AC-09 部分 / AC-11
+page:
+  id: aside-t59-activity
+  title: Activity
+  isNative: true
+  skipNavigation: true
+  navigationPrompt: ""
+  blurTarget: Activity
+  aiContext: >
+    Activity with Bills and Payments tabs. Add Bill: Select Card, Bill Amount, Bill Date,
+    Due Date, Note, Save Bill. Toast Bill added successfully.
+    Record Payment: Payment amount exceeds the remaining balance.
+    Empty: No bills yet, Add Bill; No payments yet; No records found.
+  bottomFields:
+    - Save Bill
+    - Save Payment
+
+dropdowns: []
+inputs:
+  - label: Bill Amount
+    validValue: "10000"
+    skipEmptyBlurTest: true
+    skipInvalidBlurTest: true
+    skipInputTests: true
+  - label: Payment Amount
+    validValue: "2000"
+    skipEmptyBlurTest: true
+    skipInvalidBlurTest: true
+    skipInputTests: true
+
+flow:
+  - section: Activity
+    type: verify
+    label: Activity 切换项
+    retry: 1
+    assertPrompt: >
+      Activity page title "Activity" with tabs "Bills" and "Payments".
+      Bills may be selected by default. Empty copy may be "No bills yet" with "Add Bill".
+
+  - section: Activity
+    type: verify
+    label: UI Activity PRD
+    assertPrompt: >
+      STRICT: light #F7F7FA, white list cards, selected tab/brand near #5B35D5,
+      status colors may include green #159A72, orange #E99532, red #D94B55.
+      Fail if T42 Get Cash Now loan home.
+
+  - section: Bills
+    type: action
+    action: tap-text
+    label: Add Bill
+    scrollBeforeTap: true
+    assertPrompt: Add Bill
+    locatePrompt: >
+      "+ Add Bill" or "Add Bill" on Activity Bills (or empty-state CTA).
+      Do NOT tap Payments tab or Record Payment.
+
+  - section: Bills
+    type: action
+    action: wait-page
+    label: 等待账单表单
+    manualWaitSec: 8
+    assertPrompt: >
+      Add-bill form shows "Select Card", "Bill Amount", and "Save Bill".
+
+  - section: Bills
+    type: action
+    action: tap-text
+    label: Select Card
+    optional: true
+    scrollBeforeTap: false
+    noScrollRetry: true
+    assertPrompt: Select Card
+    locatePrompt: >
+      The "Select Card" dropdown on the add-bill form. Do NOT tap Save Bill yet.
+
+  - section: Bills
+    type: action
+    action: tap-text
+    label: 选择测试卡
+    optional: true
+    scrollBeforeTap: false
+    noScrollRetry: true
+    assertPrompt: Midscene HDFC Test
+    locatePrompt: >
+      In the card picker, the option "Midscene HDFC Test". If the card is already selected, skip.
+
+  - section: Bills
+    type: action
+    action: fill-input
+    label: Bill Amount
+    inputFieldLabel: Bill Amount
+    inputValue: "10000"
+    autoDismissKeyboard: true
+
+  - section: Bills
+    type: action
+    action: tap-text
+    label: Save Bill
+    scrollBeforeTap: true
+    assertPrompt: Save Bill
+    locatePrompt: >
+      The primary "Save Bill" button after amount is filled.
+      Do NOT tap back.
+
+  - section: Bills
+    type: verify
+    label: 账单已添加 Unpaid
+    retry: 2
+    assertPrompt: >
+      Toast may show "Bill added successfully". A bill for "Midscene HDFC Test"
+      with amount around ₹10,000 is listed. Status is Unpaid or equivalent unpaid
+      (not Paid). Remaining amount is the bill amount.
+
+  - section: Bills
+    type: action
+    action: tap-text
+    label: 打开账单详情
+    scrollBeforeTap: true
+    assertPrompt: Unpaid
+    locatePrompt: >
+      The newly added unpaid bill row for Midscene HDFC Test / ₹10,000.
+      Do NOT tap Payments tab.
+
+  - section: Payment
+    type: action
+    action: tap-text
+    label: Record Payment
+    scrollBeforeTap: true
+    assertPrompt: Record Payment
+    locatePrompt: >
+      "Record Payment" on bill detail. Do NOT tap Delete.
+
+  - section: Payment
+    type: action
+    action: fill-input
+    label: 超额还款
+    inputFieldLabel: Payment Amount
+    inputValue: "999999"
+    autoDismissKeyboard: true
+
+  - section: Payment
+    type: action
+    action: tap-text
+    label: Save Payment 超额
+    scrollBeforeTap: true
+    assertPrompt: Save Payment
+    locatePrompt: >
+      The primary "Save Payment" button while the amount is far above remaining balance.
+      Do NOT tap back.
+
+  - section: Payment
+    type: verify
+    label: 超额还款提示
+    assertPrompt: >
+      Message "Payment amount exceeds the remaining balance." is visible
+      (punctuation must match). Payment is NOT saved as a 999999 record.
+
+  - section: Payment
+    type: action
+    action: fill-input
+    label: 部分还款 2000
+    inputFieldLabel: Payment Amount
+    inputValue: "2000"
+    autoDismissKeyboard: true
+
+  - section: Payment
+    type: action
+    action: tap-text
+    label: Save Payment
+    scrollBeforeTap: true
+    assertPrompt: Save Payment
+    locatePrompt: >
+      The primary "Save Payment" button with amount 2000. Do NOT tap back.
+
+  - section: Payment
+    type: verify
+    label: Partially Paid
+    retry: 2
+    assertPrompt: >
+      Bill remaining is about ₹8,000 (10000-2000). Status is "Partially Paid".
+      Paid amount about ₹2,000. Not Paid, not still Unpaid with 0 paid.
+
+  - section: Payments tab
+    type: action
+    action: tap-text
+    label: Payments
+    scrollBeforeTap: false
+    noScrollRetry: true
+    assertPrompt: Payments
+    locatePrompt: >
+      The Activity top tab "Payments" (not Save Payment). Do NOT tap Bills except to leave later.
+
+  - section: Payments tab
+    type: verify
+    label: 还款历史
+    assertPrompt: >
+      Payments list shows a ₹2,000 record for Midscene HDFC Test (newest first).
+      Empty copy "No payments yet" must NOT be the only content.
+
+  - section: Delete block
+    type: action
+    action: tap-text
+    label: 底栏 Cards
+    scrollBeforeTap: false
+    noScrollRetry: true
+    assertPrompt: Cards
+    locatePrompt: >
+      Bottom tab "Cards". Do NOT tap My yet.
+
+  - section: Delete block
+    type: action
+    action: tap-text
+    label: 再进测试卡
+    scrollBeforeTap: true
+    assertPrompt: Midscene HDFC Test
+    locatePrompt: >
+      The "Midscene HDFC Test" card. Do NOT tap Add Card.
+
+  - section: Delete block
+    type: action
+    action: tap-text
+    label: Delete Card
+    scrollBeforeTap: true
+    assertPrompt: Delete Card
+    locatePrompt: >
+      "Delete Card" on card detail. Do NOT tap Edit Card.
+
+  - section: Delete block
+    type: verify
+    label: 未结清不可直接删除
+    assertPrompt: >
+      Either a blocking message that unpaid/outstanding bills must be handled first
+      (cannot delete), OR dialog "Delete this card?" with
+      "You may lose access to this card's active management view." plus Cancel and Delete.
+      If the confirm dialog is shown, do not treat a completed deletion as success yet.
+
+  - section: Delete block
+    type: action
+    action: tap-text
+    label: Cancel 删除
+    optional: true
+    scrollBeforeTap: false
+    noScrollRetry: true
+    assertPrompt: Cancel
+    locatePrompt: >
+      If "Delete this card?" is visible, tap "Cancel". Do NOT tap Delete.
+      If no dialog (blocked already), skip.
+
+  - section: Delete block
+    type: verify
+    label: 卡仍在
+    assertPrompt: >
+      "Midscene HDFC Test" is still present (detail or list). The card was not removed.
+
+  - section: My
+    type: action
+    action: tap-text
+    label: 底栏 My
+    scrollBeforeTap: false
+    noScrollRetry: true
+    assertPrompt: My
+    locatePrompt: >
+      Bottom navigation tab "My". Do NOT tap Home, Cards, or Activity.
+
+submit:
+  enabled: false

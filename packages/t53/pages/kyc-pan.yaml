@@ -1,0 +1,49 @@
+# T53 KYC Step 2 — PRD 十九
+page:
+  id: aside-t53-kyc-pan
+  title: PAN Verification
+  isNative: true
+  skipNavigation: true
+  navigationPrompt: ""
+  blurTarget: the title PAN Verification
+  aiContext: PAN Verification. Enter your PAN to continue. Field PAN Number. Button Verify PAN. Then "PAN verified".
+  bottomFields: []
+dropdowns: []
+inputs:
+  - label: PAN Number
+    validValue: ABCDE1234F
+    skipEmptyBlurTest: true
+    skipInvalidBlurTest: true
+    skipInputTests: true
+flow:
+  - section: PAN
+    type: action
+    action: wait-page
+    label: 等待 PAN
+    manualWaitSec: 8
+    assertPrompt: '"PAN Verification" and "Enter your PAN to continue." are visible.'
+  - section: PAN
+    type: verify
+    label: UI PAN PRD
+    assertPrompt: >
+      STRICT: warm off-white background #F4F3EF, primary blue #1D4ED8 buttons with about 6dp corners (not pills), title/amount near #171717, secondary #6B7280. Fail if yellow notes, retro paper, black gallery, or cream sticker theme.
+  - section: PAN
+    type: action
+    action: fill-input
+    label: PAN Number
+    inputFieldLabel: PAN Number
+    inputValue: ABCDE1234F
+    autoDismissKeyboard: true
+  - section: PAN
+    type: action
+    action: tap-text
+    label: Verify PAN
+    scrollBeforeTap: false
+    assertPrompt: Verify PAN
+    locatePrompt: The "Verify PAN" button. Do NOT tap back.
+  - section: PAN
+    type: verify
+    label: PAN verified
+    retry: 2
+    assertPrompt: >
+      "PAN verified" is shown. This is a simulated success, not a live PAN bureau error page.

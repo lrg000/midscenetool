@@ -1,0 +1,200 @@
+# Y27 — Photos 首页（PRD 九~十一、二十八、33.1~33.2、33.9）
+# 云效: f247cecc0ee66a2ea9b3c7d6aa | com.sakhiphoto.rangoli.app
+page:
+  id: aside-y27-photos
+  title: My Photos
+  isNative: true
+  skipNavigation: true
+  navigationPrompt: ""
+  blurTarget: the My Photos title
+  aiContext: >
+    Sakhi Rangoli / PicBox Photos: title My Photos, top Photos|Albums switch (NOT bottom tabs),
+    masonry waterfall, header +, coral #FF6B4A, bg #FAFAF8. Empty: No Photos Yet.
+    Upload sheet: Add Photos / Choose from Gallery / Cancel. No login. Ignore vConsole.
+  bottomFields: []
+
+dropdowns: []
+inputs: []
+
+flow:
+  - section: Cold Start
+    type: action
+    action: wait-app-ready
+    label: 等待 App 就绪
+    manualWaitSec: 20
+    assertPrompt: >
+      Sakhi Rangoli / PicBox finished loading: My Photos, Albums, viewer, or sheet.
+      FAIL if Android launcher only.
+
+  - section: Cold Start
+    type: action
+    action: handle-permissions
+    label: 系统照片权限 Allow
+
+  - section: Cold Start
+    type: action
+    action: relaunch-if-not
+    label: 若不在 App 内则重开
+    assertPrompt: >
+      Is in-app PicBox/Sakhi UI visible (My Photos / Albums / photo viewer),
+      NOT Android home launcher with app icons
+    locatePrompt: com.sakhiphoto.rangoli.app
+
+  - section: Cold Start
+    type: action
+    action: relaunch-app
+    label: 强制冷启
+    assertPrompt: com.sakhiphoto.rangoli.app
+
+  - section: Cold Start
+    type: action
+    action: wait-app-ready
+    label: 冷启后再等就绪
+    manualWaitSec: 12
+    assertPrompt: >
+      In-app My Photos or Albums (magazine photo UI), not launcher.
+
+  - section: Photos
+    type: action
+    action: tap-text
+    label: 顶栏 Photos
+    assertPrompt: Photos
+    scrollBeforeTap: false
+    optional: true
+    locatePrompt: >
+      Top segmented control "Photos" (beside Albums). Do NOT tap Albums or launcher icons.
+
+  - section: Photos
+    type: verify
+    label: 33.1 进入 My Photos 无登录
+    retry: 2
+    assertPrompt: >
+      PRD 33.1: My Photos home (title My Photos and/or Photos segment). No login.
+      Top Photos|Albums switch — NOT bottom Tab bar with 2+ icons. FAIL for login screens.
+
+  - section: Photos
+    type: verify
+    label: UI Editorial Magazine 风格
+    assertPrompt: >
+      STRICT PRD (六~七, 33.11): light paper bg ~#FAFAF8; coral/orange accents ~#FF6B4A;
+      magazine photo layout. FAIL if dark gallery #0B0B0D, blue calendar, yellow notes, or sticker UI.
+
+  - section: Photos
+    type: verify
+    label: 33.1 瀑布流或空状态
+    retry: 2
+    assertPrompt: >
+      PASS if (A) masonry/waterfall photos with natural aspect ratios, OR
+      (B) empty "No Photos Yet" / "Add your first photos" / "+ Add Photos".
+
+  - section: Seed
+    type: action
+    action: seed-gallery-image
+    label: 推送测试图
+    assertPrompt: packages/y27/fixtures/y27-test-photo.png
+
+  - section: Upload Cancel
+    type: action
+    action: tap-text
+    label: 点 + 打开上传
+    assertPrompt: +
+    scrollBeforeTap: false
+    locatePrompt: >
+      Top-right "+" on My Photos, OR empty-state "+ Add Photos". Do NOT tap Albums.
+
+  - section: Upload Cancel
+    type: action
+    action: wait-page
+    label: 等待 Add Photos Sheet
+    manualWaitSec: 6
+    assertPrompt: >
+      Bottom sheet "Add Photos" with "Choose from Gallery" and/or Cancel, OR system picker already open.
+
+  - section: Upload Cancel
+    type: action
+    action: tap-text
+    label: Choose from Gallery（若 Sheet）
+    assertPrompt: Choose from Gallery
+    scrollBeforeTap: false
+    optional: true
+    locatePrompt: >
+      Sheet row "Choose from Gallery". Skip if system picker already visible.
+
+  - section: Upload Cancel
+    type: action
+    action: handle-permissions
+    label: 选择器权限
+
+  - section: Upload Cancel
+    type: verify
+    label: 33.2 系统选择器打开
+    retry: 3
+    retryDelayMs: 600
+    assertPrompt: >
+      Android system photo picker open (Photos/Collections grid or Gallery).
+
+  - section: Upload Cancel
+    type: action
+    action: android-back
+    label: 取消选择器
+
+  - section: Upload Cancel
+    type: action
+    action: android-back
+    label: 关闭可能残留 Sheet
+    optional: true
+
+  - section: Upload Cancel
+    type: verify
+    label: 33.2 取消后回首页
+    retry: 2
+    assertPrompt: >
+      Back on My Photos in-app (not stuck in system picker with Done/Preview).
+
+  - section: Upload
+    type: action
+    action: tap-text
+    label: 再次点 +
+    assertPrompt: +
+    scrollBeforeTap: false
+    locatePrompt: >
+      My Photos "+" or "+ Add Photos".
+
+  - section: Upload
+    type: action
+    action: tap-text
+    label: Choose from Gallery
+    assertPrompt: Choose from Gallery
+    scrollBeforeTap: false
+    optional: true
+    locatePrompt: >
+      "Choose from Gallery" if Add Photos sheet visible.
+
+  - section: Upload
+    type: action
+    action: handle-permissions
+    label: 导入权限
+
+  - section: Upload
+    type: action
+    action: pick-gallery-image
+    label: 33.2 选择单张
+    contactIndex: 0
+
+  - section: Upload
+    type: action
+    action: wait-page
+    label: 等待导入完成
+    manualWaitSec: 12
+    assertPrompt: >
+      My Photos with at least one photo in waterfall, OR toast like "photos added" then home.
+
+  - section: Upload
+    type: verify
+    label: 33.2 首页已有图片
+    retry: 2
+    assertPrompt: >
+      PRD 33.2: My Photos shows imported photo(s) in masonry/waterfall (not empty-only).
+
+submit:
+  enabled: false

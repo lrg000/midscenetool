@@ -1,0 +1,78 @@
+# T46 A 面 — Profile + Account Configuration（精简：wait 兼校验）
+page:
+  id: aside-t46-profile
+  title: Profile
+  isNative: true
+  skipNavigation: true
+  navigationPrompt: ""
+  blurTarget: the Profile header showing User
+  aiContext: >
+    Profile: header User; rows ACCOUNT CONFIGURATION, VIEW PROTOCOLS,
+    PURGE CHAMBER DATA (red), TERMINATE CHAMBER SESSION.
+    Account Configuration: MODIFY VAULT SIGNATURE IMAGE, CHAMBER USERNAME,
+    SECURE CONTACT EMAIL, BACKUP EMERGENCY HANDSET ID, COMMIT REGISTRY REWRITE.
+    Smoke: open Account Configuration, verify, back — do NOT purge/terminate/commit. Ignore vConsole.
+  bottomFields: []
+
+dropdowns: []
+inputs: []
+
+flow:
+  - section: Navigation
+    type: action
+    action: tap-text
+    label: 底部 Profile Tab
+    assertPrompt: Profile
+    scrollBeforeTap: false
+    locatePrompt: >
+      Rightmost bottom-nav person / profile icon.
+      Do NOT tap Home grid or Statistics pie icon.
+
+  - section: Profile
+    type: verify
+    label: Profile 菜单文案
+    retry: 1
+    assertPrompt: >
+      Profile shows header "User" and rows matching (ALL CAPS OK):
+      ACCOUNT CONFIGURATION, VIEW PROTOCOLS, PURGE CHAMBER DATA,
+      TERMINATE CHAMBER SESSION. Profile tab selected.
+
+  - section: Account Configuration
+    type: action
+    action: tap-text
+    label: ACCOUNT CONFIGURATION
+    assertPrompt: ACCOUNT CONFIGURATION
+    scrollBeforeTap: false
+    locatePrompt: >
+      The settings row labeled "ACCOUNT CONFIGURATION" (gear icon).
+      Do NOT tap VIEW PROTOCOLS, PURGE CHAMBER DATA, or TERMINATE CHAMBER SESSION.
+
+  - section: Account Configuration
+    type: action
+    action: wait-page
+    label: 等待 Account Configuration
+    manualWaitSec: 6
+    assertPrompt: >
+      Screen title "Account Configuration" with "COMMIT REGISTRY REWRITE" and
+      fields such as CHAMBER USERNAME / SECURE CONTACT EMAIL / BACKUP EMERGENCY HANDSET ID
+
+  - section: Account Configuration
+    type: action
+    action: tap-text
+    label: 返回 Profile
+    assertPrompt: back
+    scrollBeforeTap: false
+    locatePrompt: >
+      Top-left back arrow on Account Configuration header
+      (NOT COMMIT REGISTRY REWRITE)
+
+  - section: Account Configuration
+    type: action
+    action: wait-page
+    label: 回到 Profile
+    manualWaitSec: 5
+    assertPrompt: >
+      Profile menu with "User" and ACCOUNT CONFIGURATION row is visible again
+
+submit:
+  enabled: false

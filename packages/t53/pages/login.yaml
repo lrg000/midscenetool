@@ -1,0 +1,237 @@
+# T53 登录 — PRD 九~十四 / 60.1 登录勾选 / 60.2~60.4
+# 凭证：9110001501 / OTP 1234。不走 Truecaller / Google 真登录。
+# 实机：深蓝头图 + Welcome + 三登录按钮；底栏方框勾选后再点 Use Mobile Number。
+page:
+  id: aside-t53-login
+  title: Login
+  isNative: true
+  skipNavigation: true
+  navigationPrompt: ""
+  blurTarget: the page title Anantapur Chakra
+  aiContext: >
+    Login Welcome: navy header "Anantapur Chakra" / "Credit made simple.",
+    "Continue with Truecaller", "Continue with Google", "Use Mobile Number" (light blue outline).
+    Bottom empty square checkbox LEFT of "I agree to the Terms of Service, Privacy Policy and Permissions Declaration."
+    Must check the square before Use Mobile Number. OTP: Mobile Number, +91, Send OTP, Enter OTP, Resend OTP.
+    Not RajWise, not Sree Dhan Lekha.
+  bottomFields: []
+
+dropdowns: []
+
+inputs:
+  - label: Enter OTP
+    validValue: "000000"
+    skipEmptyBlurTest: true
+    skipInvalidBlurTest: true
+    skipInputTests: true
+
+checkboxes:
+  - label: I agree to the Terms of Service, Privacy Policy and Permissions Declaration
+    locatePrompt: >
+      On the Anantapur Chakra Welcome/login screen: the EMPTY square checkbox outline
+      at the BOTTOM-LEFT of the white area, immediately LEFT of the words "I agree to the".
+      Tap the CENTER of that small empty square ONLY.
+      Do NOT tap blue underlined "Terms of Service", "Privacy Policy", or "Permissions Declaration".
+      Do NOT tap Continue with Truecaller, Continue with Google, or Use Mobile Number.
+    checkedPrompt: >
+      On the Anantapur Chakra Welcome/login screen: is the square checkbox to the LEFT of
+      "I agree to the Terms of Service, Privacy Policy and Permissions Declaration." checked
+      (tick / filled mark inside the box)? Answer only true or false.
+
+flow:
+  - section: Login
+    type: verify
+    label: 登录页主文案
+    retry: 1
+    assertPrompt: >
+      Login shows "Anantapur Chakra", "Credit made simple.",
+      "Continue with Truecaller", "Continue with Google", and "Use Mobile Number".
+      Fail if RajWise, Login with Mobile Number (T42), or Sree Dhan Lekha.
+
+  - section: Login
+    type: verify
+    label: UI Login PRD
+    optional: true
+    assertPrompt: >
+      Login UI: dark navy header card with "Anantapur Chakra" and "Credit made simple.";
+      white body with "Welcome"; three sign-in buttons (Truecaller dark, Google outlined, Use Mobile Number light blue);
+      bottom consent checkbox. Professional finance look (not yellow notes, not retro calendar, not black gallery, not cream sticker).
+      Primary blue accents around #1D4ED8 acceptable; header may be darker navy.
+
+  - section: Login
+    type: verify
+    label: 登录页协议勾选文案
+    assertPrompt: >
+      Bottom consent reads "I agree to the Terms of Service, Privacy Policy and Permissions Declaration."
+      (line breaks allowed) with an empty square checkbox to the left.
+
+  - section: Login
+    type: action
+    action: tap-text
+    label: 未勾选点 Use Mobile Number
+    scrollBeforeTap: false
+    noScrollRetry: true
+    assertPrompt: Use Mobile Number
+    locatePrompt: >
+      The "Use Mobile Number" button (light blue outline with phone icon).
+      Do NOT tap Continue with Truecaller or Continue with Google. Do NOT tap the consent checkbox.
+
+  - section: Login
+    type: verify
+    label: 未勾选提示
+    assertPrompt: >
+      A message is visible:
+      "Please agree to the Terms of Service, Privacy Policy and Permissions Declaration to continue."
+      Line breaks allowed. Still on the login Welcome page (not Mobile Number entry).
+      The consent checkbox is still unchecked.
+
+  - section: Login
+    type: checkbox
+    label: I agree to the Terms of Service, Privacy Policy and Permissions Declaration
+
+  - section: Login
+    type: verify
+    label: 已勾选同意
+    assertPrompt: >
+      The consent checkbox LEFT of "I agree to the Terms of Service, Privacy Policy and Permissions Declaration."
+      is checked (tick mark). Still on the login Welcome page.
+
+  - section: Login
+    type: action
+    action: tap-text
+    label: Use Mobile Number
+    scrollBeforeTap: false
+    noScrollRetry: true
+    assertPrompt: Use Mobile Number
+    locatePrompt: >
+      AFTER the consent checkbox is checked: the "Use Mobile Number" button
+      (light blue outline with phone icon).
+      Do NOT tap Truecaller, Google, or the checkbox / blue legal links.
+
+  - section: OTP
+    type: action
+    action: wait-page
+    label: 等待手机号弹窗
+    manualWaitSec: 12
+    assertPrompt: >
+      A white "Mobile Number" dialog/modal is visible with title "Mobile Number",
+      text about receiving a verification code, an input with placeholder "Mobile Number",
+      and a "Send OTP" button (X close icon may be top-right).
+      Do NOT require "+91" — this dialog may omit country code in the field.
+      Fail only if still on full Welcome login without the Mobile Number dialog.
+
+  - section: OTP
+    type: native-input
+    label: 输入手机号
+    valueKey: mobile
+    # 弹窗：禁止 autoDismissKeyboard（Midscene ESC/keyevent 111 会关掉整个 Mobile Number 弹窗）
+    autoDismissKeyboard: false
+    assertPrompt: >
+      Is the white "Mobile Number" dialog visible with a Mobile Number input and Send OTP button
+    locatePrompt: >
+      Inside the white "Mobile Number" dialog/modal: the text input field whose placeholder is
+      "Mobile Number" (empty box under the subtitle). Tap the center of that input.
+      Do NOT tap Send OTP, the X close icon, or the dimmed area outside the dialog.
+
+  - section: OTP
+    type: action
+    action: dismiss-keyboard
+    label: 收起键盘（不关弹窗）
+    optional: true
+
+  - section: OTP
+    type: action
+    action: tap-text
+    label: Send OTP
+    scrollBeforeTap: false
+    noScrollRetry: true
+    assertPrompt: Send OTP
+    locatePrompt: >
+      Inside the still-open white "Mobile Number" dialog: the "Send OTP" button at the bottom.
+      Do NOT tap the X close icon, the input field, or the dimmed area outside the dialog.
+
+  - section: OTP
+    type: action
+    action: wait-page
+    label: 等待 Enter OTP
+    manualWaitSec: 12
+    assertPrompt: >
+      An OTP entry UI is visible: "Enter OTP" / verification code boxes or fields,
+      and "Resend OTP" or a resend countdown. May be a dialog or full page.
+      Fail if still only on the Mobile Number dialog with Send OTP and empty/filled phone field only.
+
+  - section: OTP
+    type: action
+    action: tap-text
+    label: Resend OTP
+    optional: true
+    scrollBeforeTap: false
+    noScrollRetry: true
+    assertPrompt: Resend OTP
+    locatePrompt: >
+      If a tappable "Resend OTP" control is enabled (not a countdown), tap it.
+      Do NOT tap the OTP boxes, X close, or back. If only a countdown is shown, skip.
+
+  - section: OTP
+    type: action
+    action: fill-input
+    label: 错误 OTP
+    inputFieldLabel: Enter OTP
+    inputValue: "000000"
+    autoDismissKeyboard: false
+
+  - section: OTP
+    type: action
+    action: dismiss-keyboard
+    label: 收起键盘（OTP）
+    optional: true
+
+  - section: OTP
+    type: action
+    action: tap-text
+    label: 提交错误 OTP
+    scrollBeforeTap: false
+    noScrollRetry: true
+    assertPrompt: Enter OTP
+    locatePrompt: >
+      The primary button that submits the OTP (Verify, Continue, Confirm, or Verify & Login).
+      Do NOT tap "Resend OTP", X close, or back.
+
+  - section: OTP
+    type: verify
+    label: 错误 OTP 有提示
+    assertPrompt: >
+      An error or invalid-code message is visible and login has NOT succeeded
+      (not "Number verified", not KYC "About You", not home AVAILABLE CREDIT).
+      Fail if the app left the OTP screen into KYC or Home.
+
+  - section: OTP
+    type: native-input
+    label: 输入正确 OTP
+    valueKey: otp
+    autoDismissKeyboard: false
+    assertPrompt: >
+      Is the Enter OTP / verification code UI still visible
+    locatePrompt: >
+      The OTP entry boxes or field under "Enter OTP" / verification code.
+      Do NOT tap Resend OTP or X close.
+
+  - section: OTP
+    type: action
+    action: dismiss-keyboard
+    label: 收起键盘（正确 OTP）
+    optional: true
+
+  - section: OTP
+    type: action
+    action: tap-text
+    label: 提交 OTP
+    scrollBeforeTap: false
+    noScrollRetry: true
+    assertPrompt: Enter OTP
+    locatePrompt: >
+      The primary button that submits the OTP code (Verify, Continue, Confirm, or Verify & Login).
+      Do NOT tap "Resend OTP", X close, or back.
+
+submit:
+  enabled: false

@@ -1,0 +1,32 @@
+# A 面自然语言用例空白模板 — 复制后改 packageId / 步骤即可
+# 完整示例见：T42包A面自然语言测试用例.txt
+
+请根据下面测试用例生成 {packageId} 包的 A 面 Midscene 测试脚本
+
+## 包元信息
+- packageId: {packageId}
+- appLabel: 
+- androidPackage: 
+- 说明: 
+
+## 前置条件
+- 
+
+## 步骤（自然语言，一行一步）
+
+1. 
+2. 
+3. 
+
+## 控件对照（可选，提高定位准确率）
+
+| 步骤 | 控件类型 | 可见文案/占位 | 备注 |
+|------|----------|---------------|------|
+| 1 | | | |
+
+## 要求
+
+1. 只生成 A 面 packages/{packageId}/ + tests/aside/{packageId}.test.ts，不改 B 面
+2. 遵循 skill aside-package-test 与 components.md
+3. 输入类 skipEmptyBlurTest + skipInvalidBlurTest；点击类写 locatePrompt + Do NOT tap
+4. 输出可执行：config/packages.yaml + npm run test:aside:{packageId}

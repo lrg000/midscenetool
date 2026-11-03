@@ -1,0 +1,75 @@
+pages:
+  app-bootstrap:
+    id: app-bootstrap
+    title: App Bootstrap
+    dataFile: data/app-bootstrap.yaml
+    enabled: true
+    groupName: App 冷启动/登录前
+
+  login:
+    id: login
+    title: Login
+    dataFile: data/login.yaml
+    enabled: true
+    groupName: 登录流程自动化测试
+
+  apply-entry:
+    id: apply-entry
+    title: Apply Entry
+    dataFile: data/apply-entry.yaml
+    enabled: true
+    groupName: 申请入口（Begin Verification / Get Started）
+
+  apply-success:
+    id: apply-success
+    title: Apply Success
+    dataFile: data/apply-success.yaml
+    enabled: true
+    groupName: 申请成功 Confirm
+
+  repay:
+    id: repay
+    title: Repay
+    dataFile: data/repay.yaml
+    enabled: true
+    groupName: 还款流程自动化测试
+
+  basic-info:
+    id: basic-info
+    title: Basic info
+    route: basicInfo
+    dataFile: data/basic-info.yaml
+    enabled: true
+    groupName: Basic info 页面自动化测试
+
+  reference-contacts:
+    id: reference-contacts
+    title: Reference Contacts
+    route: emergencyContacts
+    dataFile: data/reference-contacts.yaml
+    enabled: true
+    groupName: Reference Contacts 页面自动化测试
+
+  kyc-aadhaar:
+    id: kyc-aadhaar
+    title: Identity Verification
+    route: identity
+    dataFile: data/kyc-aadhaar.yaml
+    enabled: true
+    groupName: KYC Aadhaar OCR 自动化测试
+
+  kyc-liveness:
+    id: kyc-liveness
+    title: Upload your selfie
+    route: face
+    dataFile: data/kyc-liveness.yaml
+    enabled: true
+    groupName: KYC 静默活体 自动化测试
+
+  bank-info:
+    id: bank-info
+    title: Bank information
+    route: bank
+    dataFile: data/bank-info.yaml
+    enabled: true
+    groupName: Bank information 页面自动化测试

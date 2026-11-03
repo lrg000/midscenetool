@@ -1,0 +1,124 @@
+# Y25 TC-021 卸载后本地贴纸数据清除（破坏性，需 Y25_APK_PATH）
+page:
+  id: aside-y25-ac021
+  title: TC-021 Uninstall
+  isNative: true
+  skipNavigation: true
+  navigationPrompt: ""
+  blurTarget: the Sticker Box title
+  aiContext: >
+    TC-021: download one sticker → uninstall → reinstall → Downloaded empty.
+  bottomFields:
+    - Download Sticker
+
+dropdowns: []
+inputs: []
+
+flow:
+  - section: Setup
+    type: action
+    action: wait-app-ready
+    label: 卸载前就绪
+    manualWaitSec: 20
+    assertPrompt: >
+      Explore or sticker UI visible.
+
+  - section: Setup
+    type: action
+    action: tap-text
+    label: 点任一贴纸
+    assertPrompt: sticker
+    scrollBeforeTap: false
+    locatePrompt: >
+      First sticker thumbnail on Explore grid.
+
+  - section: Setup
+    type: action
+    action: wait-page
+    label: 等待详情
+    manualWaitSec: 8
+    assertPrompt: >
+      Sticker detail with Download Sticker or Downloaded.
+
+  - section: Setup
+    type: action
+    action: handle-permissions
+    label: 权限
+
+  - section: Setup
+    type: action
+    action: tap-text
+    label: 下载标记贴纸
+    assertPrompt: Download Sticker
+    scrollBeforeTap: true
+    optional: true
+    locatePrompt: >
+      "Download Sticker" if visible (skip if already Downloaded).
+
+  - section: Setup
+    type: verify
+    label: 卸载前已有下载
+    retry: 2
+    assertPrompt: >
+      Button shows Downloaded OR toast Sticker saved! OR My would list a download.
+
+  - section: Uninstall
+    type: action
+    action: force-stop-app
+    label: 卸载前关闭
+    assertPrompt: com.chitrachitra.stickers.app
+
+  - section: Uninstall
+    type: action
+    action: uninstall-app
+    label: 卸载 App
+    assertPrompt: com.chitrachitra.stickers.app
+
+  - section: Uninstall
+    type: action
+    action: install-apk
+    label: 重装 APK
+
+  - section: Uninstall
+    type: action
+    action: relaunch-app
+    label: 重开
+    assertPrompt: com.chitrachitra.stickers.app
+
+  - section: Uninstall
+    type: action
+    action: wait-app-ready
+    label: 重装后就绪
+    manualWaitSec: 20
+    assertPrompt: >
+      Fresh Explore / Sticker Box visible.
+
+  - section: Uninstall
+    type: action
+    action: tap-text
+    label: 进 My
+    assertPrompt: My
+    scrollBeforeTap: false
+    locatePrompt: >
+      Bottom My tab.
+
+  - section: Uninstall
+    type: action
+    action: tap-text
+    label: Downloaded
+    assertPrompt: Downloaded
+    scrollBeforeTap: false
+    optional: true
+    locatePrompt: >
+      Downloaded tab.
+
+  - section: Uninstall
+    type: verify
+    label: TC-021 数据已清除
+    retry: 2
+    assertPrompt: >
+      PRD TC-021: after uninstall+reinstall, Downloaded is empty (no prior downloads).
+      Uploaded also empty. Fail if old downloaded stickers remain.
+
+submit:
+  enabled: false

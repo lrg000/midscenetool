@@ -1,0 +1,37 @@
+:root {
+  --ease-out: cubic-bezier(0.16, 1, 0.3, 1);
+  --ease-soft: cubic-bezier(0.4, 0, 0.2, 1);
+  --dur-base: 0.45s;
+}
+
+.reveal-item {
+  opacity: 0;
+  transform: translateY(18px);
+}
+
+.reveal-item.in-view {
+  opacity: 1;
+  transform: translateY(0);
+  transition:
+    transform var(--dur-base) var(--ease-out),
+    opacity var(--dur-base) var(--ease-soft);
+}
+
+.concept-wrap.is-playing .concept-packet {
+  animation: concept-pass-wide 1.8s var(--ease-out) both;
+}
+
+@keyframes concept-pass-wide {
+  0% { opacity: 0; left: 8%; transform: translateY(-50%) scale(0.7); }
+  15% { opacity: 1; }
+  85% { opacity: 1; }
+  100% { opacity: 0; left: 88%; transform: translateY(-50%) scale(1); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation: none !important;
+    transition: none !important;
+  }
+  .reveal-item { opacity: 1; transform: none; }
+}

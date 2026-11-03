@@ -1,0 +1,5 @@
+# T42 全量：冷启登录 + 登录后 Figma 校验
+# 详见 postlogin-figma.nl.txt 与根目录 T42包A面自然语言测试用例.txt
+
+A. bootstrap → login（OTP）
+B. home → personal-loan → business-loan → profile → help → account-details

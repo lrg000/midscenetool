@@ -1,0 +1,63 @@
+# T59 Home — PRD 五 / AC-10 / AC-14
+page:
+  id: aside-t59-home
+  title: Home
+  isNative: true
+  skipNavigation: true
+  navigationPrompt: ""
+  blurTarget: Your Cards
+  aiContext: >
+    Viramgam CardVista Home. Greeting, Your Cards, Total Outstanding, Total Credit Limit,
+    Available Credit, My Cards, View all, Upcoming Bills, See all.
+    Empty: Add Your First Card. Caught up: You're all caught up.
+    Bottom tabs Home, Cards, Activity, My. Brand purple #5B35D5.
+  bottomFields: []
+
+dropdowns: []
+inputs: []
+
+flow:
+  - section: Home
+    type: action
+    action: wait-page
+    label: 等待首页
+    retry: 2
+    manualWaitSec: 12
+    assertPrompt: >
+      Home of Viramgam CardVista is visible: "Total Outstanding" or "Total Credit Limit"
+      or "My Cards" or "Add Your First Card", and bottom tabs including Home.
+      Not the login Truecaller screen. Not Manage Your Cards, Simply agreement.
+
+  - section: Home
+    type: verify
+    label: 首页总览文案
+    assertPrompt: >
+      Home shows "Total Credit Limit", "Total Outstanding", and "Available Credit"
+      (₹ amounts), plus "My Cards" and "Upcoming Bills" (or empty "Add Your First Card"
+      and/or "You're all caught up").
+      Bottom navigation includes Home, Cards, Activity, and My.
+      Fail if AVAILABLE CREDIT LIMIT / Get Cash Now loan-shell copy from T42.
+
+  - section: Home
+    type: verify
+    label: UI Home PRD
+    assertPrompt: >
+      STRICT: page background near #F7F7FA (light grey-white), white cards,
+      brand purple near #5B35D5 for selected tab / key accents,
+      primary titles near #191922, secondary near #777783.
+      Amounts are large and prominent. Card corners look 16–20px, not sharp rectangles.
+      Fail if navy RajWise, notes yellow, retro paper, or black gallery.
+
+  - section: Home
+    type: action
+    action: tap-text
+    label: 底栏 Cards
+    scrollBeforeTap: false
+    noScrollRetry: true
+    assertPrompt: Cards
+    locatePrompt: >
+      The bottom navigation tab labeled "Cards" (not the My Cards heading, not View all).
+      Do NOT tap Home, Activity, or My.
+
+submit:
+  enabled: false

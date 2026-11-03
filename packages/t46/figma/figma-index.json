@@ -1,0 +1,135 @@
+{
+  "fileKey": "K3Y5QORZ3zy8lNkwz0ABIV",
+  "fileName": "T46.Sree-Dhan-Lekha",
+  "figmaUrl": "https://www.figma.com/design/K3Y5QORZ3zy8lNkwz0ABIV/T46.Sree-Dhan-Lekha?node-id=0-1&p=f",
+  "exportedAt": "2026-08-28",
+  "source": "manual export by user into packages/t46/figma/",
+  "screens": [
+    {
+      "name": "协议",
+      "localPng": "bootstrap-agreement.png",
+      "yamlPage": "pages/bootstrap.yaml",
+      "exactCopy": [
+        "Before You Continue",
+        "ACCEPT & CONTINUE",
+        "DECLINE",
+        "Terms of Service",
+        "Privacy Policy",
+        "Permissions Declaration"
+      ]
+    },
+    {
+      "name": "登录 Welcome",
+      "localPng": "login-welcome.png",
+      "yamlPage": "pages/login.yaml",
+      "exactCopy": [
+        "Sree Dhan Lekha",
+        "Unlocking your capital potential, one clear snapshot at a time.",
+        "CONTINUE WITH TRUECALLER",
+        "CONTINUE WITH GOOGLE",
+        "CINTINUE WITH PHONE CODE",
+        "I agree to the Terms & Conditions and Privacy Policy."
+      ]
+    },
+    {
+      "name": "手机号 Phone Code Verification",
+      "localPng": "login-otp.png",
+      "yamlPage": "pages/login.yaml",
+      "exactCopy": [
+        "Phone Code",
+        "Verification",
+        "We will send a code to log you in securely.",
+        "+91",
+        "10-digit handset ID",
+        "SEND CODE"
+      ],
+      "note": "文件名 login-otp.png 实为「输手机号发码」屏，非填 OTP"
+    },
+    {
+      "name": "填写 OTP",
+      "localPng": "fill-otp.png",
+      "yamlPage": "pages/login.yaml",
+      "exactCopy": [
+        "Phone Code",
+        "Verification",
+        "Code dispatched to:",
+        "Enter code",
+        "VERIFY CODE",
+        "RESEND IN"
+      ]
+    },
+    {
+      "name": "首页 Transactions Journal",
+      "localPng": "home-journal.png",
+      "yamlPage": "pages/home.yaml",
+      "exactCopy": [
+        "TOTAL INCOME",
+        "TOTAL EXPENSE",
+        "TRANSACTIONS JOURNAL",
+        "+ ADD ACTION"
+      ]
+    },
+    {
+      "name": "记一笔-收入",
+      "localPng": "input-income.png",
+      "yamlPage": "pages/home.yaml",
+      "exactCopy": [
+        "Record Transaction",
+        "EXPENSE",
+        "INCOME",
+        "TRANSACTION VALUE",
+        "EPOCH PERIOD (DATE)",
+        "CATEGORY BEZEL SELECT",
+        "SALARY",
+        "BONUS",
+        "DIVIDENDS",
+        "REFUND",
+        "INTERESTS",
+        "COMMIT TRANSACTION ACTION"
+      ]
+    },
+    {
+      "name": "记一笔-支出",
+      "localPng": "input-expense.png",
+      "yamlPage": "pages/home.yaml",
+      "exactCopy": [
+        "Record Transaction",
+        "EXPENSE",
+        "INCOME",
+        "DINING",
+        "GROCERY",
+        "TRAVEL",
+        "COMMIT TRANSACTION ACTION"
+      ]
+    },
+    {
+      "name": "我的 Profile",
+      "localPng": "profile-me.png",
+      "yamlPage": "pages/profile.yaml",
+      "exactCopy": [
+        "User",
+        "ACCOUNT CONFIGURATION",
+        "VIEW PROTOCOLS",
+        "PURGE CHAMBER DATA",
+        "TERMINATE CHAMBER SESSION"
+      ]
+    },
+    {
+      "name": "账户配置",
+      "localPng": "account-configuration.png",
+      "yamlPage": "pages/profile.yaml",
+      "exactCopy": [
+        "Account Configuration",
+        "MODIFY VAULT SIGNATURE IMAGE",
+        "CHAMBER USERNAME",
+        "SECURE CONTACT EMAIL",
+        "BACKUP EMERGENCY HANDSET ID",
+        "COMMIT REGISTRY REWRITE"
+      ]
+    }
+  ],
+  "missing": [
+    "Statistics 独立帧（底栏中间 pie 图标仍测；无本地 PNG）"
+  ],
+  "notes": "登录手机/OTP 文案以 login-otp.png + fill-otp.png 为准（Phone Code Verification / SEND CODE / VERIFY CODE），勿再用 Primary Telecom Digit。"
+}

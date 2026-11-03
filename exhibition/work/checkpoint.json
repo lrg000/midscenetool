@@ -1,0 +1,12 @@
+{
+  "schema_version": "1.0",
+  "phase": "deliver",
+  "status": "completed",
+  "route": {"view": "scroll", "structure": "modular"},
+  "template": "terminal-mint",
+  "slides_total": 8,
+  "slides_done": 8,
+  "completed_batches": [1],
+  "last_error": null,
+  "updated_at": "2026-08-17T08:50:00.000Z"
+}

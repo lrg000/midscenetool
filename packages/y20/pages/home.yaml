@@ -1,0 +1,180 @@
+# Y20 Daily Grid — 首页月历（PRD 八、AC-001~AC-005、AC-018~AC-019、TC-001~TC-004）
+# 云效: 0e040308d09761451e8d96019c | com.dailygrid.lifecaptured.app
+page:
+  id: aside-y20-home
+  title: Calendar Home
+  isNative: true
+  skipNavigation: true
+  navigationPrompt: ""
+  blurTarget: the month title in the calendar header (e.g. July 2026)
+  aiContext: >
+    Daily Grid: 2 pages only, no login/Tabs/bottom nav (PRD 四). Split UI: top calendar + bottom day preview.
+    PRD UI: #FFFFFF bg; #3B82F6 brand; today blue circle; selected date #DBEAFE light blue; dot 4dp.
+    Header 56dp; month 24sp; cell 48dp/16sp. Month nav: judge top header+grid only.
+  bottomFields:
+    - Today
+
+dropdowns: []
+inputs: []
+
+flow:
+  - section: Calendar
+    type: action
+    action: wait-app-ready
+    label: 等待 App 就绪
+    manualWaitSec: 25
+    assertPrompt: >
+      Daily Grid app finished loading: calendar home OR day schedule page visible.
+      No endless splash. Answer true if any main screen shown.
+
+  - section: Calendar
+    type: action
+    action: ensure-calendar-home
+    label: 确保回到月历首页
+    assertPrompt: com.dailygrid.lifecaptured.app
+
+  - section: Calendar
+    type: verify
+    label: 前置 已在月历非行程页
+    retry: 2
+    assertPrompt: >
+      MUST be calendar home: month/year header, Sun-Sat weekday row, date number grid.
+      NOT day schedule-only screen (no "No Schedule" list page as root).
+      Fail if still on day schedule without month grid.
+
+  - section: Calendar
+    type: verify
+    label: AC-001/TC-001 默认进入当前月历无登录
+    retry: 2
+    assertPrompt: >
+      PRD AC-001 / TC-001: opened directly to current month calendar.
+      No login, registration, splash, or onboarding.
+      Split UI: bottom day-preview panel is NOT a Tab bar — ignore it.
+      FAIL ONLY for login/splash, Android TabLayout, or 3+ icon bottom navigation bar.
+
+  - section: Calendar
+    type: verify
+    label: UI 首页 PRD 配色字号与 Header
+    assertPrompt: >
+      STRICT PRD UI (五~八, AC-018) on CALENDAR HOME only:
+      - Background #FFFFFF; brand #3B82F6 on "Today" link and today's filled circle
+      - Month title ~24sp #111827; weekdays ~#9CA3AF; header ~56dp with prev/next arrows
+      - Date cells ~48dp; numerals ~16sp #111827
+      White card backgrounds elsewhere are NOT failures. Fail only if calendar chrome wrong.
+
+  - section: Calendar
+    type: verify
+    label: AC-019 首页圆角与极简风格
+    assertPrompt: >
+      STRICT AC-019: minimal whitespace, flat layout, light shadow only (blur 20 / 6% opacity).
+      Controls ~16dp corner radius. Fail if heavy shadows or cluttered UI.
+
+  - section: Calendar
+    type: verify
+    label: AC-002 今日蓝色圆形高亮
+    assertPrompt: >
+      On CALENDAR HOME grid: today's cell has filled circle #3B82F6 with white numeral (~48dp cell).
+      Ignore bottom day-preview panel styling. Fail ONLY if today cell in the grid lacks blue circle.
+
+  - section: Calendar
+    type: verify
+    label: 月历结构与 Today 按钮
+    assertPrompt: >
+      On CALENDAR HOME: weekday Sun-Sat row; "Today" top-left (#3B82F6); month prev/next chevrons.
+      Ignore split bottom preview. Fail if calendar header controls missing.
+
+  - section: Calendar
+    type: action
+    action: tap-text
+    label: 上一月
+    assertPrompt: Previous
+    locatePrompt: >
+      The previous month back chevron/arrow in calendar header (left of month title).
+      Do NOT tap Today or date cells.
+
+  - section: Calendar
+    type: verify
+    label: AC-003/TC-002 切换上一月
+    retry: 3
+    retryDelayMs: 600
+    assertPrompt: >
+      CHECK ONLY top header + grid (ignore bottom preview).
+      Header month moved one month backward from current month (e.g. July 2026 if was August).
+      Grid dates match header month. FAIL ONLY if header did not go to previous month.
+
+  - section: Calendar
+    type: action
+    action: tap-text
+    label: 下一月
+    assertPrompt: Next
+    locatePrompt: >
+      The next month forward chevron in calendar header (right side). Do NOT tap Today or dates.
+
+  - section: Calendar
+    type: verify
+    label: AC-003/TC-002 切换下一月
+    retry: 3
+    retryDelayMs: 600
+    assertPrompt: >
+      CHECK ONLY top header + grid (ignore bottom preview).
+      Header moved one month FORWARD from the month shown immediately before this step
+      (e.g. if header was July 2026, now August 2026). Grid dates match new header month.
+      MUST PASS if bottom preview lags. FAIL ONLY if header did not advance one month.
+
+  - section: Calendar
+    type: action
+    action: tap-text
+    label: Today 返回当前月
+    assertPrompt: Today
+    locatePrompt: >
+      The "Today" text button on the left of the calendar header.
+
+  - section: Calendar
+    type: verify
+    label: AC-004/TC-003 Today 返回当前月并选中今天
+    retry: 4
+    retryDelayMs: 800
+    assertPrompt: >
+      CHECK ONLY top header + grid (ignore bottom preview lag).
+      After tapping "Today", header month equals real current month (e.g. August 2026 if today is in August).
+      Today cell should be highlighted (#3B82F6 circle OR #DBEAFE selected fill).
+      PASS if header is current month even if highlight style differs slightly.
+
+  - section: Calendar
+    type: action
+    action: tap-text
+    label: AC-006/TC-004 点击非今日日期
+    assertPrompt: "15"
+    locatePrompt: >
+      Tap a NON-today date cell in the grid (e.g. "15") — NOT the blue-circle today cell,
+      NOT "Today" button, NOT month arrows. Pick any ordinary date in current month.
+
+  - section: Day
+    type: verify
+    label: AC-006/TC-004 任意日期进入行程页
+    retry: 2
+    assertPrompt: >
+      PRD AC-006: entered day schedule page for the tapped date (header shows that date/month,
+      e.g. "August 15" + weekday). Back arrow and FAB "+" visible. NOT calendar grid only.
+      PRD selected-date styling may use light blue #DBEAFE highlight on tapped cell when returning.
+      Fail if still on calendar home only.
+
+  - section: Day
+    type: action
+    action: tap-text
+    label: 非今日页返回月历
+    assertPrompt: Back
+    locatePrompt: >
+      Back arrow top-left of day schedule header (not system Back).
+
+  - section: Calendar
+    type: action
+    action: tap-text
+    label: AC-006 点击今日进入行程页
+    assertPrompt: Today
+    locatePrompt: >
+      Tap today's date cell — #3B82F6 blue circle with white number.
+      Do NOT tap "Today" text or month arrows.
+
+submit:
+  enabled: false

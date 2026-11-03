@@ -1,0 +1,159 @@
+# T57 KYC Step 1 Personal Information — 录制实机（非完整 PRD）
+# 补全录制缺失的 Full Name；下拉点开后选明确选项
+page:
+  id: aside-t57-kyc-personal
+  title: Personal Information
+  isNative: true
+  skipNavigation: true
+  navigationPrompt: ""
+  blurTarget: the title Personal Information
+  aiContext: >
+    Haveri VahanCredit KYC Step 1 of 6 Personal Information.
+    Fields Full Name, Date of Birth, Gender, Marital Status, Education Level, Purpose of Loan.
+    Purpose may already show New Car. Continue at bottom.
+    Not Anantapur "About You".
+  bottomFields: [Continue]
+
+dropdowns: []
+inputs:
+  - label: Full Name
+    validValue: Ravi Kumar
+    skipEmptyBlurTest: true
+    skipInvalidBlurTest: true
+    skipInputTests: true
+
+flow:
+  - section: KYC
+    type: action
+    action: wait-page
+    label: 等待 Personal Information
+    manualWaitSec: 15
+    assertPrompt: >
+      Is KYC Step 1 visible with "Personal Information" and "Full Name"
+      (may say "Complete your verification" / "Step 1 of 6")?
+      Answer only true or false.
+
+  - section: KYC
+    type: verify
+    label: Step 1 字段
+    assertPrompt: >
+      Fields "Full Name", "Date of Birth", "Gender", "Marital Status",
+      "Education Level", and "Purpose of Loan" are visible.
+      Fail if still on Enter OTP or Welcome login.
+
+  - section: KYC
+    type: action
+    action: fill-input
+    label: Full Name
+    inputFieldLabel: Full Name
+    inputValue: Ravi Kumar
+    autoDismissKeyboard: true
+    locatePrompt: >
+      The "Full Name" text input on Personal Information. Tap the input, not Continue.
+
+  - section: KYC
+    type: action
+    action: tap-text
+    label: 打开 Date of Birth
+    scrollBeforeTap: false
+    assertPrompt: Date of Birth
+    locatePrompt: >
+      The "Date of Birth" field (or its value/calendar icon) on Personal Information.
+      Do NOT tap Continue.
+
+  - section: KYC
+    type: action
+    action: tap-text
+    label: 确认日期 OK
+    optional: true
+    scrollBeforeTap: false
+    noScrollRetry: true
+    assertPrompt: OK
+    locatePrompt: >
+      If a date picker is open: the "OK" / Confirm / Done button on the picker.
+      Do NOT tap Cancel. If no picker, skip.
+
+  - section: KYC
+    type: action
+    action: tap-text
+    label: 打开 Gender
+    scrollBeforeTap: false
+    assertPrompt: Gender
+    locatePrompt: >
+      The "Gender" field on Personal Information (not the page title). Do NOT tap Continue.
+
+  - section: KYC
+    type: action
+    action: tap-text
+    label: 选择 Male
+    scrollBeforeTap: false
+    noScrollRetry: true
+    assertPrompt: Male
+    locatePrompt: >
+      In the Gender picker/list, the option "Male". Do NOT tap Female, Other, or Continue.
+
+  - section: KYC
+    type: action
+    action: tap-text
+    label: 打开 Marital Status
+    scrollBeforeTap: true
+    assertPrompt: Marital Status
+    locatePrompt: >
+      The "Marital Status" field on Personal Information. Do NOT tap Continue.
+
+  - section: KYC
+    type: action
+    action: tap-text
+    label: 选择已婚或未婚选项
+    optional: true
+    scrollBeforeTap: false
+    noScrollRetry: true
+    assertPrompt: Single
+    locatePrompt: >
+      In the Marital Status picker: tap "Single" if listed, otherwise "Married" or the first real option
+      (not Cancel / Close). Do NOT tap Continue on the form behind the sheet.
+
+  - section: KYC
+    type: action
+    action: tap-text
+    label: 打开 Education Level
+    scrollBeforeTap: true
+    assertPrompt: Education Level
+    locatePrompt: >
+      The "Education Level" field on Personal Information. Do NOT tap Continue.
+
+  - section: KYC
+    type: action
+    action: tap-text
+    label: 选择学历选项
+    optional: true
+    scrollBeforeTap: false
+    noScrollRetry: true
+    assertPrompt: Graduate
+    locatePrompt: >
+      In the Education Level picker: tap "Graduate" if listed, otherwise "Bachelor" or the first real option.
+      Do NOT tap Continue on the form behind the sheet.
+
+  - section: KYC
+    type: action
+    action: tap-text
+    label: Purpose New Car
+    optional: true
+    scrollBeforeTap: true
+    assertPrompt: New Car
+    locatePrompt: >
+      If Purpose of Loan is not already "New Car": open Purpose of Loan and choose "New Car".
+      If New Car is already selected, skip. Do NOT tap Continue yet.
+
+  - section: KYC
+    type: action
+    action: tap-text
+    label: Continue
+    scrollBeforeTap: true
+    assertPrompt: Continue
+    locatePrompt: >
+      The primary "Continue" button at the bottom of Personal Information (Step 1 of 6).
+      Do NOT tap back. Do NOT tap Continue on a leftover picker.
+
+submit:
+  enabled: false

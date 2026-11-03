@@ -1,0 +1,68 @@
+# ============================================================
+# Y28 MastiMagic Craft A 面 — 自然语言测试用例（云效 PRD 全量映射）
+# ============================================================
+#
+# 云效: Y28面包开发 | WIFO-1965 | workItemId: 4f5dad82ee7d00e4f0c02229c7
+# URL: https://devops.aliyun.com/projex/project/f56f3edd04756632f67acd5450/req#openWorkitemIdentifier=4f5dad82ee7d00e4f0c02229c7
+# androidPackage: com.mastimagic.craftphoto.app
+#
+# ============================================================
+
+## 包元信息
+
+| 字段 | 值 |
+|------|-----|
+| packageId | y28 |
+| appLabel | MastiMagic Craft |
+| androidPackage | com.mastimagic.craftphoto.app |
+| 包类别 | 贴纸 |
+| 自动化 | npm run test:aside:y28 |
+| 云效状态 | 开发中 |
+
+## PRD §30 → 自动化覆盖表
+
+| 节 | PRD 要求 | 自动化 | 说明 |
+|----|----------|--------|------|
+| 30.1 首页 | 进 Home / Sticker Board；分类滑动切换；进详情 | home | |
+| 30.2 详情 | 大图、名称、Download、返回 | detail | |
+| 30.3 下载 | Download Sticker → Sticker saved! / Saved / Downloaded | detail | |
+| 30.4 Create | Add a Photo；预览；名称必填/≤30；Save Sticker → My | create | |
+| 30.5 My | 展示、查看、下载、删除确认 | my | |
+| 30.6 权限 | Create 时 Allow | create | 拒权不测 |
+| 30.7 数据 | force-stop 后自制贴纸仍在 | my | |
+| 30.8~9 UI/稳定 | Soft Stationery STRICT soft | home+… | |
+
+## UI 规范（PRD 六~八）
+
+| 项 | PRD |
+|----|-----|
+| 风格 | Soft Stationery / 奶油白+薄荷绿；禁黄便签/复古日历/黑 Gallery/橙红图库 |
+| 背景 | #F8F6EF；主色 #73B9A4；浅绿底 #E1F0E9 |
+| 文字 | #34332D / #88857A；删除 #C95C5C |
+| 底栏 | Home / Create / My（非四宫格死板） |
+| Home | Sticker Board / Find something fun；分类胶囊 All/Cute/… |
+| 详情 | Download Sticker → Sticker saved! / Saved / Downloaded |
+| Create | Create Sticker；Add a Photo；Sticker Name 默认 My Sticker；Save Sticker → Sticker created! |
+| My | My Stickers；空态 Your sticker board is empty；删 Delete this sticker? |
+
+## 测试流程摘要
+
+1. **home**：就绪 → Home/分类/UI → 点贴纸  
+2. **detail**：下载态 → 返回  
+3. **create**：空名/超长 → 选图 → Save → My  
+4. **my**：持久化 → 删贴纸（Cancel+Delete）  
+
+## PRD 明确不支持
+
+登录 / 社交 / AI 抠图 / 滤镜美颜 / 云同步 / 复杂搜索 / 收藏夹
+
+## 实机差异
+
+- `key_d4l6.jks` 仅签名，密码不写 YAML  
+- 包名 PRD 断字已还原为 `com.mastimagic.craftphoto.app`
+
+## 产物
+
+- packages/y28/pages/home.yaml, detail.yaml, create.yaml, my.yaml
+- packages/y28/fixtures/y28-test-sticker.png
+- tests/aside/y28.test.ts

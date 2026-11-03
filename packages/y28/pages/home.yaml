@@ -1,0 +1,114 @@
+# Y28 — Home Sticker Board（PRD 九~十一、30.1、30.8）
+# 云效: 4f5dad82ee7d00e4f0c02229c7 | com.mastimagic.craftphoto.app
+page:
+  id: aside-y28-home
+  title: Sticker Board Home
+  isNative: true
+  skipNavigation: true
+  navigationPrompt: ""
+  blurTarget: the Sticker Board title
+  aiContext: >
+    MastiMagic Craft Home: Sticker Board / Find something fun; mint #73B9A4 category chips;
+    irregular sticker board (not strict 3-col); bottom Home/Create/My. Cream bg #F8F6EF.
+    No login. Ignore vConsole.
+  bottomFields: []
+
+dropdowns: []
+inputs: []
+
+flow:
+  - section: Cold Start
+    type: action
+    action: wait-app-ready
+    label: 等待 App 就绪
+    manualWaitSec: 20
+    assertPrompt: >
+      MastiMagic Craft loaded: Sticker Board Home, Create, My Stickers, or sticker detail.
+      FAIL if Android launcher only.
+
+  - section: Cold Start
+    type: action
+    action: handle-permissions
+    label: 系统权限
+
+  - section: Cold Start
+    type: action
+    action: relaunch-if-not
+    label: 若不在 App 内则重开
+    assertPrompt: >
+      Is in-app Sticker Board UI visible (Home/Create/My), NOT Android launcher
+    locatePrompt: com.mastimagic.craftphoto.app
+
+  - section: Cold Start
+    type: action
+    action: relaunch-app
+    label: 强制冷启
+    assertPrompt: com.mastimagic.craftphoto.app
+
+  - section: Cold Start
+    type: action
+    action: wait-app-ready
+    label: 冷启后再等
+    manualWaitSec: 12
+    assertPrompt: >
+      In-app Sticker Board (cream stationery UI), not launcher.
+
+  - section: Home
+    type: action
+    action: tap-text
+    label: 底栏 Home
+    assertPrompt: Home
+    scrollBeforeTap: false
+    optional: true
+    locatePrompt: >
+      Bottom tab "Home" (left of Create/My). Do NOT tap Create or stickers yet.
+
+  - section: Home
+    type: verify
+    label: 30.1 进入 Home 无登录
+    retry: 2
+    assertPrompt: >
+      PRD 30.1: Home with "Sticker Board" (and/or Find something fun) and sticker content or empty.
+      Bottom Home/Create/My. No login. FAIL for login screens.
+
+  - section: Home
+    type: verify
+    label: UI Soft Stationery 风格
+    assertPrompt: >
+      STRICT PRD (六~七, 30.8): cream bg ~#F8F6EF; mint green accents ~#73B9A4.
+      FAIL if yellow notes, blue calendar, dark gallery, or coral photo-manager chrome.
+
+  - section: Home
+    type: verify
+    label: 30.1 分类胶囊
+    retry: 2
+    assertPrompt: >
+      Horizontal category chips visible (All / Cute / Love / Animals / Food / Funny / Text etc.).
+
+  - section: Home
+    type: action
+    action: tap-text
+    label: 30.1 切换 Cute
+    assertPrompt: Cute
+    scrollBeforeTap: false
+    locatePrompt: >
+      Category chip "Cute" (mint when selected). Do NOT tap stickers or Create.
+
+  - section: Home
+    type: verify
+    label: 30.1 Cute 内容
+    retry: 2
+    assertPrompt: >
+      After tapping Cute, sticker board shows stickers (or empty for that category). Cute chip selected.
+
+  - section: Home
+    type: action
+    action: tap-text
+    label: 点击任一贴纸
+    assertPrompt: sticker
+    scrollBeforeTap: false
+    locatePrompt: >
+      First/top sticker on Home board. Do NOT tap Create or My.
+
+submit:
+  enabled: false

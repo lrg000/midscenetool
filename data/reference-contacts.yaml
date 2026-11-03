@@ -1,0 +1,63 @@
+# Reference Contacts — 紧急联系人（支持 2/3/N 个）
+# 增加联系人：在 references 数组末尾追加一项即可（可选 optional: true）
+page:
+  id: reference-contacts
+  title: Reference Contacts
+  route: emergencyContacts
+  skipNavigation: true
+  navigationPrompt: Navigate to the "Reference Contacts" emergency contacts page
+  blurTarget: the "Reference Contacts" title in the top header bar
+  aiContext: >
+    Testing Reference Contacts on Android loan app. Multiple reference sections
+    (Primary / Secondary / Third / ...). Relationship opens bottom sheet; Full Name
+    opens native Android contact picker. On entry, an optional "Only 10 slots remain"
+    modal with orange "Get Mine" may appear — tap Get Mine first if shown (not required).
+    After Next, an optional "You're ahead of 99% of users" modal with "Continue Now" may
+    appear — tap Continue Now if shown. Close other popups if shown. Only click Next at the end.
+  bottomFields:
+    - Full Name
+    - Third Reference
+
+# 联系人区块列表（顺序即页面从上到下）
+# contactIndex 默认用下标 0,1,2... 错开通讯录；运行时还会按 Full Name 去重，
+# 若回填姓名与其他紧急联系人相同会自动改选下一项（相同联系人无法提交）
+references:
+  - section: Primary Reference
+  - section: Secondary Reference
+  #- section: Third Reference
+    optional: true
+  # 若 App 还有第四人，取消注释即可：
+  # - section: Fourth Reference
+  #   optional: true
+
+referenceDefaults:
+  relationshipLabel: Relationship
+  relationshipModalTitle: Relationship with you
+  contactLabel: Full Name
+  placeholder: e.g. Rahul Kumar Sharma (avoid nicknames)
+  mobilePlaceholder: e.g. 98115 43210
+
+dropdowns: []
+contacts: []
+inputs: []
+
+flow:
+  - section: Page
+    type: verify
+    label: Reference Contacts 页面
+    # assertPrompt 由 expand 按 references 自动补全；保留亦可被覆盖
+
+submit:
+  enabled: true
+  requireEnabled: true
+  buttonPrompt: >
+    The black full-width "Next" button at the bottom of the Reference Contacts page.
+    Tap the LEFT-CENTER of that black bar (white Next text). Do NOT tap green vConsole
+    covering the right side of the button.
+  stayOnPagePrompt: >
+    Is the "Reference Contacts" form still the primary editable screen
+    (Primary/Secondary Reference fields still filling the page)?
+    Progress-bar labels alone do not count. Answer only true or false.
+  nextPageAssert: >
+    The "Reference Contacts" form is no longer the primary editable screen —
+    the app has left this page (progress-bar labels do not count as still being here)

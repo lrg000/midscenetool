@@ -1,0 +1,209 @@
+# Y24 — 图片全屏查看 / 下载 / 删除（PRD 十、TC-007~009）
+page:
+  id: aside-y24-viewer
+  title: Photo Viewer
+  isNative: true
+  skipNavigation: true
+  navigationPrompt: ""
+  blurTarget: the photo viewer top bar
+  aiContext: >
+    Full-screen dark photo viewer: back, overflow "..."; menu Download / Add to Album / Delete.
+    Toast "Photo saved."; delete dialog "Delete this photo?" Cancel / Delete (#F43F5E).
+  bottomFields: []
+
+dropdowns: []
+inputs: []
+
+flow:
+  - section: Open
+    type: action
+    action: tap-text
+    label: 底栏 Photos
+    assertPrompt: Photos
+    scrollBeforeTap: false
+    optional: true
+    locatePrompt: >
+      Bottom "Photos" tab if not already on Photos grid.
+
+  - section: Open
+    type: action
+    action: wait-page
+    label: 确认 Photos Grid
+    manualWaitSec: 6
+    assertPrompt: >
+      Photos page with at least one photo thumbnail in the grid.
+
+  - section: Open
+    type: action
+    action: tap-text
+    label: 点击任意图片
+    assertPrompt: photo
+    scrollBeforeTap: false
+    locatePrompt: >
+      The first/top-left photo thumbnail in the Photos 3-column grid.
+      Do NOT tap +, Albums, or system chrome.
+
+  - section: Viewer
+    type: action
+    action: wait-page
+    label: 等待全屏查看
+    manualWaitSec: 8
+    assertPrompt: >
+      In-app full-screen photo viewer on dark background (Glimmer Frame), NOT Android system photo picker
+      (no Photos/Collections tabs, no Done/Preview bottom bar). Large photo preview with app back/overflow.
+
+  - section: Viewer
+    type: verify
+    label: TC-007 全屏查看
+    retry: 2
+    assertPrompt: >
+      PRD TC-007: full-screen photo viewer with large centered photo and dark background.
+      Fail if still only Photos grid.
+
+  - section: Download
+    type: action
+    action: tap-text
+    label: 打开 ⋯ 菜单
+    assertPrompt: overflow
+    scrollBeforeTap: false
+    locatePrompt: >
+      Top-right ellipsis/overflow "..." on photo viewer. Do NOT tap back.
+
+  - section: Download
+    type: action
+    action: tap-text
+    label: TC-008 Download
+    assertPrompt: Download
+    scrollBeforeTap: false
+    locatePrompt: >
+      Menu item "Download" (not Delete, not Add to Album).
+
+  - section: Download
+    type: action
+    action: handle-permissions
+    label: 下载权限
+
+  - section: Download
+    type: verify
+    label: TC-008 Photo saved
+    retry: 3
+    retryDelayMs: 700
+    assertPrompt: >
+      PRD TC-008: toast/banner "Photo saved." visible OR download clearly succeeded without error.
+      FAIL if "Save failed." only.
+
+  - section: Delete
+    type: action
+    action: tap-text
+    label: 再次打开 ⋯
+    assertPrompt: overflow
+    scrollBeforeTap: false
+    locatePrompt: >
+      Top-right "..." on photo viewer if menu closed.
+
+  - section: Delete
+    type: action
+    action: tap-text
+    label: 菜单 Delete
+    assertPrompt: Delete
+    scrollBeforeTap: false
+    locatePrompt: >
+      Menu item "Delete" (destructive). Do NOT tap Download.
+
+  - section: Delete
+    type: verify
+    label: TC-009 删除确认框
+    retry: 2
+    assertPrompt: >
+      PRD TC-009: dialog "Delete this photo?" with Cancel and Delete buttons.
+
+  - section: Delete
+    type: action
+    action: tap-text
+    label: 先 Cancel
+    assertPrompt: Cancel
+    scrollBeforeTap: false
+    locatePrompt: >
+      Dialog button "Cancel" on Delete this photo? (NOT Delete).
+
+  - section: Delete
+    type: action
+    action: wait-page
+    label: Cancel 后仍在查看页
+    manualWaitSec: 5
+    assertPrompt: >
+      Still on full-screen photo viewer; confirm dialog closed.
+
+  - section: Delete
+    type: action
+    action: tap-text
+    label: 再开 ⋯
+    assertPrompt: overflow
+    scrollBeforeTap: false
+    locatePrompt: >
+      Top-right "..." on photo viewer.
+
+  - section: Delete
+    type: action
+    action: tap-text
+    label: 再点 Delete 菜单
+    assertPrompt: Delete
+    scrollBeforeTap: false
+    locatePrompt: >
+      Menu item "Delete".
+
+  - section: Delete
+    type: action
+    action: tap-text
+    label: TC-009 确认 Delete
+    assertPrompt: Delete
+    scrollBeforeTap: false
+    locatePrompt: >
+      Confirm dialog destructive "Delete" on "Delete this photo?" (NOT Cancel).
+
+  - section: Delete
+    type: action
+    action: wait-page
+    label: 删除后回 Photos
+    manualWaitSec: 8
+    assertPrompt: >
+      Back on Photos grid (deleted photo removed from App library view).
+
+  - section: Delete
+    type: verify
+    label: TC-009 图片已从 App 移除
+    retry: 2
+    assertPrompt: >
+      PRD TC-009: photo viewer for that image is closed; Photos shows grid or empty without that fullscreen.
+
+  # 后续相册用例需要至少一张图：再导入
+  - section: Reimport
+    type: action
+    action: tap-text
+    label: 删除后重新导入入口
+    assertPrompt: +
+    scrollBeforeTap: false
+    locatePrompt: >
+      Photos "+" or "Add Photos" to re-import after delete.
+
+  - section: Reimport
+    type: action
+    action: handle-permissions
+    label: 再导入权限
+
+  - section: Reimport
+    type: action
+    action: pick-gallery-image
+    label: 再选一张图
+    contactIndex: 0
+
+  - section: Reimport
+    type: action
+    action: wait-page
+    label: 确认 Photos 有图
+    manualWaitSec: 8
+    assertPrompt: >
+      Photos grid shows at least one photo again.
+
+submit:
+  enabled: false

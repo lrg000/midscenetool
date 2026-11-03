@@ -1,0 +1,55 @@
+# T53 KYC 完成 + 固定额度 — PRD 二十五、二十六
+page:
+  id: aside-t53-kyc-done
+  title: You're Verified
+  isNative: true
+  skipNavigation: true
+  navigationPrompt: ""
+  blurTarget: the title
+  aiContext: You're Verified. Continue into Credit Limit ₹30,000 then Continue to home.
+  bottomFields: [Continue]
+dropdowns: []
+inputs: []
+flow:
+  - section: Done
+    type: action
+    action: wait-page
+    label: 等待 You're Verified 或额度页
+    manualWaitSec: 10
+    assertPrompt: >
+      Either "You're Verified" or a "Credit Limit" page showing "₹30,000" is visible.
+  - section: Done
+    type: verify
+    label: You're Verified 文案
+    optional: true
+    assertPrompt: >
+      If "You're Verified" is showing, body includes "Your account verification has been completed."
+      If already on Credit Limit, pass.
+  - section: Done
+    type: verify
+    label: UI Verified PRD
+    assertPrompt: >
+      STRICT: warm off-white background #F4F3EF, primary blue #1D4ED8 buttons with about 6dp corners (not pills), title/amount near #171717, secondary #6B7280. Fail if yellow notes, retro paper, black gallery, or cream sticker theme.
+  - section: Done
+    type: action
+    action: tap-text
+    label: Continue to Credit Limit
+    optional: true
+    scrollBeforeTap: false
+    assertPrompt: Continue
+    locatePrompt: >
+      If "You're Verified" is visible, tap its "Continue".
+      Do NOT tap this if already on the Credit Limit page.
+  - section: Credit
+    type: verify
+    label: 固定额度 ₹30,000
+    retry: 2
+    assertPrompt: >
+      Credit Limit shows Total Limit "₹30,000", Used "₹0", and Available "₹30,000".
+  - section: Credit
+    type: action
+    action: tap-text
+    label: Continue
+    scrollBeforeTap: true
+    assertPrompt: Continue
+    locatePrompt: The "Continue" button on the Credit Limit page. Do NOT tap Borrow.

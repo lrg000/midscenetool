@@ -1,0 +1,77 @@
+# T42 A 面 — Profile「我的」（对齐 Figma「我的」1:1159 / 删除弹窗 8:3990）
+page:
+  id: aside-t42-profile
+  title: Profile
+  isNative: true
+  skipNavigation: true
+  navigationPrompt: ""
+  blurTarget: the Profile header showing User
+  aiContext: >
+    T42 A-side Profile (Figma 我的). Header "User", rows Account Details,
+    Help & Support, Privacy Policy, red Delete Account, Logout.
+    Delete opens "Delete Account?" with exact warning and Yes/Cancel.
+    Tests Cancel only. Bottom Profile tab active. Ignore vConsole.
+  bottomFields: []
+
+dropdowns: []
+inputs: []
+
+flow:
+  - section: Profile
+    type: action
+    action: tap-text
+    label: 底部 Profile Tab
+    assertPrompt: Profile
+    locatePrompt: >
+      The bottom navigation tab labeled "Profile" (person icon).
+      Do NOT tap Home, Get Cash Now, or service tiles.
+
+  - section: Profile
+    type: verify
+    label: Profile 菜单文案对齐 Figma
+    retry: 2
+    assertPrompt: >
+      Profile screen shows header name "User" (or equivalent display name area),
+      and menu rows with exact labels: "Account Details", "Help & Support",
+      "Privacy Policy", red "Delete Account", and "Logout".
+      Bottom tab "Profile" is selected (blue). Fail if any menu label differs.
+
+  - section: Profile
+    type: action
+    action: tap-text
+    label: Delete Account
+    assertPrompt: Delete Account
+    locatePrompt: >
+      The list row whose text is exactly "Delete Account" in red (X icon).
+      Do NOT tap Logout, Account Details, or Help & Support.
+
+  - section: Profile
+    type: verify
+    label: 删除确认弹窗文案对齐 Figma
+    assertPrompt: >
+      Dialog title is exactly "Delete Account?". Body contains
+      "This action cannot be undone" and mentions data including loan applications
+      and profile information will be permanently deleted.
+      Buttons are exactly "Yes, Delete My Account" (red) and "Cancel" (grey).
+      Fail if title/button wording differs from Figma.
+
+  - section: Profile
+    type: action
+    action: tap-text
+    label: Cancel 关闭删除弹窗
+    assertPrompt: Cancel
+    locatePrompt: >
+      The grey "Cancel" button on the "Delete Account?" dialog
+      (NOT "Yes, Delete My Account")
+
+  - section: Profile
+    type: action
+    action: tap-text
+    label: Help & Support
+    assertPrompt: Help & Support
+    locatePrompt: >
+      The settings row labeled exactly "Help & Support" with chevron.
+      Do NOT tap Account Details, Privacy Policy, Delete Account, or Logout.
+
+submit:
+  enabled: false

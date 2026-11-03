@@ -1,0 +1,46 @@
+# T53 KFS — PRD 三十二
+page:
+  id: aside-t53-kfs
+  title: Key Fact Statement
+  isNative: true
+  skipNavigation: true
+  navigationPrompt: ""
+  blurTarget: Key Fact Statement
+  aiContext: >
+    Key Fact Statement. Loan Amount, APR, Tenure, Processing Fee, Total Amount Payable, Repayment Date,
+    Look-up Period, Grievance Officer. "I have reviewed the KFS" and Continue.
+  bottomFields: [Continue]
+dropdowns: []
+inputs: []
+checkboxes:
+  - label: I have reviewed the KFS
+flow:
+  - section: KFS
+    type: action
+    action: wait-page
+    label: 等待 KFS
+    manualWaitSec: 8
+    assertPrompt: '"Key Fact Statement" is visible.'
+  - section: KFS
+    type: verify
+    label: KFS 字段
+    assertPrompt: >
+      Shows "Loan Amount", "APR", "Tenure", "Processing Fee", "Total Amount Payable",
+      "Repayment Date", "Look-up Period", and "Grievance Officer".
+      Loan amount line includes "₹10,000".
+  - section: KFS
+    type: verify
+    label: UI KFS PRD
+    assertPrompt: >
+      STRICT: warm off-white background #F4F3EF, primary blue #1D4ED8 buttons with about 6dp corners (not pills), title/amount near #171717, secondary #6B7280. Fail if yellow notes, retro paper, black gallery, or cream sticker theme.
+  - section: KFS
+    type: checkbox
+    label: I have reviewed the KFS
+  - section: KFS
+    type: action
+    action: tap-text
+    label: Continue
+    scrollBeforeTap: true
+    assertPrompt: Continue
+    locatePrompt: >
+      The "Continue" button under "I have reviewed the KFS". Do NOT tap back.

@@ -1,0 +1,52 @@
+# ============================================================
+# T42.RajWise A 面 — 自然语言测试用例（含登录后 Figma 对齐）
+# Figma: https://www.figma.com/design/WyXM6yVCpAI7TmrgGuYPZY/T42.RajWise
+# ============================================================
+
+请根据下面测试用例维护 T42 包 A 面 Midscene 脚本
+
+## 包元信息
+- packageId: t42 / t42-postlogin
+- appLabel: RajWise（T42）
+- figma: https://www.figma.com/design/WyXM6yVCpAI7TmrgGuYPZY/T42.RajWise
+- 说明: 完整 App。登录后展示文案与业务逻辑必须与 Figma 一致，有差异即失败。
+
+## 前置条件
+- adb 已连接；凭证 TEST_MOBILE / TEST_OTP（全量登录时）
+- postlogin：已登录并停在 A 面 Home
+- 证件/人脸/换头像步骤需人工配合（脚本等待预览/回填）
+
+## 步骤 A — 冷启登录（全量 t42）
+1. 等待离开闪屏 → 权限 → Accept/Agree & Continue（可选）
+2. Welcome 勾选 Terms → Login with Mobile Number → OTP → Verify & Login
+
+## 步骤 B — 登录后（t42 与 t42-postlogin 共用，对齐 Figma）
+
+### 首页 → Get Cash Now 主流程（必须走完）
+3. 校验 AVAILABLE CREDIT LIMIT、Interest Rate 10.49% p.a.、Tenure Up to 60 M、Processing Zero Fee、Get Cash Now
+4. 校验 Our Services 六宫格与 Trusted by 10M+ Indians / 100% Secure / Instant Disbursal / Minimal Paperwork
+5. 点 Get Cash Now
+6. Personal Information：填 Full Name、Mobile；Date of Birth **选日 + OK**；Employment Type=Salaried → Continue
+7. Document Upload：Upload PAN / Upload Aadhaar（人工）→ Continue
+8. Face Verification：Take a picture（人工自拍）→ Verify Face
+9. Verification Completed：**必须校验 PROFILE SCORE 得分（XX/100，如 87/100）** → Back to Home → 回 Home
+
+### 贷款详情
+10. Personal Loan 文案校验 → 返回；Business Loan 文案校验 → 返回
+
+### Profile / Help / Account Details（个人信息+头像需测完）
+11. Profile 菜单与 Delete Account? → Cancel
+12. Help & Support：Service Email = business@rajwiseloanadvisor.com
+13. Account Details：Change Photo（人工）→ 填 Nickname、Email → **选 Emergency Contact 并校验回显** → 收键盘 → Save changes → 返回
+
+## 要求
+1. 只改 packages/t42/；禁止改 B 面 data/business-*
+2. assertPrompt 写 Figma 精确字符串；错字/漏项失败
+3. Delete 只 Cancel；不执行真 Logout；主业务必须点 Get Cash Now 并走完
+4. 产物：见 packages/t42/pages/*.yaml + tests/aside/t42*.test.ts
+
+## 运行
+```powershell
+npm run test:aside:t42-postlogin
+npm run test:aside:t42
+```

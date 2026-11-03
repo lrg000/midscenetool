@@ -1,0 +1,16 @@
+node_modules/
+.env
+.env.*
+!.env.example
+config/agents.local.yaml
+
+# Midscene / 框架运行产物（体积大，勿提交）
+midscene_run/
+*.log
+
+# OS / IDE
+.DS_Store
+Thumbs.db
+.idea/
+.vscode/
+*.swp

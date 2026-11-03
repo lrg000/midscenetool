@@ -1,0 +1,93 @@
+# T46 Sree Dhan Lekha A 面 — Figma 全量 UI 驱动冒烟
+# Figma: https://www.figma.com/design/K3Y5QORZ3zy8lNkwz0ABIV/T46.Sree-Dhan-Lekha?node-id=0-1&p=f
+# 本地 PNG: packages/t46/figma/（见 figma-index.json）
+
+## 包元信息
+| 字段 | 值 |
+|------|-----|
+| packageId | t46 |
+| appLabel | Sree Dhan Lekha |
+| androidPackage | com.sreedhan.lekhabook.app |
+| 登录手机 | 9110001244 |
+| 登录 OTP | 123456 |
+
+## 业务链（A 面记账壳）
+```
+冷启 Before You Continue
+  →（实机可选）Charter of Operation 勾选 + CONTINUE
+  → Welcome 三登录入口
+  → Phone Code Verification（输手机号）SEND CODE
+  → Phone Code Verification（填 OTP）VERIFY CODE
+  → Home TRANSACTIONS JOURNAL
+       ↳ + ADD ACTION → Record Transaction（INCOME/EXPENSE）→ 返回
+  → 底栏 Statistics（无独立 PNG，只 verify 图表页）
+  → Profile
+       ↳ ACCOUNT CONFIGURATION → 返回
+```
+
+## 每屏精确文案
+
+### 协议 bootstrap-agreement.png
+- Title: `Before You Continue`
+- Links（勿点）: Terms of Service / Privacy Policy / Permissions Declaration
+- `ACCEPT & CONTINUE`（黑）/ `DECLINE`（白描边）
+
+### Welcome login-welcome.png
+- Brand: `Sree Dhan Lekha`
+- Tagline: `Unlocking your capital potential, one clear snapshot at a time.`
+- `CONTINUE WITH TRUECALLER` / `CONTINUE WITH GOOGLE` / `CINTINUE WITH PHONE CODE`（设计稿拼写）
+- `I agree to the Terms & Conditions and Privacy Policy.`（只点方框）
+
+### 手机号 login-otp.png（文件名易混，实为发码页）
+- Title: `Phone Code` + 金色斜体 `Verification`
+- Subtitle: `We will send a code to log you in securely.`
+- `+91` + placeholder `10-digit handset ID`
+- Button: `SEND CODE`（金色全大写）
+
+### OTP fill-otp.png
+- Title: 同上 `Phone Code` / `Verification`
+- `Code dispatched to:` + 掩码 `+91 ******xxxx`
+- Placeholder: `Enter code`
+- Button: `VERIFY CODE`（黑色全大写）
+- Timer: `RESEND IN 45S`（秒数可变）
+
+### 首页 home-journal.png
+- `TOTAL INCOME` / `TOTAL EXPENSE` + ₹
+- `TRANSACTIONS JOURNAL` + `+ ADD ACTION`
+- 底栏三 Tab：Home / Statistics(pie) / Profile
+
+### 记一笔 input-income.png / input-expense.png
+- Title: `Record Transaction`
+- Toggle: `EXPENSE` / `INCOME`
+- `TRANSACTION VALUE`（₹）
+- `EPOCH PERIOD (DATE)`
+- `CATEGORY BEZEL SELECT`（收入: SALARY/BONUS…；支出: DINING/GROCERY…）
+- `COMMIT TRANSACTION ACTION`
+- 冒烟：进入页校验后 **返回**，不提交
+
+### 我的 profile-me.png
+- Header: `User`
+- `ACCOUNT CONFIGURATION` / `VIEW PROTOCOLS` / `PURGE CHAMBER DATA` / `TERMINATE CHAMBER SESSION`
+- 冒烟：不点 Purge / Terminate
+
+### 账户配置 account-configuration.png
+- Title: `Account Configuration`
+- `MODIFY VAULT SIGNATURE IMAGE`
+- `CHAMBER USERNAME` / `SECURE CONTACT EMAIL` / `BACKUP EMERGENCY HANDSET ID`
+- `COMMIT REGISTRY REWRITE`
+- 冒烟：进入校验后返回，不提交
+
+## T46 vs T42
+| 场景 | T46 | T42 |
+|------|-----|-----|
+| 协议 | Before You Continue / ACCEPT & CONTINUE | Welcome to RajWise |
+| 手机入口 | CINTINUE WITH PHONE CODE | Login with Mobile Number |
+| 发码页 | Phone Code Verification + SEND CODE | Login with OTP 弹窗 + Send OTP |
+| 验码 | VERIFY CODE + RESEND IN | Verify & Login |
+| 主页 | TRANSACTIONS JOURNAL | Get Cash Now 额度卡 |
+
+## 运行
+```powershell
+adb shell am force-stop com.sreedhan.lekhabook.app
+npm run test:aside:t46
+```

@@ -1,0 +1,47 @@
+# T42 A 面 — Help & Support（对齐实机 + Figma「帮助中心」结构）
+# 实机 Service Email = business@rajwiseloanadvisor.com（非 Figma 占位 1234567890@email.com）
+page:
+  id: aside-t42-help-support
+  title: Help & Support
+  isNative: true
+  skipNavigation: true
+  navigationPrompt: ""
+  blurTarget: the "Help & Support" title
+  aiContext: >
+    T42 Help & Support. Title "Help & Support", card "Service Email" with
+    business@rajwiseloanadvisor.com. Back to Profile.
+  bottomFields: []
+
+dropdowns: []
+inputs: []
+
+flow:
+  - section: Help
+    type: verify
+    label: Help & Support 文案对齐
+    retry: 2
+    assertPrompt: >
+      Page title is exactly "Help & Support". A card shows label "Service Email"
+      with email value "business@rajwiseloanadvisor.com"
+      (exact address). Fail if title missing or email differs.
+
+  - section: Help
+    type: action
+    action: tap-text
+    label: 返回 Profile
+    assertPrompt: Back
+    locatePrompt: >
+      The back chevron/arrow at the top-left of the Help & Support header
+      (not Android system Back)
+
+  - section: Profile
+    type: action
+    action: tap-text
+    label: Account Details
+    assertPrompt: Account Details
+    locatePrompt: >
+      The settings row labeled exactly "Account Details" with person icon and chevron.
+      Do NOT tap Help & Support, Privacy Policy, Delete Account, or Logout.
+
+submit:
+  enabled: false

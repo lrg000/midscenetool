@@ -1,0 +1,85 @@
+# ============================================================
+# Y26 Aarambh Calendar A 面 — 自然语言测试用例（云效 PRD 全量映射）
+# ============================================================
+#
+# 云效: Y26面包开发 | WIFO-1960 | workItemId: 11bbbf3e77b6062cba6f067efd
+# URL: https://devops.aliyun.com/projex/project/f56f3edd04756632f67acd5450/req#openWorkitemIdentifier=11bbbf3e77b6062cba6f067efd
+# androidPackage: com.aarambhdailycalendar.app（PRD 原文断字 aarambhda.ilycalendar → daily）
+#
+# ============================================================
+
+## 包元信息
+
+| 字段 | 值 |
+|------|-----|
+| packageId | y26 |
+| appLabel | Aarambh Calendar |
+| androidPackage | com.aarambhdailycalendar.app |
+| 包类别 | 日历 |
+| 自动化 | npm run test:aside:y26 |
+| 云效状态 | 测试中 |
+
+## PRD 验收标准 → 自动化覆盖表
+
+| TC | PRD 要求 | 自动化 | 说明 |
+|----|----------|--------|------|
+| TC-001 | 首次打开进当前月历，无登录 | home | |
+| TC-002 | 显示月份/星期/日期 | home | |
+| TC-003 | 上一月 | home | |
+| TC-004 | 下一月 | home | |
+| TC-005 | Today 回当前月并选中今天 | home | |
+| TC-006 | 点日期进 Day Schedule | home | |
+| TC-007 | 有行程墨绿圆点 | day-schedule | 存后回月历验 |
+| TC-008 | 无行程无圆点 | day-schedule | 删后验 |
+| TC-009 | Add Schedule → New Schedule Sheet | day-schedule | |
+| TC-010 | 输入 Team Meeting → Save Schedule | day-schedule | |
+| TC-011 | Go to Gym + 19:00 | day-schedule | 时间选择器，机型差异 |
+| TC-012 | All Day 置顶 | day-schedule | |
+| TC-013 | 空 Save → Please enter schedule. | day-schedule | |
+| TC-014 | >100 字 → Maximum 100 characters. | day-schedule | |
+| TC-015 | ⋯/🗑 → Delete this schedule? | day-schedule | |
+| TC-016 | Cancel 保留 | day-schedule | |
+| TC-017 | Delete 立即消失 | day-schedule | |
+| TC-018 | 删最后一条 → Nothing planned + 圆点消失 | day-schedule | |
+| TC-019 | 多条按时间早→晚 | day-schedule | 09/12/18 |
+| TC-020 | All Day 最上 + 时间序 | day-schedule | 与 012/019 合验 |
+| TC-021 | force-stop 后仍在 | day-schedule | |
+| TC-022 | 删除后重启不再出现 | day-schedule | |
+| TC-023 | 卸载清数据 | ac023-uninstall | 专项 |
+| TC-024~025 | Save/Delete failed 注入 | — | 需注入 |
+| TC-026~031 | UI/深色/稳定 | home+day | STRICT soft |
+
+## UI 规范（PRD 五~七）
+
+| 项 | PRD |
+|----|-----|
+| 风格 | Retro Paper；米白 #F7F3EA；墨绿 #245C4A |
+| 禁风格 | 蓝白科技 / 黄便签 / 黑图库 / 彩贴纸 |
+| 选中日 | #DDE9E1；今日墨绿描边圆（非蓝实心） |
+| 行程点 | 墨绿小圆点 |
+| 删除 | #B94A48 |
+| Header | 64dp；Today + 月份 Serif + ‹ › |
+| 空态 | Nothing planned / Add a schedule for this day. / + Add Schedule |
+| Sheet | New Schedule；What are you planning?≤100；Save Schedule 48dp 墨绿 |
+| 确认框 | Delete this schedule? Cancel / Delete |
+
+## 测试流程摘要
+
+1. **home**：就绪 → TC-001/002/UI → 上/下月 → Today → 点非今日再回 → 点今日  
+2. **day-schedule**：清理 → 空态 → 空/超限 Save → Team Meeting → All Day → 时间序三条 → 持久化 → Cancel/Delete → 空态+圆点  
+3. **uninstall**：`Y26_APK_PATH` + `Y26_RUN_UNINSTALL=1`
+
+## PRD 明确不支持（不测）
+
+登录 / 云同步 / 提醒 / 重复 / 分类标签 / 搜索分享 / **编辑行程** / 设置
+
+## 实机差异
+
+- 包名以 `com.aarambhdailycalendar.app` 为准（PRD HTML 断字）  
+- 附件 `key_LlvL.jks` 仅签名，**密码不写 YAML**  
+- 与 Y20 同为 2 页日历，但文案/配色完全不同，禁止复用蓝白断言
+
+## 产物
+
+- packages/y26/pages/home.yaml, day-schedule.yaml, ac023-uninstall.yaml
+- tests/aside/y26.test.ts, y26-uninstall.test.ts

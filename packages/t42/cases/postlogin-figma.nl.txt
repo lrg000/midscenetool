@@ -1,0 +1,436 @@
+# ============================================================
+# T42.RajWise A 面 — 登录后自然语言测试用例（产品维护版）
+# ============================================================
+#
+# 【文档用途】
+# - 本文件 = **登录后** A 面冒烟/回归的产品用例（scope: t42-postlogin）
+# - 产品在此维护「步骤 + 期望文案 + 业务规则」
+# - 研发/自动化根据本文件生成：
+#     packages/t42/pages/*.yaml  →  tests/aside/t42-postlogin.test.ts
+# - 含冷启+OTP 登录的全量用例见仓库根目录：T42包A面自然语言测试用例.txt
+#
+# 【设计稿】
+# Figma: https://www.figma.com/design/WyXM6yVCpAI7TmrgGuYPZY/T42.RajWise
+#
+# 【断言原则】
+# - 界面可见英文文案必须与 Figma 图层一致（大小写、标点、空格）
+# - 金额/利率/区间等数值必须与 Figma 一致
+# - 有差异即失败；若实机与 Figma 不一致，产品需在本文件「实机差异」栏注明以何为准
+#
+# ============================================================
+
+## 一、包元信息
+
+| 字段 | 值 |
+|------|-----|
+| packageId（登录后） | t42-postlogin |
+| packageId（含登录全量） | t42 |
+| appLabel | RajWise |
+| androidPackage | com.rajwiseguide.loanadvisor.app |
+| 设计稿 | T42.RajWise（WyXM6yVCpAI7TmrgGuYPZY） |
+| 自动化入口 | npm run test:aside:t42-postlogin |
+| YAML 目录 | packages/t42/pages/ |
+| 脚本 | tests/aside/t42-postlogin.test.ts |
+
+## 二、前置条件
+
+1. adb 已连接真机/模拟器，RajWise 已安装
+2. 用户**已完成 OTP 登录**，当前停在 A 面 **Home**（底部 Home Tab 选中）
+3. 可选：设置 `$env:ASIDE_SKIP_LAUNCH=1`（默认 postlogin 不重复 launch）
+4. 以下步骤涉及相机/相册/证件/自拍/换头像，需**测试人员人工配合**（自动化会等待，最长约 4 分钟/步）
+
+## 三、用例总览（登录后执行顺序）
+
+| 序号 | 模块 | Figma 帧名 | node-id | 是否必测 | 对应 YAML |
+|------|------|-----------|---------|----------|-----------|
+| TC-01 | 首页 | 首页 | 1:183 | 是 | pages/home.yaml |
+| TC-02 | Get Cash Now 主流程 — 个人信息 | 验证 1 | 1:373 | 是 | pages/personal-information.yaml |
+| TC-03 | Get Cash Now 主流程 — 证件上传 | 验证 2 | 3:1713 | 是 | pages/document-upload.yaml |
+| TC-04 | Get Cash Now 主流程 — 人脸（拍照） | 验证 3 | 3:1840 | 是 | pages/face-verification.yaml |
+| TC-05 | Get Cash Now 主流程 — 人脸（核验） | 验证 4 | 3:1922 | 是 | （同上 yaml） |
+| TC-06 | Get Cash Now 主流程 — 认证结果 | 结果 | 1:525 | 是 | pages/verification-result.yaml |
+| TC-07 | 贷款详情 — Personal Loan | Personal Loan | 1:585 | 是 | pages/personal-loan.yaml |
+| TC-08 | 贷款详情 — Business Loan | Business Loan | 3:2020 | 是 | pages/business-loan.yaml |
+| TC-09 | 我的 — Profile | 我的 | 1:1159 | 是 | pages/profile.yaml |
+| TC-09a | 删除账号确认弹窗 | 我的（弹窗态） | 8:3990 | 是 | （profile.yaml 内） |
+| TC-10 | 帮助中心 | 帮助中心 | 8:4228 | 是 | pages/help-support.yaml |
+| TC-11 | 账户详情（填资料+换头像） | 账户详情 | 7:3687 | 是 | pages/account-details.yaml |
+
+---
+
+## TC-01 首页（Home）
+
+**Figma**：首页 `1:183`
+
+### 步骤
+
+| # | 操作 | 期望（与 Figma 一致） |
+|---|------|----------------------|
+| 1 | 若出现营销/活动弹窗，关闭 | 回到 Home 主内容 |
+| 2 | 校验额度卡 | 标题 **AVAILABLE CREDIT LIMIT**（实机为大写；Figma 图层为 Available Credit Limit，以实机展示为准） |
+| 3 | 校验额度数值 | 显示 ₹ 金额（示例 Figma：**5,00,000**） |
+| 4 | 校验三列指标 | **Interest Rate** = **10.49% p.a.**；**Tenure** = **Up to 60 M**；**Processing** = **Zero Fee**（绿色） |
+| 5 | 校验主按钮 | 蓝色按钮 **Get Cash Now**（带右箭头） |
+| 6 | 校验 Our Services | 区块标题 **Our Services**；六宫格文案：**Personal Loan**、**Business Loan**、**Education Loan**、**Gold Loan**、**Home Loan**、**Vehicle Loan** |
+| 7 | 校验信任区（需下滑） | **Trusted by 10M+ Indians**；三标签 **100% Secure**、**Instant Disbursal**、**Minimal Paperwork** |
+| 8 | 校验底部 Tab | **Home** 选中（蓝色）；**Profile** 未选中 |
+| 9 | 点击 **Get Cash Now** | 进入 TC-02 Personal Information |
+
+### 自动化映射
+
+- verify → 步骤 2–8 的 assertPrompt 写精确英文字符串
+- action tap-text → 步骤 9；scrollBeforeTap 或 bottomFields
+- 小屏：Our Services 下排、Trusted 区需 scrollDownBefore
+
+---
+
+## TC-02 Personal Information（Get Cash Now 第 1 步）
+
+**Figma**：验证 1 `1:373`  
+**进度条**：约 1/3
+
+### 页面文案（verify）
+
+| 元素 | Figma 精确文案 |
+|------|----------------|
+| 页标题 | Personal Information |
+| 字段 1 标签 | Full Name (As per PAN) |
+| 字段 1 占位 | Enter full name |
+| 字段 2 标签 | Mobile Number |
+| 字段 2 前缀 | +91 |
+| 字段 2 占位 | 00000 00000 |
+| 字段 3 标签 | Date of Birth |
+| 字段 3 占位 | DD/MM/YYYY |
+| 字段 4 标签 | Employment Type |
+| 下拉选项 | Salaried / Self Employed / Business Owner |
+| 底部按钮 | Continue |
+
+### 步骤
+
+| # | 操作 | 期望 |
+|---|------|------|
+| 1 | 校验页面结构与文案 | 见上表 |
+| 2 | 输入 Full Name | 合法姓名，如 Test User PAN |
+| 3 | 输入 Mobile Number | 10 位印度手机号（+91 已展示） |
+| 4 | 点击 Date of Birth | 弹出系统日期选择器 |
+| 5 | 在日期选择器中选择任意有效日期 | 日期高亮/选中 |
+| 6 | 点击 **OK**（或 Done/Confirm） | 选择器关闭 |
+| 7 | 校验 DOB 已回填 | 不再仅显示 DD/MM/YYYY 占位 |
+| 8 | 点击 Employment Type → 选 **Salaried** | 字段回显 Salaried |
+| 9 | 点击 **Continue** | 进入 TC-03 Document Upload |
+
+### 自动化映射
+
+- input → Full Name、Mobile Number（skipEmptyBlurTest + skipInvalidBlurTest）
+- tap-text → DOB 行、选日期、OK、Employment Type、Salaried、Continue
+- verify → 页文案、DOB 回填
+
+---
+
+## TC-03 Document Upload（Get Cash Now 第 2 步）
+
+**Figma**：验证 2 `3:1713`  
+**进度条**：约 2/3
+
+### 页面文案（verify）
+
+| 元素 | Figma 精确文案 |
+|------|----------------|
+| 页标题 | Document Upload |
+| 说明 | Upload clear images of your original documents for faster verification. |
+| 区块 1 标题 | PAN Card |
+| 区块 1 上传 | Upload PAN Card |
+| 区块 2 标题 | Aadhaar Card |
+| 区块 2 上传 | Upload Aadhaar Card |
+| 底部按钮 | Continue |
+
+### 步骤
+
+| # | 操作 | 期望 |
+|---|------|------|
+| 1 | 校验页面文案 | 见上表 |
+| 2 | 点击 **Upload PAN Card** | 调起相机/相册；若弹权限则 Allow |
+| 3 | **人工**拍照或选图完成 PAN 上传 | PAN 区出现预览图，非空虚线框 |
+| 4 | 点击 **Upload Aadhaar Card** | 同上 |
+| 5 | **人工**完成 Aadhaar 上传 | Aadhaar 区出现预览图 |
+| 6 | 点击 **Continue** | 进入 TC-04 Face Verification |
+
+### 自动化映射
+
+- kyc-manual-until → 步骤 3、5（manualWaitSec 建议 240）
+- handle-permissions → 相机/相册
+- tap-text Continue → scrollBeforeTap
+
+---
+
+## TC-04 / TC-05 Face Verification（Get Cash Now 第 3–4 步）
+
+**Figma**：验证 3 `3:1840`（Take a picture）/ 验证 4 `3:1922`（Verify Face）  
+**进度条**：接近满格
+
+### 页面文案（verify）
+
+| 元素 | Figma 精确文案 |
+|------|----------------|
+| 页标题 | Face Verification |
+| 主标题 | Take a Selfie |
+| 说明 | Ensure your face is clearly visible in a well-lit area. Remove glasses or hats if possible. |
+| 按钮（拍照前） | Take a picture |
+| 按钮（预览后） | Verify Face |
+
+### 步骤
+
+| # | 操作 | 期望 |
+|---|------|------|
+| 1 | 校验页面文案 | 见上表 |
+| 2 | 点击 **Take a picture** | 调起相机；Allow 权限 |
+| 3 | **人工**完成自拍/捕获 | 出现自拍预览或 Verify Face 按钮 |
+| 4 | 点击 **Verify Face** | 进入 TC-06 Verification Completed（必须展示得分页） |
+
+### 自动化映射
+
+- kyc-manual-until → 步骤 3
+- Take a picture / Verify Face 可 optional（视当前态）
+
+---
+
+## TC-06 Verification Completed（认证结果 — 必须校验得分）
+
+**Figma**：结果 `1:525`（见设计稿：绿色勾 + PROFILE SCORE **87/100** + Excellent Eligibility）
+
+### 页面文案（verify — 必现）
+
+| 元素 | Figma 精确文案 |
+|------|----------------|
+| 主标题 | Verification Completed |
+| 副文案 | Your profile has been successfully assessed. |
+| 分数卡标题 | Profile Score / PROFILE SCORE（实机多为全大写） |
+| **得分（必校验）** | **XX/100**（Figma 示例 **87/100**；必须为 1–100 的整数，不可为空） |
+|  eligibility | Excellent Eligibility |
+| 推荐区标题 | Recommended Loan Types |
+| 推荐磁贴 | Personal Loan / Home Loan / Vehicle Loan |
+| 底部按钮 | Back to Home |
+
+### 步骤
+
+| # | 操作 | 期望 |
+|---|------|------|
+| 1 | 等待 Verify Face 完成 | 进入 **Verification Completed** 结果页（不可跳过） |
+| 2 | **校验已获取 PROFILE SCORE 数值** | 可见 **XX/100** 格式得分（如 87/100），非空、非占位 |
+| 3 | 校验结果页完整文案 | 见上表：标题、副文案、eligibility、Recommended Loan Types、Back to Home |
+| 4 | 点击 **Back to Home** | 回到 Home，Home Tab 选中 |
+| 5 | 校验已回 Home | AVAILABLE CREDIT LIMIT + Get Cash Now 可见 |
+
+### 通过标准
+
+- **必须**在结果页看到数值得分；未展示得分或仅回 Home 而无得分校验 → **失败**
+- 得分分子为 1–100 整数；0/100 或空白视为未获取有效得分 → **失败**
+
+### 自动化映射
+
+- kyc-manual-until → 等待 "Verification Completed" + XX/100
+- verify ×2 → 完整文案 + 得分非空专项断言
+- tap-text → Back to Home（非 optional）
+- verify → 已回 Home
+
+---
+
+## TC-07 Personal Loan 详情
+
+**Figma**：Personal Loan `1:585`
+
+### 步骤
+
+| # | 操作 | 期望 |
+|---|------|------|
+| 1 | 在 Home 点击 **Personal Loan** 磁贴 | 进入详情页 |
+| 2 | 校验标题 | **Personal Loan** |
+| 3 | 校验 Overview | 区块标题 **Overview**；正文为个人/即时资金描述（非 Business 文案） |
+| 4 | 校验 Typical Features | **Loan Amount** = **₹50k - ₹20 Lakhs**；**Repayment Period** = **12 - 60 Months**；**Interest Rate** = **10.5% - 24% p.a.** |
+| 5 | 校验 Suitable For | 标签 **Salaried**、**Self-employed** |
+| 6 | 校验 Required Documents | **PAN Card**、**Aadhaar Card**、**Income Proof** |
+| 7 | 点击左上角返回 | 回到 Home |
+
+---
+
+## TC-08 Business Loan 详情
+
+**Figma**：Business Loan `3:2020`
+
+### 步骤
+
+| # | 操作 | 期望 |
+|---|------|------|
+| 1 | 在 Home 点击 **Business Loan** | 进入详情页 |
+| 2 | 校验标题 | **Business Loan** |
+| 3 | 校验 Overview | 含 business/MSME/working capital 语义（不得为 Personal Loan 概述） |
+| 4 | 校验 Typical Features | **Loan Amount** = **₹1 Lakh - ₹50 Lakhs**；**Repayment Period** = **12 - 60 Months**；**Interest Rate** = **15% - 24% p.a.** |
+| 5 | 校验 Suitable For | **MSMEs**、**Retailers**、**Manufacturers** |
+| 6 | 校验 Required Documents | **Business Registration (Udhyam)**、**GST Returns / ITR**、**Bank Statement (12M)** |
+| 7 | 点击返回 | 回到 Home |
+
+---
+
+## TC-09 Profile（我的）
+
+**Figma**：我的 `1:1159`
+
+### 步骤
+
+| # | 操作 | 期望 |
+|---|------|------|
+| 1 | 点击底部 **Profile** Tab | Profile 选中（蓝色） |
+| 2 | 校验头部 | 显示名 **User**（或已保存昵称） |
+| 3 | 校验菜单行 | **Account Details**、**Help & Support**、**Privacy Policy** |
+| 4 | 校验危险操作 | 红色 **Delete Account** |
+| 5 | 校验退出 | **Logout** |
+| 6 | 点击 **Delete Account** | 弹出 TC-09a 确认框 |
+| 7 | 点击 **Cancel** | 弹窗关闭，仍在 Profile |
+| 8 | 点击 **Help & Support** | 进入 TC-10 |
+
+### TC-09a 删除确认弹窗
+
+**Figma**：我的（弹窗）`8:3990`
+
+| 元素 | Figma 精确文案 |
+|------|----------------|
+| 标题 | Delete Account? |
+| 正文 | This action cannot be undone. All your data, including loan applications and profile information, will be permanently deleted. |
+| 确认按钮（红） | Yes, Delete My Account |
+| 取消按钮（灰） | Cancel |
+
+**规则**：自动化**只点 Cancel**，不执行真删除。
+
+---
+
+## TC-10 Help & Support（帮助中心）
+
+**Figma**：帮助中心 `8:4228`
+
+### 页面文案
+
+| 元素 | Figma 图层 | 实机（当前 T42 包） |
+|------|-----------|---------------------|
+| 页标题 | Help & Support | Help & Support |
+| 卡片标签 | Service Email | Service Email |
+| 邮箱值 | Enter your email（占位） | **business@rajwiseloanadvisor.com** |
+
+### 步骤
+
+| # | 操作 | 期望 |
+|---|------|------|
+| 1 | 校验标题与 Service Email 卡片 | 标题一致；邮箱以**实机配置**为准（见上表） |
+| 2 | 点击返回 | 回到 Profile |
+| 3 | 点击 **Account Details** | 进入 TC-11 |
+
+### 产品说明
+
+- Figma 帮助页邮箱为占位符，**产品需在本文档或配置单明确线上/测试环境真实邮箱**，自动化 assert 跟产品确认值
+
+---
+
+## TC-11 Account Details（账户详情 — 必测完）
+
+**Figma**：账户详情 `7:3687`
+
+### 页面文案（verify）
+
+| 元素 | Figma 精确文案 |
+|------|----------------|
+| 页标题 | Account Details |
+| 区块 | Profile Picture |
+| 按钮 | Change Photo |
+| 字段 | Nickname |
+| 字段 | Email Address |
+| Email 占位 | Enter your email |
+| 字段 | Emergency Contact |
+| 紧急联系人前缀 | +91 |
+| 紧急联系人占位 | Emergency contact number |
+| 底部按钮 | Save changes |
+
+### 步骤
+
+| # | 操作 | 期望 |
+|---|------|------|
+| 1 | 校验表单结构与标签 | 见上表 |
+| 2 | 点击 **Change Photo** | 调起相册/相机；Allow 权限 |
+| 3 | **人工**选择头像 | 回到 Account Details，头像区有图 |
+| 4 | 填写 **Nickname** | 如 T42Nick |
+| 5 | 收起键盘（Done 或点标题） | 键盘不遮挡 Save |
+| 6 | 填写 **Email Address** | 合法邮箱，如 rajwise.user@gmail.com |
+| 7 | 再次收起键盘 | Save changes 可见 |
+| 8 | 点击 **Emergency Contact**（+91 行） | 打开系统通讯录 |
+| 9 | Allow 通讯录权限 → **选择一位联系人** | 回到 Account Details |
+| 10 | **校验 Emergency Contact 回显** | 行内显示所选联系人姓名/手机号，非占位符 |
+| 11 | **校验回显一致性** | 姓名与号码对应同一人，非空、非矛盾 |
+| 12 | 点击 **Save changes** | 保存成功；紧急联系人仍保留回显 |
+| 13 | 点击返回 | 回到 Profile |
+
+### 自动化映射
+
+- input → Nickname、Email（Email 建议 skipValidBlurTest，避免键盘误判）
+- tap-text → Change Photo、Emergency Contact、Done（optional）、标题失焦、Save changes
+- pick-native-contact → 通讯录选第 1 项（contactIndex: 0）
+- verify ×2 → 回显 + 一致性；Save 后 verify 含紧急联系人未丢失
+- kyc-manual-until → 换头像
+
+---
+
+## 四、控件对照表（供生成 YAML locatePrompt）
+
+| 页面 | 控件 | 定位要点 | 勿点 |
+|------|------|----------|------|
+| Home | Get Cash Now | 额度卡蓝色主按钮 | Our Services、Profile |
+| Home | Personal/Business Loan 磁贴 | Our Services 网格内 | Get Cash Now |
+| Personal Information | Full Name 输入框 | placeholder Enter full name | Mobile、DOB |
+| Personal Information | Continue | 底部蓝色全宽 | 返回 |
+| Document Upload | Upload PAN/Aadhaar | 虚线框/cloud 文案 | 另一证件区 |
+| Face | Take a picture / Verify Face | 底部蓝色 | 返回 |
+| Result | PROFILE SCORE XX/100 | 得分卡数字，非空 | — |
+| Result | Back to Home | 底部描边按钮 | 推荐贷款磁贴 |
+| Profile | Delete Account | 红色行 | Logout |
+| Profile | Cancel | 弹窗灰色按钮 | Yes, Delete My Account |
+| Account Details | Nickname / Email | 各字段标签下方输入框 | 勿交叉填写 |
+| Account Details | Emergency Contact | +91 行带 chevron，打开通讯录 | Save changes |
+| Account Details | Save changes | 底部蓝色全宽 | Change Photo |
+
+---
+
+## 五、生成自动化时的要求（研发）
+
+1. **只改** `packages/t42/` 与 `tests/aside/t42*.test.ts`，**禁止**改 B 面 `data/business-*`
+2. 每个可点步骤写 `locatePrompt` + **Do NOT tap …**
+3. 输入类：`skipEmptyBlurTest: true` + `skipInvalidBlurTest: true`（A 面失焦常不校验）
+4. 底部主按钮：`scrollBeforeTap: true` 或写入 `page.bottomFields`
+5. 居中弹窗/协议：**不要** scrollBeforeTap
+6. Delete：**只 Cancel**；Logout：**不执行**
+7. 人工步骤：`kyc-manual-until` + `handle-permissions`
+8. 注册 `config/packages.yaml` 的 `t42-postlogin.pages[]` 顺序与本文件 TC 顺序一致
+
+### 建议 page 顺序（packages.yaml）
+
+```
+home → personal-information → document-upload → face-verification →
+verification-result → personal-loan → business-loan → profile →
+help-support → account-details
+```
+
+---
+
+## 六、运行
+
+```powershell
+# 已登录并停在 A 面 Home
+npm run test:aside:t42-postlogin
+
+# 冷启 + OTP 登录 + 上述全部
+npm run test:aside:t42
+```
+
+---
+
+## 七、变更记录（产品填写）
+
+| 日期 | 变更人 | 说明 |
+|------|--------|------|
+| 2026-07-27 | — | 按 Figma 完善登录后用例；补充 node-id、精确文案、实机差异、YAML 映射 |

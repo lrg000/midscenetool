@@ -1,0 +1,36 @@
+# T53 Loan Summary — PRD 三十一
+page:
+  id: aside-t53-loan-summary
+  title: Review Your Loan
+  isNative: true
+  skipNavigation: true
+  navigationPrompt: ""
+  blurTarget: Review Your Loan
+  aiContext: Review Your Loan. Loan Amount, Interest, Processing Fee, Total Repayment, APR, Repayment Date. Review KFS.
+  bottomFields: [Review KFS]
+dropdowns: []
+inputs: []
+flow:
+  - section: Summary
+    type: action
+    action: wait-page
+    label: 等待 Review Your Loan
+    manualWaitSec: 8
+    assertPrompt: '"Review Your Loan" is visible with Loan Amount "₹10,000".'
+  - section: Summary
+    type: verify
+    label: Loan Summary 字段
+    assertPrompt: >
+      Shows "Loan Amount" "₹10,000", "Interest", "Processing Fee", "Total Repayment", "APR", and "Repayment Date".
+  - section: Summary
+    type: verify
+    label: UI Loan Summary PRD
+    assertPrompt: >
+      STRICT: warm off-white background #F4F3EF, primary blue #1D4ED8 buttons with about 6dp corners (not pills), title/amount near #171717, secondary #6B7280. Fail if yellow notes, retro paper, black gallery, or cream sticker theme.
+  - section: Summary
+    type: action
+    action: tap-text
+    label: Review KFS
+    scrollBeforeTap: true
+    assertPrompt: Review KFS
+    locatePrompt: The "Review KFS" button. Do NOT tap back.

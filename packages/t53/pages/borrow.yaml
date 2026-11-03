@@ -1,0 +1,77 @@
+# T53 借款金额 — PRD 二十九、三十 / 60.10
+page:
+  id: aside-t53-borrow
+  title: How much do you need?
+  isNative: true
+  skipNavigation: true
+  navigationPrompt: ""
+  blurTarget: the title How much do you need?
+  aiContext: >
+    How much do you need? Available credit ₹30,000. Chips ₹2,000 ₹5,000 ₹10,000 ₹15,000.
+    Over-limit copy "Amount exceeds your available credit."
+  bottomFields: []
+dropdowns: []
+inputs:
+  - label: How much do you need?
+    validValue: "50000"
+    skipEmptyBlurTest: true
+    skipInvalidBlurTest: true
+    skipInputTests: true
+flow:
+  - section: Borrow
+    type: action
+    action: tap-text
+    label: Borrow Now
+    scrollBeforeTap: true
+    assertPrompt: Borrow Now
+    locatePrompt: >
+      The "Borrow Now" button on the home credit card. Do NOT tap Repay Now or My.
+  - section: Borrow
+    type: action
+    action: wait-page
+    label: 等待借款金额页
+    manualWaitSec: 8
+    assertPrompt: '"How much do you need?" and "Available credit" with "₹30,000" are visible.'
+  - section: Borrow
+    type: verify
+    label: 快捷金额
+    assertPrompt: >
+      Amount chips "₹2,000", "₹5,000", "₹10,000", and "₹15,000" are visible.
+  - section: Borrow
+    type: verify
+    label: UI Borrow PRD
+    assertPrompt: >
+      STRICT: warm off-white background #F4F3EF, primary blue #1D4ED8 buttons with about 6dp corners (not pills), title/amount near #171717, secondary #6B7280. Fail if yellow notes, retro paper, black gallery, or cream sticker theme.
+  - section: Borrow
+    type: action
+    action: fill-input
+    label: 超额金额
+    inputFieldLabel: How much do you need?
+    inputValue: "50000"
+    autoDismissKeyboard: true
+  - section: Borrow
+    type: verify
+    label: 超过可用额度
+    assertPrompt: >
+      The exact message "Amount exceeds your available credit." is visible.
+  - section: Borrow
+    type: action
+    action: tap-text
+    label: 选择 ₹10,000
+    scrollBeforeTap: false
+    assertPrompt: ₹10,000
+    locatePrompt: >
+      The "₹10,000" quick amount chip. Do NOT tap ₹2,000, ₹5,000, or ₹15,000.
+
+  - section: Borrow
+    type: action
+    action: tap-text
+    label: 进入 Loan Summary
+    optional: true
+    scrollBeforeTap: true
+    assertPrompt: Continue
+    locatePrompt: >
+      If still on the amount page, tap the primary button that continues
+      (Continue, Next, or Review). Do NOT change the amount.
+      If "Review Your Loan" is already visible, skip.
+

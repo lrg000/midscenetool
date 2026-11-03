@@ -1,0 +1,180 @@
+# T42 A 面 — Account Details 填写 + 换头像 + Save（Figma 账户详情）
+page:
+  id: aside-t42-account-details
+  title: Account Details
+  isNative: true
+  skipNavigation: true
+  navigationPrompt: ""
+  blurTarget: the "Account Details" title in the top header bar
+  aiContext: >
+    T42 Account Details. Fill Nickname and Email, pick Emergency Contact from native
+    contacts and verify echo, Save changes. Change Photo may need manual pick.
+  bottomFields:
+    - Save changes
+
+dropdowns: []
+
+inputs:
+  - label: Nickname
+    validValue: T42Nick
+    skipEmptyBlurTest: true
+    skipInvalidBlurTest: true
+    locatePrompt: >
+      The "Nickname" text input box directly under the Nickname label
+      (may show "User" or previous nickname). Do NOT tap Email Address,
+      Emergency Contact, Change Photo, or Save changes.
+  - label: Email Address
+    validValue: rajwise.user@gmail.com
+    skipEmptyBlurTest: true
+    skipInvalidBlurTest: true
+    skipValidBlurTest: true
+    locatePrompt: >
+      The "Email Address" text input under the Email Address label
+      (envelope icon, placeholder "Enter your email").
+      Do NOT tap the Nickname field above, Emergency Contact, Change Photo,
+      or Save changes.
+
+flow:
+  - section: Account Details
+    type: verify
+    label: Account Details 表单文案对齐 Figma
+    retry: 2
+    assertPrompt: >
+      Page title is exactly "Account Details". Labels include "Profile Picture",
+      "Nickname", "Email Address", "Emergency Contact", button "Change Photo",
+      and blue "Save changes". Fail if Figma labels missing.
+
+  - section: Account Details
+    type: action
+    action: tap-text
+    label: Change Photo
+    assertPrompt: Change Photo
+    locatePrompt: >
+      The "Change Photo" button next to the profile picture (camera icon).
+      Do NOT tap Save changes yet.
+
+  - section: Account Details
+    type: action
+    action: handle-permissions
+    label: 相册/相机权限
+
+  - section: Account Details
+    type: action
+    action: kyc-manual-until
+    label: 等待头像选择完成
+    manualWaitSec: 120
+    assertPrompt: >
+      Back on Account Details after picking a photo: profile avatar area and
+      form (Nickname / Email Address) are visible again
+
+  - section: Account Details
+    type: input
+    label: Nickname
+
+  - section: Account Details
+    type: action
+    action: tap-text
+    label: 收起键盘 Done
+    optional: true
+    assertPrompt: Done
+    locatePrompt: >
+      Soft keyboard "Done" or "OK" key if the keyboard is still open
+      (bottom-right of keyboard). Skip if keyboard already closed.
+
+  - section: Account Details
+    type: input
+    label: Email Address
+
+  - section: Account Details
+    type: action
+    action: tap-text
+    label: 收起键盘 Done（Email 后）
+    optional: true
+    assertPrompt: Done
+    locatePrompt: >
+      Soft keyboard "Done" or "OK" key if still open. Skip if keyboard closed.
+
+  - section: Account Details
+    type: action
+    action: tap-text
+    label: 点标题失焦
+    assertPrompt: Account Details
+    locatePrompt: >
+      The "Account Details" title text in the top header bar
+      (to dismiss keyboard). Do NOT tap back arrow.
+
+  - section: Account Details
+    type: action
+    action: tap-text
+    label: Emergency Contact
+    assertPrompt: Emergency Contact
+    scrollBeforeTap: true
+    locatePrompt: >
+      The "Emergency Contact" row with +91 prefix and placeholder text like
+      "Emergency contact" or "Emergency contact number", with a chevron on the right.
+      Do NOT tap Nickname, Email Address, Change Photo, or Save changes.
+
+  - section: Account Details
+    type: action
+    action: handle-permissions
+    label: 通讯录权限
+
+  - section: Account Details
+    type: action
+    action: pick-native-contact
+    label: 选择紧急联系人
+    contactIndex: 0
+
+  - section: Account Details
+    type: verify
+    label: Emergency Contact 回显（已选非占位）
+    retry: 3
+    retryDelayMs: 1000
+    assertPrompt: >
+      On Account Details, the Emergency Contact row shows a selected contact:
+      a visible person name and/or a phone number with at least 6 digits after +91.
+      Must NOT still show only the empty gray placeholder "Emergency contact number"
+      or "Emergency contact" with no actual selected contact. Fail if picker did not echo back.
+
+  - section: Account Details
+    type: verify
+    label: Emergency Contact 回显一致性
+    retry: 2
+    assertPrompt: >
+      The Emergency Contact value displayed on Account Details is consistent:
+      the same contact name or phone number appears in the row (not blank on one line
+      and filled on another). Name and number if both shown must belong to one contact.
+      Fail if the row looks empty, placeholder-only, or contradictory.
+
+  - section: Account Details
+    type: action
+    action: tap-text
+    label: Save changes
+    assertPrompt: Save changes
+    scrollBeforeTap: true
+    locatePrompt: >
+      The solid blue full-width button labeled "Save changes" or "Save Changes"
+      at the bottom of Account Details (not Change Photo, not keyboard Done)
+
+  - section: Account Details
+    type: verify
+    label: 保存后仍在资料页或已提示成功
+    retry: 2
+    assertPrompt: >
+      After Save changes: still on Account Details with nickname/email visible,
+      Emergency Contact still shows the selected contact (not reverted to placeholder),
+      OR a success toast appeared, OR returned to Profile with User header.
+      Fail only if an error dialog blocks the form with no way forward.
+
+  - section: Account Details
+    type: action
+    action: tap-text
+    label: 返回 Profile
+    optional: true
+    assertPrompt: Back
+    locatePrompt: >
+      The back arrow at the top-left of Account Details if still on that page
+      (not Android system Back)
+
+submit:
+  enabled: false

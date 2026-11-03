@@ -1,0 +1,77 @@
+# KYC Aadhaar OCR — 对齐 Appium fill_kyc_aadhaar_ocr
+# 用例设计：入口校验 → 人工完成拍照/OCR → Confirm 表单 PAN 校验 → Next 离开当前页
+page:
+  id: kyc-aadhaar
+  title: Identity Verification
+  route: identity
+  skipNavigation: true
+  navigationPrompt: Navigate to KYC Identity Verification / Aadhaar OCR page
+  # 失焦点页面顶部标题即可（收起键盘不会触发校验）；勿点 Gender / Date of Birth
+  blurTarget: the "Confirm your info" title at the top of the confirmation sheet
+  aiContext: >
+    KYC Identity Verification on Android. After entry, user may manually complete Aadhaar
+    front upload, camera, and OCR Submit. Automation continues on Confirm your info form
+    (Date of Birth is a date picker; PAN is text input). Handle Allow dialogs if shown.
+    On entry, an optional "You're ahead of 99% of users" modal with orange "Continue Now"
+    may appear — tap Continue Now first if shown (not required). After leaving OCR,
+    an optional "10 MINUTES LEFT" modal with "Complete Now" may appear on the selfie page.
+    Blur by tapping the page/sheet top title — never Gender or Date of Birth chevrons.
+  bottomFields:
+    - PAN card number
+
+dropdowns: []
+
+inputs:
+  - label: PAN card number
+    invalidValues:
+      - "INVALID"
+      - "12345"
+      - "ABCDE1234"
+    validValues:
+      - "ABCDE1234F"
+      - "AAAAA0000A"
+    skipInvalidBlurTest: false
+    locatePrompt: >
+      The "PAN card number" text input inside the "Confirm your info" sheet
+      (bottom-most text field, directly above the black Next button, below Date of Birth).
+      Tap ONLY the PAN text value area. Do NOT tap Gender, Date of Birth, Full Name,
+      or any row with an orange chevron (>).
+
+flow:
+  - section: Entry
+    type: verify
+    label: Identity Verification 入口
+    assertPrompt: >
+      The "Identity Verification" page or KYC step indicator is visible on screen
+  - section: Manual OCR
+    type: action
+    action: kyc-manual-until
+    label: 等待人工完成 Aadhaar 拍照/OCR
+    manualWaitSec: 600
+    assertPrompt: >
+      Confirm your info form is visible with Date of Birth and PAN card number fields
+  - section: Confirm Info
+    type: verify
+    label: Confirm your info 表单
+    assertPrompt: >
+      Confirm your info form is visible with Date of Birth and PAN card number fields,
+      and no Date picker overlay is covering the form
+  - section: Confirm Info
+    type: input
+    label: PAN card number
+
+submit:
+  enabled: true
+  buttonPrompt: >
+    The black "Next" button at the bottom of the "Confirm your info" sheet
+    (full-width dark button with white "Next" text — not Gender/Date of Birth, not vConsole)
+  stayOnPagePrompt: >
+    Is the "Confirm your info" sheet or Aadhaar OCR upload still the primary form
+    (PAN card number / Date of Birth / Front of Aadhaar)?
+    "Upload your selfie" does NOT count as still here — even if the top header still
+    says "Identity Verification". Progress-bar labels do not count.
+    Answer only true or false.
+  nextPageAssert: >
+    The "Confirm your info" / Aadhaar OCR / PAN form is gone. Landing on "Upload your selfie"
+    (guide with Perfect / No mask examples, camera, or preview) counts as success even if
+    the top header still says "Identity Verification". Progress-bar labels do not count.
