@@ -130,7 +130,7 @@ rules:
         query: contacts-by-customer
 
 explore:
-  enabled: false
+  enabled: true
   packageId: t57
   maxSteps: 6
   stopPrompt: >

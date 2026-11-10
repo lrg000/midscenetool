@@ -50,6 +50,7 @@ flow:
 submit:
   enabled: true
   requireEnabled: true
+  # KYC 五步：点 Next 后先等转圈离开当前页，再校验「不是本页」
   buttonPrompt: >
     The black full-width "Next" button at the bottom of the Reference Contacts page.
     Tap the LEFT-CENTER of that black bar (white Next text). Do NOT tap green vConsole

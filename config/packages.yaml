@@ -373,6 +373,8 @@ packages:
         dataFile: pages/login.yaml
       - id: aside-t57-kyc-personal
         dataFile: pages/kyc-personal.yaml
+      - id: aside-t57-recorded
+        dataFile: pages/recorded.yaml
 
   t59:
     name: t59.Viramgam CardVista

@@ -4,8 +4,8 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="color-scheme" content="dark">
-  <meta name="description" content="Midscene AI 视觉自动化测试框架 — 项目展示">
-  <title>MidsceneTool · 项目展示</title>
+  <meta name="description" content="MidsceneTool 项目汇报 — 控制台编排的 Android AI 视觉自动化">
+  <title>MidsceneTool · 项目汇报</title>
   <link rel="stylesheet" href="./styles/theme.css">
   <link rel="stylesheet" href="./styles/page.css">
   <link rel="stylesheet" href="./styles/motion.css">
@@ -15,14 +15,14 @@
   <main class="page" id="main" data-deck data-deck-mode="scroll">
 
     <section class="section section-narrow is-active" data-section data-slide id="slide-01" aria-current="page">
-      <p class="prompt cursor">midscenetool / project showcase</p>
-      <h1 class="hero-title reveal-item">用 AI 视觉 + YAML 配置，驱动 Android 借贷 App 自动化测试。</h1>
-      <p class="lede reveal-item">页面配置驱动 · AI Agent 执行 · 状态机编排。无需维护 XPath / UiAutomator，用自然语言描述 UI，由 Midscene 完成点击、输入与断言。</p>
-      <p class="note reveal-item">scroll 模式 · terminal-mint 主题 · 来源：用户操作手册、config/、package.json</p>
+      <p class="prompt cursor">midscenetool / project update</p>
+      <h1 class="hero-title reveal-item">用控制台编排 YAML，让视觉 Agent 在真机上把用例跑完。</h1>
+      <p class="lede reveal-item">页面配置驱动 · 控制台选 Agent / 包 / 账号 · Midscene 执行点击与断言。B 面测统一 H5 借款模版，A 面按 T/Y 包测原生壳。</p>
+      <p class="note reveal-item">scroll 模式 · terminal-mint · 事实对齐 2026-11 仓库：用户操作手册、config/、package.json、dashboard/</p>
       <div class="stat-row reveal-item" style="margin-top: var(--space-4);">
-        <div class="stat"><strong>11</strong><span>B 面注册页面</span></div>
-        <div class="stat"><strong>4</strong><span>A 面马甲包配置</span></div>
-        <div class="stat"><strong>18+</strong><span>npm 测试入口</span></div>
+        <div class="stat"><strong>10</strong><span>B 面注册页面</span></div>
+        <div class="stat"><strong>18</strong><span>A 面包配置</span></div>
+        <div class="stat"><strong>35</strong><span>npm 脚本入口</span></div>
         <div class="stat"><strong>3</strong><span>运行模式</span></div>
       </div>
     </section>
@@ -30,107 +30,108 @@
     <section class="section" data-section data-slide id="slide-02">
       <div class="stack">
         <p class="eyebrow">01 / Problem</p>
-        <h2 class="heading reveal-item">移动端 H5 + 原生壳混合，传统定位器维护成本过高。</h2>
+        <h2 class="heading reveal-item">混合栈 + 多马甲，传统定位器跟不上皮肤与流程变化。</h2>
         <div class="grid-3 reveal-item">
           <article class="card">
             <h3>定位器脆弱</h3>
-            <p>UI 微调即导致 XPath / resource-id 失效，回归成本高。</p>
+            <p>XPath / resource-id 随皮肤与版本失效。同功能按钮颜色可完全不同。</p>
           </article>
           <article class="card">
-            <h3>混合栈复杂</h3>
-            <p>冷启动、权限、原生登录、WebView H5、KYC 原生页交替出现。</p>
+            <h3>栈在交替</h3>
+            <p>冷启动、权限、原生 OTP、Passkey、WebView H5、KYC 原生页轮流出现。</p>
           </article>
           <article class="card">
-            <h3>业务流多变</h3>
-            <p>首页分流 Next / Apply / Repay，账号与包配置影响路径。</p>
+            <h3>包不是一套 UI</h3>
+            <p>T 包是贷款壳，Y 包是日历/便签等独立 App。H5 字段 YAML 不能抄到某个马甲。</p>
           </article>
         </div>
-        <p class="takeaway reveal-item">框架选择用<strong>自然语言 + 视觉理解</strong>描述元素，把「怎么点」交给 AI，把「测什么」留在 YAML。</p>
+        <p class="takeaway reveal-item">框架把<strong>测什么</strong>锁在 YAML，把<strong>怎么点</strong>交给视觉模型；控制台负责选谁跑、用哪个模型、落哪份报告。</p>
       </div>
     </section>
 
     <section class="section" data-section data-slide id="slide-03">
       <div class="stack">
         <p class="eyebrow">02 / Mechanism</p>
-        <h2 class="heading reveal-item">YAML 配置进入状态机，AI Agent 在设备上执行并回写报告。</h2>
+        <h2 class="heading reveal-item">任务从控制台进队列，runner 读 YAML，Agent 在设备上执行并回写报告。</h2>
         <div class="concept-wrap reveal-item" data-concept-stage>
           <span class="concept-packet" aria-hidden="true"></span>
           <div class="concept-stage">
-            <span class="concept-node">data/*.yaml<br>flows.yaml</span>
-            <span class="concept-node">state-machine<br>page-executor</span>
-            <span class="concept-node">Midscene<br>AI Agent</span>
-            <span class="concept-node">断言 + HTML<br>JSON 报告</span>
+            <span class="concept-node">Dashboard<br>Agent / 包 / 账号</span>
+            <span class="concept-node">YAML catalog<br>state-machine</span>
+            <span class="concept-node">Midscene<br>真机执行</span>
+            <span class="concept-node">断言 + HTML<br>截图 / Token</span>
           </div>
         </div>
         <button class="term-nav" type="button" data-replay>重播数据流</button>
         <ul class="list-clean reveal-item">
-          <li><strong>config/pages.yaml</strong> — 页面注册与 data 文件映射</li>
-          <li><strong>core/state-machine.ts</strong> — 单页入口 <code>runPageTest</code></li>
-          <li><strong>core/business-runner.ts</strong> — 多页业务流 <code>runBusinessFlow</code></li>
+          <li><strong>dashboard/server.ts</strong> — 目录、队列、录制转换、视觉执行作业</li>
+          <li><strong>core/business-runner.ts</strong> — B 面全流程 <code>runBusinessFlow</code>（可先清数据）</li>
           <li><strong>core/aside-runner.ts</strong> — A 面按包 <code>runAsidePackage</code></li>
+          <li><strong>config/agents.yaml</strong> + 本地覆盖 — 模型与执行档位，密钥只在 <code>.env</code></li>
         </ul>
       </div>
     </section>
 
     <section class="section" data-section data-slide id="slide-04">
       <div class="stack">
-        <p class="eyebrow">03 / Modes</p>
-        <h2 class="heading reveal-item">按稳定性选择运行模式 — 日常推荐单页。</h2>
-        <div class="grid-3 reveal-item">
-          <article class="card mode-card recommended">
-            <h3>single-page <span class="stars">★★★</span></h3>
-            <p>设备已在目标页，<code>skipNavigation=true</code>。例：<code>npm run test:basic-info</code></p>
+        <p class="eyebrow">03 / Dashboard</p>
+        <h2 class="heading reveal-item">日常主路径：配置 → 录制生成 → 选择用例 → 视觉执行 → 报告。</h2>
+        <div class="grid-2 reveal-item">
+          <article class="card">
+            <h3>配置与执行</h3>
+            <p>选择视觉 Agent（可改模型、Base URL、档位），选包、选账号/OTP，再点跑。队列弹层与配置面板同步，执行的是当前选中配置，不是仓库默认包。</p>
           </article>
-          <article class="card mode-card">
-            <h3>segment <span class="stars">★★</span></h3>
-            <p>分段串联，如 bootstrap + 登录，或 KYC 五步 <code>kyc-full</code>。</p>
-          </article>
-          <article class="card mode-card">
-            <h3>full-flow <span class="stars">★</span></h3>
-            <p>bootstrap → 登录 → 分流 → 多页；依赖账号、环境与人工步骤。</p>
+          <article class="card">
+            <h3>录制生成</h3>
+            <p>步骤先在内存；填 packageId，真机或 Playwright。停止后转换落盘。0 步的页跳过；已有 YAML（如 login.yaml）必须开覆盖才会改写。</p>
           </article>
         </div>
-        <p class="note reveal-item">环境变量：<code>ACCOUNT_PROFILE</code> · <code>SKIP_BOOTSTRAP=1</code> · <code>SKIP_LOGIN=1</code></p>
+        <p class="note reveal-item">入口 <code>npm run dashboard</code> → 浏览器打开 <code>http://127.0.0.1:5173</code>（可用 <code>DASHBOARD_PORT</code> 改端口）</p>
       </div>
     </section>
 
     <section class="section" data-section data-slide id="slide-05">
       <div class="stack">
-        <p class="eyebrow">04 / Capabilities</p>
-        <h2 class="heading reveal-item">已落地的自动化能力模块。</h2>
+        <p class="eyebrow">04 / Modes</p>
+        <h2 class="heading reveal-item">按稳定性选模式 — 字段回归仍用单页。</h2>
         <div class="grid-3 reveal-item">
-          <article class="card"><h3>下拉框</h3><p>随机选项 + 关弹窗后回显一致性</p></article>
-          <article class="card"><h3>输入框</h3><p>空值 / 非法值 / 合法值失焦校验</p></article>
-          <article class="card"><h3>通讯录</h3><p>原生联系人选择 + 回填校验</p></article>
-          <article class="card"><h3>原生登录</h3><p>手机号 + OTP 验证码流程</p></article>
-          <article class="card"><h3>业务分流</h3><p>Next / Apply / Go to repay 识别</p></article>
-          <article class="card"><h3>KYC 链路</h3><p>Aadhaar OCR · 活体 · Bank info</p></article>
-          <article class="card"><h3>申请 / 还款</h3><p>Apply entry · Success · Repay 页面</p></article>
-          <article class="card"><h3>AI 指标</h3><p>Token 统计、步骤缓存、可视化报告</p></article>
+          <article class="card mode-card recommended">
+            <h3>单页 <span class="stars">★★★</span></h3>
+            <p>人已停在目标页。例：<code>npm run test:basic-info</code>。控制台对应 B 面单页。</p>
+          </article>
+          <article class="card mode-card">
+            <h3>分段 <span class="stars">★★</span></h3>
+            <p>已登录后串一段，如 KYC 五步 <code>test:kyc-full</code>。提交只等离开当前页。</p>
+          </article>
+          <article class="card mode-card">
+            <h3>全流程 <span class="stars">★</span></h3>
+            <p>冷启 <code>pm clear</code> → 协议 → 登录 → 分流。控制台指定 Android 包；<code>skipLaunch</code> / <code>SKIP_CLEAR_DATA</code> 可不清。</p>
+          </article>
         </div>
+        <p class="note reveal-item">环境：<code>ACCOUNT_PROFILE</code> · <code>TEST_MOBILE</code> / <code>TEST_OTP</code> · <code>SKIP_BOOTSTRAP=1</code> · <code>SKIP_LOGIN=1</code> — 明文只放 <code>.env</code></p>
       </div>
     </section>
 
     <section class="section" data-section data-slide id="slide-06">
       <div class="grid-2">
         <div class="stack reveal-item">
-          <span class="split-label">B 面 · H5 WebView</span>
+          <span class="split-label">B 面 · 统一 H5 借款模版</span>
           <h2 class="heading">flows + data</h2>
-          <p class="lede">登录后 H5 页面：Basic info、Reference Contacts、KYC、Bank、Apply、Repay 等，由 <code>config/flows.yaml</code> 编排。</p>
+          <p class="lede">登录后 WebView：Basic info、联系人、KYC、Bank、Apply、Repay。不要为某个马甲去改这套字段 YAML。</p>
           <ul class="list-clean">
-            <li>11 页注册于 <code>config/pages.yaml</code></li>
-            <li>字段与 flow 定义在 <code>data/*.yaml</code></li>
-            <li>测试入口 <code>tests/*.test.ts</code></li>
+            <li>10 页注册于 <code>config/pages.yaml</code></li>
+            <li>步骤在 <code>data/*.yaml</code>，编排在 <code>config/flows.yaml</code></li>
+            <li>入口 <code>tests/*.test.ts</code> 与控制台「B 面」</li>
           </ul>
         </div>
         <div class="stack reveal-item">
-          <span class="split-label">A 面 · 原生马甲包</span>
+          <span class="split-label">A 面 · T 贷款壳 / Y 独立 App</span>
           <h2 class="heading">packages + aside</h2>
-          <p class="lede">各 Android 壳包独立 YAML：<strong>T42 RajWise</strong>、<strong>Y20 Daily Grid</strong> 等，由 <code>config/packages.yaml</code> 注册。</p>
+          <p class="lede">一包一目录。T42 / T46 / T53 / T57 / T59 是贷款壳；Y20–Y28 是日历便签等独立 App。禁止把 T42 文案抄到 T46，禁止交接 B 面 H5。</p>
           <ul class="list-clean">
-            <li>一包一目录 <code>packages/&lt;slug&gt;/pages/</code></li>
-            <li>入口 <code>tests/aside/*.test.ts</code></li>
-            <li>可对齐 Figma / 云效 PRD 验收</li>
+            <li>18 条配置于 <code>config/packages.yaml</code></li>
+            <li>页面 YAML：<code>packages/&lt;slug&gt;/pages/</code></li>
+            <li>入口 <code>tests/aside/*.test.ts</code>，可对齐云效 PRD</li>
           </ul>
         </div>
       </div>
@@ -138,49 +139,49 @@
 
     <section class="section" data-section data-slide id="slide-07">
       <div class="stack">
-        <p class="eyebrow">05 / Evidence</p>
-        <h2 class="heading reveal-item">每次运行产出可核对、可分享的报告与产物。</h2>
+        <p class="eyebrow">05 / Hard-won</p>
+        <h2 class="heading reveal-item">实机跑通后写进 YAML 的规则，不是「放宽断言」。</h2>
         <div class="grid-2 reveal-item">
-          <div class="stack">
-            <article class="card">
-              <h3>reports/report-generator.ts</h3>
-              <p>汇总用例结果，生成 HTML 可视化报告（通过率、分组、AI Token 等）。</p>
-            </article>
-            <article class="card">
-              <h3>midscene_run/</h3>
-              <p>报告、截图、日志、缓存、Midscene 步骤报告统一落盘。</p>
-            </article>
-          </div>
-          <pre class="code-block reveal-item">midscene_run/
-├── report/          # HTML 步骤报告
-├── output/          # 汇总报告
-├── screenshots/     # 失败/关键步骤截图
-├── log/             # 运行日志
-└── cache/           # AI 缓存</pre>
+          <article class="card">
+            <h3>协议跟文案，不跟颜色</h3>
+            <p><code>Agree &amp; Continue</code> 只在 bootstrap。皮肤可黄可蓝，locate 忽略颜色。login.yaml 不再找这一步。</p>
+          </article>
+          <article class="card">
+            <h3>Passkey 可跳过</h3>
+            <p>登录后点 <code>Skip for now</code>。等 H5 首页时每一轮继续 dismiss，避免卡在系统弹层。</p>
+          </article>
+          <article class="card">
+            <h3>KYC 提交只等离页</h3>
+            <p>五步 Submit 后 <code>waitForKycLeavePage</code>。活体完成后可能已是 Bank information，不假定固定下一页。</p>
+          </article>
+          <article class="card">
+            <h3>L3 不是 PRD</h3>
+            <p><code>test:l3:explore</code> 是有界探索冒烟。按 PRD 逐条验收走 A 面 aside 或 B 面 YAML，并先看失败截图再改 prompt。</p>
+          </article>
         </div>
-        <p class="takeaway reveal-item">可与数据库 MCP 联用：跑完用例后核对业务表落库（customer、borrow_apply 等）。</p>
+        <p class="takeaway reveal-item">Token / 免费额度耗尽则<strong>停止重试</strong>，不当成脚本缺陷去改 YAML。</p>
       </div>
     </section>
 
     <section class="section section-narrow" data-section data-slide id="slide-08">
       <div class="stack">
         <p class="eyebrow">06 / Quick Start</p>
-        <h2 class="heading reveal-item">从单页字段测试开始 — 最稳定的路径。</h2>
+        <h2 class="heading reveal-item">从控制台接真机开始 — 单页回归仍然最稳。</h2>
         <ol class="list-clean reveal-item">
-          <li><code>cd F:\tools\midscenetool && npm install</code></li>
-          <li>配置 <code>.env</code>（Midscene 模型 API + 可选测试账号）</li>
-          <li>USB 连接 Android 设备，<code>adb devices</code> 确认在线</li>
-          <li>手动导航 App 到 <strong>Basic info</strong> 页</li>
-          <li><code>npm run test:basic-info</code></li>
+          <li><code>npm install</code>；录制用浏览器时再 <code>npm run playwright:install</code></li>
+          <li>配置 <code>.env</code>（视觉模型 API；可选账号 / OTP，勿提交）</li>
+          <li>USB 调试，<code>adb devices</code> 为 <code>device</code>，被测 App 已安装</li>
+          <li><code>npm run dashboard</code>，打开本机 5173 端口，选 Agent 与用例后执行</li>
+          <li>字段回归：先手动停在目标页，再跑单页（如 Basic info）</li>
         </ol>
-        <pre class="code-block reveal-item"># 其他常用入口
+        <pre class="code-block reveal-item"># 对照命令（控制台能做的，这些也能做）
+npm run test:basic-info
 npm run test:kyc-full
 npm run test:business-auto
-npm run test:business-apply
-npm run test:aside:t42
-npm run test:aside:y20</pre>
-        <p class="takeaway reveal-item">核心结论：<strong>YAML 描述测什么，AI 负责怎么点，报告证明测过了。</strong></p>
-        <p class="note reveal-item">项目路径 F:\tools\midscenetool · 技术栈 Midscene.js 1.10 + TypeScript</p>
+npm run test:aside:t57
+npm run test:l3:explore</pre>
+        <p class="takeaway reveal-item">记住一句话：<strong>YAML 描述测什么，控制台决定谁跑，AI 负责怎么点，报告证明测过了。</strong></p>
+        <p class="note reveal-item">产物在 <code>midscene_run/</code>（report · screenshots · log · cache）。密钥与 <code>agents.local.yaml</code> 不入库。</p>
       </div>
     </section>
 

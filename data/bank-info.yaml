@@ -101,10 +101,13 @@ flow:
 
 submit:
   enabled: true
+  # KYC 五步：点 Next 后先等转圈离开当前页，再校验「不是本页」
   buttonPrompt: The "Next" button at the bottom of the Bank information page
   stayOnPagePrompt: >
-    Is the "Bank information" / "Bank Account" form with IFSC still the primary editable screen?
-    Progress-bar labels alone do not count. Answer only true or false.
+    Is the "Bank information" / "Bank Account" form with IFSC still the primary editable
+    screen (including a loading spinner on this form)? Any other KYC step or home as the
+    primary screen means we have left — do not assume a specific next page.
+    Progress-bar labels do not count. Answer only true or false.
   nextPageAssert: >
     The Bank information form is no longer the primary editable screen —
-    the app has left this page (progress-bar labels do not count as still being here)
+    the app has left this page (KYC step order is not fixed; progress-bar labels do not count)

@@ -3,7 +3,7 @@ import { runAsidePackage } from '../../core/aside-runner.js';
 
 /**
  * Haveri VahanCredit A 面（Dashboard 录制生成）
- * session: 2026-09-29T08-39-23-721Z-ae0c74
+ * session: 2026-11-10T05-42-05-974Z-f0fed7
  *
  *   npm run test:aside:t57
  */

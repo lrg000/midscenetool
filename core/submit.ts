@@ -31,6 +31,59 @@ async function isStillOnSubmitPage(session: AgentSession): Promise<boolean> {
   }
 }
 
+async function isKycSubmitSpinner(session: AgentSession): Promise<boolean> {
+  try {
+    return await session.agent.aiBoolean(
+      'After tapping Next or Submit on this KYC step, is a loading spinner / circular progress / ' +
+        '"please wait" overlay covering the screen (form not being edited, navigation in progress)? ' +
+        'Answer only true or false.',
+    );
+  } catch {
+    return false;
+  }
+}
+
+/**
+ * KYC 五步：提交后可能转圈才跳转。先等离开当前页；转圈中不要立刻再点 Next/Submit。
+ * 仍停在可编辑表单时才按 retryTap 补点。
+ */
+export async function waitForKycLeavePage(
+  session: AgentSession,
+  options?: { retapPrompt?: string; retryTap?: number; retryDelayMs?: number },
+): Promise<boolean> {
+  const max = Math.max(1, session.env.kyc?.afterSubmitLeaveMaxAttempts ?? 12);
+  const pollMs = session.env.kyc?.afterSubmitLeavePollMs ?? 1000;
+  const retryTap = Math.max(0, options?.retryTap ?? 0);
+  const retryDelay = options?.retryDelayMs ?? 2000;
+  let tapsUsed = 0;
+
+  for (let i = 0; i < max; i++) {
+    await sleep(i === 0 ? Math.min(pollMs, session.env.timing.afterSubmit ?? 1500) : pollMs);
+    if (KYC_URGENCY_PAGE_IDS.has(session.meta.id)) {
+      await dismissKycUrgencyPopups(session);
+    }
+    if (await isKycSubmitSpinner(session)) {
+      console.log(`  提交后转圈中，等待离开当前页（${i + 1}/${max}）...`);
+      continue;
+    }
+    const stayed = await isStillOnSubmitPage(session);
+    if (!stayed) {
+      console.log(`  已离开当前 KYC 页（第 ${i + 1} 次检测）`);
+      return true;
+    }
+    if (options?.retapPrompt && tapsUsed < retryTap) {
+      tapsUsed += 1;
+      console.log(`  仍停在当前表单（无转圈），重试点提交（${tapsUsed}/${retryTap}）...`);
+      await scrollToElement(session, 'Next', options.retapPrompt);
+      await session.agent.aiTap(options.retapPrompt);
+      await sleep(retryDelay);
+    } else {
+      console.log(`  仍在当前 KYC 页，继续等跳转（${i + 1}/${max}）...`);
+    }
+  }
+  return !(await isStillOnSubmitPage(session));
+}
+
 function resolveRetryTap(session: AgentSession): number {
   const fromPage = session.page.submit.retryTapIfStay;
   if (fromPage !== undefined) return Math.max(0, fromPage);
@@ -88,12 +141,19 @@ export async function submitAndVerifyNextPage(session: AgentSession): Promise<vo
     }
   }
 
+  const isKycStep = KYC_URGENCY_PAGE_IDS.has(session.meta.id);
+
   await runTest('点击 Next 提交表单', async () => {
     await session.agent.aiTap(nextPrompt);
-    await sleep(env.timing.afterSubmit);
-    if (KYC_URGENCY_PAGE_IDS.has(session.meta.id)) {
-      await dismissKycUrgencyPopups(session);
+    if (isKycStep) {
+      leftAfterTap = await waitForKycLeavePage(session, {
+        retapPrompt: nextPrompt,
+        retryTap,
+        retryDelayMs: retryDelay,
+      });
+      return;
     }
+    await sleep(env.timing.afterSubmit);
 
     for (let i = 0; i < retryTap; i++) {
       const stayed = await isStillOnSubmitPage(session);
@@ -106,13 +166,17 @@ export async function submitAndVerifyNextPage(session: AgentSession): Promise<vo
       await scrollToElement(session, 'Next', nextPrompt);
       await session.agent.aiTap(nextPrompt);
       await sleep(retryDelay);
-      if (KYC_URGENCY_PAGE_IDS.has(session.meta.id)) {
-        await dismissKycUrgencyPopups(session);
-      }
     }
   }, runOpts);
 
   await runTest('验证跳转到下一页', async () => {
+    if (isKycStep) {
+      if (leftAfterTap || !(await isStillOnSubmitPage(session))) {
+        console.log('  已离开当前 KYC 页（提交校验：不是当前页）');
+        return;
+      }
+      throw new Error('点击 Next 后未离开当前 KYC 页（仍在本表单或转圈超时）');
+    }
     if (retryTap > 0) await sleep(Math.min(800, retryDelay));
     if (leftAfterTap) {
       const still = await isStillOnSubmitPage(session);

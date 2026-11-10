@@ -5,20 +5,27 @@
   "template": "terminal-mint",
   "topic": "MidsceneTool",
   "slides": [
-    {"id": "slide-01", "title": "核心价值"},
+    {"id": "slide-01", "title": "核心结论"},
     {"id": "slide-02", "title": "问题背景"},
     {"id": "slide-03", "title": "运行机制"},
-    {"id": "slide-04", "title": "三种模式"},
-    {"id": "slide-05", "title": "能力模块"},
+    {"id": "slide-04", "title": "控制台日常入口"},
+    {"id": "slide-05", "title": "三种模式"},
     {"id": "slide-06", "title": "A面与B面"},
-    {"id": "slide-07", "title": "报告产出"},
+    {"id": "slide-07", "title": "实机规则"},
     {"id": "slide-08", "title": "快速开始"}
   ],
-  "verified_at": "2026-08-17T08:50:00.000Z",
+  "verified_at": "2026-11-10T06:20:00.000Z",
   "validation": {
-    "static": "NOT_RUN",
-    "browser": "NOT_RUN",
+    "static": "PASS",
+    "browser": "PASS",
     "clicker": "NOT_RUN"
   },
-  "revisions": []
+  "revisions": [
+    {
+      "at": "2026-11-10",
+      "summary": "按 2026-11 仓库重写汇报：控制台主入口、Agent 配置、全流程清数据、协议不跟色、Passkey、KYC 离页、A 面 18 包、录制落盘规则、L3 边界",
+      "slides": ["slide-01", "slide-02", "slide-03", "slide-04", "slide-05", "slide-06", "slide-07", "slide-08"],
+      "validation": "static PASS; node --check PASS; browser desktop/narrow overflowX false, Home/End keyboard; hardware clicker NOT_RUN"
+    }
+  ]
 }

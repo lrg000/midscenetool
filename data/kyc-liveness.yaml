@@ -42,11 +42,20 @@ flow:
     action: tap-submit
     label: 自拍预览 Submit
   - section: Done
-    type: verify
+    type: action
+    action: wait-page
     label: 活体检测完成
+    manualWaitSec: 8
     assertPrompt: >
-      The "Upload your selfie" guide, camera capture, and selfie preview are no longer the
-      primary screen — the app has left this liveness page (progress-bar labels do not count)
+      The "Upload your selfie" guide, camera capture, and selfie preview (Submit/Retake)
+      are no longer the primary screen. Do NOT require any specific next KYC page
+      (order is not fixed). A loading spinner on the selfie preview means we have NOT left.
+      Progress-bar labels do not count.
 
 submit:
   enabled: false
+  stayOnPagePrompt: >
+    Is the "Upload your selfie" guide, camera capture, or selfie preview with Submit/Retake
+    still the primary screen (including a loading spinner on that preview)?
+    Any other KYC step as the primary form means we have left — do not assume Bank information.
+    Progress-bar labels do not count. Answer only true or false.

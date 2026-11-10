@@ -6,6 +6,7 @@ import { fillInputField } from './input-field.js';
 import { contactFieldLocatePrompt, optionOrdinal, safeAiCall, sleep } from './utils.js';
 import { isElementVisible, scrollFieldIntoView, scrollPage, scrollToElement } from './scroll.js';
 import { recordSkipped, runTest } from './test-context.js';
+import { waitForKycLeavePage } from './submit.js';
 
 /** optional tap-text：优先用 locatePrompt 条件句，避免 Welcome 上 "CONTINUE" 误匹配 */
 function optionalTapVisibilityPrompt(step: FlowStep, text: string): string {
@@ -582,8 +583,18 @@ export async function runActionStep(session: AgentSession, step: FlowStep): Prom
       }
 
       case 'tap-submit':
-        await session.agent.aiTap('The "Submit" button on the current page');
+        await session.agent.aiTap(
+          step.locatePrompt ?? 'The "Submit" button on the current page',
+        );
         await sleep(env.timing.afterSubmit);
+        if (KYC_URGENCY_PAGE_IDS.has(session.meta.id)) {
+          const left = await waitForKycLeavePage(session);
+          if (!left) {
+            throw new Error(
+              `点击 Submit 后未离开「${session.page.page.title}」（仍在本页或转圈超时）`,
+            );
+          }
+        }
         break;
 
       case 'tap-allow':

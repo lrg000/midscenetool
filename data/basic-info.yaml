@@ -150,6 +150,7 @@ flow:
 
 submit:
   enabled: true
+  # KYC 五步：点 Next 后先等转圈离开当前页，再校验「不是本页」（core/submit waitForKycLeavePage）
   buttonPrompt: The "Next" button at the bottom of the Basic info form page
   stayOnPagePrompt: >
     Is the "Basic info" form still the primary editable screen (Personal/Address/Work fields

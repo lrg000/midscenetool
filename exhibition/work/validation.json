@@ -1,7 +1,8 @@
 {
   "schema_version": "1.0",
-  "static": "NOT_RUN",
-  "browser": "NOT_RUN",
-  "node_check": "NOT_RUN",
-  "notes": "当前环境终端不可用，未执行 validate_skill / validate_deck。请在本地运行：node --check exhibition/scripts/*.js"
+  "static": "PASS",
+  "node_check": "PASS",
+  "browser": "PASS",
+  "clicker": "NOT_RUN",
+  "notes": "validate_skill.py PASS; validate_deck.py PASS; node --check on exhibition/scripts/*.js PASS. Browser: served exhibition on 127.0.0.1:8765, desktop 1280 and mobile 390, overflowX false, Home/End hash navigation, replay button clickable. Hardware clicker not present."
 }

@@ -1,4 +1,6 @@
-# t57 — 录制后拆页精修（非完整 PRD）
+# t57 — 录制用例摘要（recorded）
+# session: 2026-11-10T05-42-05-974Z-f0fed7
+# mode: device
 
 ## 包元信息
 
@@ -8,28 +10,23 @@
 | appLabel | Haveri VahanCredit |
 | androidPackage | com.haveridriveloan.vahancredit.app |
 | kind | loan-shell |
-| 自动化 | npm run test:aside:t57 |
 
-## 步骤摘要
+## 步骤
 
-### bootstrap — Before you continue
-1. wait-app-ready / 权限（若有）
-2. checkbox「I have read and agree to the documents above.」
-3. 仅点协议弹窗 Continue
+### recorded — recorded
 
-### login — Welcome / OTP
-1. 勾选 Terms 底栏 checkbox
-2. Use Mobile Number
-3. native-input mobile → Send OTP
-4. native-input otp（valueKey: otp）→ Verify & Login
+### login — login
+1. [wait-page] wait-page: Welcome to Haveri VahanCredit («Welcome to Haveri VahanCredit»)
+2. [verify] verify: Choose how to continue («Choose how to continue»)
+3. [checkbox] checkbox: I hava read and agree to the («I hava read and agree to the»)
+4. [tap-text] tap-text: Use Mobile Number («Use Mobile Number»)
+5. [wait-page] wait-page: Mobile Number («Mobile Number»)
+6. [native-input] native-input: Mobile Number («Mobile Number»)
+7. [tap-text] tap-text: Send OTP («Send OTP»)
+8. [wait-page] wait-page: Enter OTP («Enter OTP»)
+9. [native-input] native-input: Enter OTP («Enter OTP»)
+10. [tap-text] tap-text: Verify & Login («Verify & Login»)
 
-### kyc-personal — Step 1
-1. Full Name = Ravi Kumar
-2. Date of Birth（开日历后 OK）
-3. Gender = Male
-4. Marital / Education 选项 optional（实机选项名可能不同）
-5. Purpose New Car（若已选可跳过）→ Continue
-
-## 未覆盖
-- KYC Step 2–6、借款/还款、我的：录制未走到，未自动化
-- 云效 PRD 逐条 AC：未映射，禁止当作已按 PRD 验收
+## 生成产物
+- packages/t57/pages/*.yaml
+- tests/aside/t57.test.ts

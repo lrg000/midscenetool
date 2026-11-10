@@ -3,13 +3,13 @@
   "narrative_arc": "project",
   "template": "terminal-mint",
   "slides": [
-    {"id": "slide-01", "purpose": "建立唯一核心结论", "message": "AI 视觉 + YAML 配置驱动 Android 自动化", "evidence_ids": ["fact-01", "fact-02"], "layout": "cover", "content_budget": {"headline_chars": 32, "body_chars": 90, "items": 0}, "concept_animation": null},
-    {"id": "slide-02", "purpose": "说明为何需要这套框架", "message": "传统定位器维护成本高，视觉 AI 用自然语言描述 UI", "evidence_ids": ["fact-02"], "layout": "problem", "content_budget": {"headline_chars": 28, "body_chars": 120, "items": 3}, "concept_animation": null},
-    {"id": "slide-03", "purpose": "展示真实机制", "message": "YAML → 状态机 → AI Agent → 断言/报告", "evidence_ids": ["fact-02"], "layout": "mechanism", "content_budget": {"headline_chars": 24, "body_chars": 80, "items": 4}, "concept_animation": "config-to-assert"},
-    {"id": "slide-04", "purpose": "解释运行模式选择", "message": "单页最稳，分段次之，全流程依赖环境", "evidence_ids": ["fact-03"], "layout": "comparison", "content_budget": {"headline_chars": 24, "body_chars": 100, "items": 3}, "concept_animation": null},
-    {"id": "slide-05", "purpose": "列举核心能力", "message": "下拉、输入、通讯录、KYC、业务分流等", "evidence_ids": ["fact-01"], "layout": "grid", "content_budget": {"headline_chars": 20, "body_chars": 60, "items": 8}, "concept_animation": null},
-    {"id": "slide-06", "purpose": "区分 A 面/B 面", "message": "H5 用 flows + data，原生壳用 packages + aside", "evidence_ids": ["fact-04", "fact-05"], "layout": "split", "content_budget": {"headline_chars": 24, "body_chars": 100, "items": 2}, "concept_animation": null},
-    {"id": "slide-07", "purpose": "展示可验证产出", "message": "HTML/JSON 报告 + midscene_run 产物", "evidence_ids": ["fact-06"], "layout": "evidence", "content_budget": {"headline_chars": 24, "body_chars": 90, "items": 4}, "concept_animation": null},
-    {"id": "slide-08", "purpose": "给出下一步行动", "message": "npm run test:basic-info 等入口", "evidence_ids": ["fact-07", "fact-03"], "layout": "cta", "content_budget": {"headline_chars": 20, "body_chars": 120, "items": 6}, "concept_animation": null}
+    {"id": "slide-01", "purpose": "建立唯一核心结论", "message": "控制台编排 YAML，视觉 Agent 在真机上点，报告证明测过", "evidence_ids": ["fact-01", "fact-02"], "layout": "cover", "content_budget": {"headline_chars": 36, "body_chars": 110, "items": 0}, "concept_animation": null},
+    {"id": "slide-02", "purpose": "说明为何需要这套框架", "message": "混合栈与多马甲使定位器失效；自然语言描述 UI，YAML 锁住测什么", "evidence_ids": ["fact-05"], "layout": "problem", "content_budget": {"headline_chars": 32, "body_chars": 120, "items": 3}, "concept_animation": null},
+    {"id": "slide-03", "purpose": "展示真实机制", "message": "Dashboard 任务 → 状态机/业务流/A 面 runner → Midscene → 报告", "evidence_ids": ["fact-02", "fact-08"], "layout": "mechanism", "content_budget": {"headline_chars": 28, "body_chars": 90, "items": 4}, "concept_animation": "config-to-assert"},
+    {"id": "slide-04", "purpose": "把控制台讲清楚", "message": "配置 Agent 与账号后选用例执行；录制只在转换落盘时写 YAML", "evidence_ids": ["fact-02", "fact-08", "fact-13"], "layout": "grid", "content_budget": {"headline_chars": 24, "body_chars": 80, "items": 4}, "concept_animation": null},
+    {"id": "slide-05", "purpose": "解释运行模式与全流程约束", "message": "单页最稳；全流程清数据、可选包名，稳定性依赖环境", "evidence_ids": ["fact-03", "fact-09"], "layout": "comparison", "content_budget": {"headline_chars": 28, "body_chars": 100, "items": 3}, "concept_animation": null},
+    {"id": "slide-06", "purpose": "区分三域", "message": "B 面 10 页 H5 模版；A 面 T 贷款壳与 Y 独立 App 分目录", "evidence_ids": ["fact-04", "fact-05"], "layout": "split", "content_budget": {"headline_chars": 24, "body_chars": 100, "items": 3}, "concept_animation": null},
+    {"id": "slide-07", "purpose": "沉淀实机教训", "message": "协议跟文案不跟色；Passkey 可跳；KYC 提交只等离页", "evidence_ids": ["fact-10", "fact-11", "fact-12", "fact-14"], "layout": "evidence", "content_budget": {"headline_chars": 28, "body_chars": 90, "items": 4}, "concept_animation": null},
+    {"id": "slide-08", "purpose": "给出下一步行动", "message": "npm run dashboard 接真机即可开始；单页回归仍是最稳入口", "evidence_ids": ["fact-06", "fact-07"], "layout": "cta", "content_budget": {"headline_chars": 24, "body_chars": 120, "items": 6}, "concept_animation": null}
   ]
 }

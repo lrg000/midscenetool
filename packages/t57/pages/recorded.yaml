@@ -1,0 +1,52 @@
+# Auto-generated from Dashboard record session 2026-11-10T03-47-21-245Z-9ee30c
+# mode=device package=t57 page=recorded
+# Refine locatePrompt / assertPrompt against PRD before relying on CI.
+page:
+  id: aside-t57-recorded
+  title: recorded
+  isNative: true
+  skipNavigation: true
+  navigationPrompt: ""
+  blurTarget: the title recorded
+  aiContext: Haveri VahanCredit A-side page (recorded). packageId=t57
+    androidPackage=com.haveridriveloan.vahancredit.app. Generated from Dashboard record session;
+    refine prompts against PRD / real UI.
+  bottomFields: []
+dropdowns: []
+inputs: []
+flow:
+  - section: Recorded
+    label: "wait-page: Personal Information"
+    type: action
+    action: wait-page
+    assertPrompt: Is the screen showing content related to "Personal Information"? Answer only true or false.
+  - section: Recorded
+    label: Fill Name
+    type: native-input
+    valueKey: mobile
+  - section: Recorded
+    label: "tap-text: Date of Birth"
+    type: action
+    action: tap-text
+    assertPrompt: Date of Birth
+    locatePrompt: The visible text/control "Date of Birth"
+  - section: Recorded
+    label: "tap-text: OK"
+    type: action
+    action: tap-text
+    assertPrompt: OK
+    locatePrompt: The visible text/control "OK"
+  - section: Recorded
+    label: "tap-text: Gender"
+    type: action
+    action: tap-text
+    assertPrompt: Gender
+    locatePrompt: The visible text/control "Gender"
+  - section: Recorded
+    label: "tap-text: Male"
+    type: action
+    action: tap-text
+    assertPrompt: Male
+    locatePrompt: The visible text/control "Male"
+submit:
+  enabled: false

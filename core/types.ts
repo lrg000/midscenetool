@@ -265,6 +265,10 @@ export interface EnvironmentConfig {
     selfieCaptureWaitSec: number;
     /** 入口校验通过后，等待人工完成 Aadhaar OCR 的上限（秒） */
     ocrManualWaitSec?: number;
+    /** 五步提交后等转圈离开当前页：轮询次数（默认 12） */
+    afterSubmitLeaveMaxAttempts?: number;
+    /** 五步提交后等转圈离开当前页：轮询间隔 ms（默认 1000） */
+    afterSubmitLeavePollMs?: number;
   };
   /** B 面全流程冷启启动的 App（applicationId） */
   app?: {

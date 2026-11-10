@@ -39,6 +39,9 @@ kyc:
   photoManualWaitSec: 300
   selfieCaptureWaitSec: 45
   ocrManualWaitSec: 600
+  # 五步点 Next/Submit 后网络转圈：先等离开当前页，再断言；勿把转圈当「没点到」立刻重试
+  afterSubmitLeaveMaxAttempts: 12
+  afterSubmitLeavePollMs: 1000
 
 # B 面全流程（business-*）连接设备后、bootstrap 前启动的 App
 # 换马甲包时改这里，或设环境变量 ANDROID_PACKAGE 覆盖

@@ -62,16 +62,16 @@ flow:
 
 submit:
   enabled: true
+  # KYC 五步：点 Next 后先等转圈离开当前页，再校验「不是本页」
   buttonPrompt: >
     The black "Next" button at the bottom of the "Confirm your info" sheet
     (full-width dark button with white "Next" text — not Gender/Date of Birth, not vConsole)
   stayOnPagePrompt: >
     Is the "Confirm your info" sheet or Aadhaar OCR upload still the primary form
-    (PAN card number / Date of Birth / Front of Aadhaar)?
-    "Upload your selfie" does NOT count as still here — even if the top header still
-    says "Identity Verification". Progress-bar labels do not count.
-    Answer only true or false.
+    (PAN card number / Date of Birth / Front of Aadhaar), including a submit loading spinner
+    on this form? Any other KYC step as the primary screen means we have left — do not
+    assume the next page is selfie. Header "Identity Verification" alone does not count.
+    Progress-bar labels do not count. Answer only true or false.
   nextPageAssert: >
-    The "Confirm your info" / Aadhaar OCR / PAN form is gone. Landing on "Upload your selfie"
-    (guide with Perfect / No mask examples, camera, or preview) counts as success even if
-    the top header still says "Identity Verification". Progress-bar labels do not count.
+    The "Confirm your info" / Aadhaar OCR / PAN form is no longer the primary screen.
+    Any other KYC step counts as success (order is not fixed). Progress-bar labels do not count.
